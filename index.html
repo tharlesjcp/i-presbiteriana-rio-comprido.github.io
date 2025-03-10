@@ -5,22 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bem-vindo à Igreja Presbiteriana do Rio Comprido!</title>
     <style>
+        /* Nova Paleta de Cores */
         :root {
-            --verde-escuro: #004d00;
-            --verde-medio: #006600;
-            --verde-claro: #00cc44;
+            --azul-medio: #2a80be;
+            --azul-suave: #2b80bd;
+            --marrom-escuro: #1f1210;
+            --branco: #ffffff;
             --cinza-claro: #f5f5f5;
-            --cinza-medio: #666666;
-            --branco: #FFFFFF;
         }
-        body { background-color: var(--cinza-claro); color: var(--cinza-medio); margin: 0; font-family: Arial, sans-serif; }
-        header { background-color: var(--verde-escuro); color: var(--branco); text-align: center; padding: 20px; }
+        
+        body { background-color: var(--cinza-claro); color: var(--marrom-escuro); margin: 0; font-family: Arial, sans-serif; }
+        
+        header { background-color: var(--azul-medio); color: var(--branco); text-align: center; padding: 20px; }
+        
         .banner-container { position: relative; max-width: 100%; overflow: hidden; }
         .banner-slide { display: none; width: 100%; height: 400px; object-fit: cover; }
         .banner-slide.active { display: block; }
-        .links a { background-color: var(--verde-medio); color: var(--branco); border-radius: 5px; padding: 10px 20px; text-decoration: none; transition: 0.3s; }
-        .links a:hover { background-color: var(--verde-claro); }
-        footer { background-color: var(--verde-escuro); color: var(--branco); text-align: center; padding: 10px; margin-top: 20px; }
+        
+        .links a {
+            background-color: var(--azul-suave);
+            color: var(--branco);
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        
+        .links a:hover {
+            background-color: var(--marrom-escuro);
+        }
+        
+        footer { background-color: var(--azul-medio); color: var(--branco); text-align: center; padding: 10px; margin-top: 20px; }
+        
         .video { text-align: center; margin: 20px 0; }
     </style>
 </head>
@@ -39,7 +55,7 @@
 </div>
 
 <main>
-    <h2 style="color: var(--verde-medio);">Estudo Bíblico da Semana</h2>
+    <h2 style="color: var(--azul-medio);">Estudo Bíblico da Semana</h2>
     <div class="video">
         <iframe width="560" height="315" src="https://www.youtube.com/embed/tANPdft2AQ0?si=1Kg8Wh9n75s4l6rM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </div>
@@ -54,7 +70,7 @@
 </main>
 
 <footer>
-    <p>&copy; 2025 Igreja Presbiteriana do Rio comprido - Todos os direitos reservados</p>
+    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
     <p>Siga-nos: <a href="#" style="color: var(--branco);">Instagram</a> | <a href="#" style="color: var(--branco);">YouTube</a></p>
 </footer>
 
