@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo à Igreja Presbiteriana do Rio Comprido</title>
+    <title>Bem-vindo à Igreja Presbiteriana do Rio Comprido!</title>
     <style>
         :root {
             --verde-escuro: #004d00;
@@ -21,15 +21,17 @@
         .links a { background-color: var(--verde-medio); color: var(--branco); border-radius: 5px; padding: 10px 20px; text-decoration: none; transition: 0.3s; }
         .links a:hover { background-color: var(--verde-claro); }
         footer { background-color: var(--verde-escuro); color: var(--branco); text-align: center; padding: 10px; margin-top: 20px; }
+        .video { text-align: center; margin: 20px 0; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Bem-vindo à Igreja Presbiteriana do Rio Comprido.</h1>
+    <h1>Bem-vindo à Igreja Presbiteriana do Rio Comprido!</h1>
     <p>Estamos felizes em receber você!</p>
 </header>
 
+<!-- Banner Slideshow -->
 <div class="banner-container">
     <img src="images/banner1.jpg" class="banner-slide active">
     <img src="images/banner2.jpg" class="banner-slide">
@@ -37,7 +39,11 @@
 </div>
 
 <main>
-    <h2 style="color: var(--verde-medio);">Estudos Bíblicos</h2>
+    <h2 style="color: var(--verde-medio);">Estudo Bíblico da Semana</h2>
+    <div class="video">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/tANPdft2AQ0?si=1Kg8Wh9n75s4l6rM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+
     <p>Confira nossos estudos semanais sobre a Palavra de Deus.</p>
     <div class="links">
         <a href="biblia.html">Bíblia Online</a>
@@ -48,10 +54,11 @@
 </main>
 
 <footer>
-    <p>&copy; 2025 Igreja Presbiteriana do rio Comprido - Todos os direitos reservados</p>
+    <p>&copy; 2025 Igreja Presbiteriana do Rio comprido - Todos os direitos reservados</p>
     <p>Siga-nos: <a href="#" style="color: var(--branco);">Instagram</a> | <a href="#" style="color: var(--branco);">YouTube</a></p>
 </footer>
 
+<!-- Script do Banner Slideshow -->
 <script>
     let index = 0;
     const slides = document.querySelectorAll('.banner-slide');
