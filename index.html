@@ -14,20 +14,25 @@
             --cinza-claro: #f5f5f5;
         }
 
-        body { background-color: var(--cinza-claro); color: var(--marrom-escuro); margin: 0; font-family: Arial, sans-serif; padding-top: 60px; }
+        body {
+            background-color: var(--cinza-claro);
+            color: var(--marrom-escuro);
+            margin: 0;
+            font-family: Arial, sans-serif;
+            padding-top: 80px; /* Espaço para o menu fixo */
+        }
 
         /* Menu superior fixo */
         .menu-superior {
             background-color: var(--azul-medio);
             color: var(--branco);
-            text-align: left;
             padding: 10px 20px;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 10;
+            z-index: 10; /* Garante que o menu fique abaixo do banner */
             display: flex;
             align-items: center;
         }
@@ -50,33 +55,81 @@
             border-radius: 5px;
         }
 
+        /* Banner com transição suave */
         .banner-container {
             max-width: 100%;
             overflow: hidden;
             margin-bottom: 60px;
             padding-top: 80px;
             position: relative;
-            z-index: 0;  /* Ajusta para não sobrepor o vídeo */
+            z-index: 0; /* Ajusta o banner para não sobrepor o vídeo */
+        }
+
+        .banner-slide {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            background-color: var(--branco);
+            position: absolute;
+            top: 0;
+            left: 100%;
+            opacity: 0;
+            transition: all 1s ease-in-out;
+        }
+
+        .banner-slide.active {
+            left: 0;
+            opacity: 1;
+        }
+
+        .banner-slide.previous {
+            left: -100%;
+            opacity: 0;
+        }
+
+        /* Paginador do banner */
+        .pontos {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .pontos span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--azul-suave);
+            border-radius: 50%;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .pontos span.active {
+            background-color: var(--azul-medio);
+        }
+
+        footer {
+            background-color: var(--azul-medio);
+            color: var(--branco);
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        .video {
+            text-align: center;
+            margin: 20px 0;
         }
 
         main {
             padding: 20px;
-            margin-top: 20px;
+            margin-top: 40px; /* Garante espaçamento após o banner */
         }
-
-        .banner-slide { width: 100%; max-height: 500px; object-fit: contain; background-color: var(--branco); position: absolute; top: 0; left: 100%; opacity: 0; transition: all 1s ease-in-out; }
-        .banner-slide.active { left: 0; opacity: 1; }
-        .banner-slide.previous { left: -100%; opacity: 0; }
-        .pontos { text-align: center; margin-top: 10px; }
-        .pontos span { display: inline-block; width: 10px; height: 10px; background-color: var(--azul-suave); border-radius: 50%; margin: 0 5px; transition: background-color 0.3s; cursor: pointer; }
-        .pontos span.active { background-color: var(--azul-medio); }
-
-        footer { background-color: var(--azul-medio); color: var(--branco); text-align: center; padding: 10px; margin-top: 20px; }
-        .video { text-align: center; margin: 20px 0; }
     </style>
 </head>
 <body>
 
+<!-- Menu Superior -->
 <nav class="menu-superior">
     <img src="images/logo.png" alt="Logo da Igreja">
     <a href="index.html">Home</a>
@@ -87,10 +140,13 @@
     <a href="login.html">Login</a>
 </nav>
 
+<!-- Banner Slideshow -->
 <div class="banner-container">
     <img src="images/banner1.png" class="banner-slide active">
     <img src="images/banner2.png" class="banner-slide">
 </div>
+
+<!-- Paginador do Banner -->
 <div class="pontos">
     <span data-index="0" class="active"></span>
     <span data-index="1"></span>
