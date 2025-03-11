@@ -121,3 +121,67 @@ main {
     padding: 20px;
     margin-top: 20px;
 }
+/* Estilos da página de estudos */
+.titulo-pagina {
+    text-align: center;
+    color: var(--azul-medio);
+    margin-bottom: 20px;
+}
+
+.estudos-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.estudo {
+    background-color: var(--branco);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.estudo:hover {
+    transform: scale(1.05);
+}
+
+.estudo img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.estudo .info {
+    padding: 15px;
+    text-align: center;
+}
+
+.estudo .info h2 {
+    color: var(--azul-escuro);
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.estudo .info p {
+    color: var(--marrom-escuro);
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.botao {
+    display: inline-block;
+    background-color: var(--azul-medio);
+    color: var(--branco);
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.botao:hover {
+    background-color: var(--azul-escuro);
+}
