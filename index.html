@@ -43,20 +43,12 @@
         }
 
         .banner-container { max-width: 100%; overflow: hidden; margin-bottom: 20px; }
-        .banner-slide { display: none; width: 100%; max-height: 500px; object-fit: contain; background-color: var(--branco); }
-        .banner-slide.active { display: block; }
-
-        .links a, button {
-            background-color: var(--azul-suave);
-            color: var(--branco);
-            padding: 5px 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin: 5px;
-            transition: 0.3s;
-        }
-
-        .links a:hover, button:hover { background-color: var(--marrom-escuro); }
+        .banner-slide { width: 100%; max-height: 500px; object-fit: contain; background-color: var(--branco); position: absolute; top: 0; left: 100%; opacity: 0; transition: all 1s ease-in-out; }
+        .banner-slide.active { left: 0; opacity: 1; }
+        .banner-slide.previous { left: -100%; opacity: 0; }
+        .pontos { text-align: center; margin-top: 10px; }
+        .pontos span { display: inline-block; width: 10px; height: 10px; background-color: var(--azul-suave); border-radius: 50%; margin: 0 5px; transition: background-color 0.3s; cursor: pointer; }
+        .pontos span.active { background-color: var(--azul-medio); }
 
         footer { background-color: var(--azul-medio); color: var(--branco); text-align: center; padding: 10px; margin-top: 20px; }
         .video { text-align: center; margin: 20px 0; }
@@ -64,7 +56,6 @@
 </head>
 <body>
 
-<!-- Menu Superior -->
 <nav class="menu-superior">
     <a href="index.html">Home</a>
     <a href="estudos.html">Estudos Bíblicos</a>
@@ -74,10 +65,13 @@
     <a href="login.html">Login</a>
 </nav>
 
-<!-- Banner Slideshow -->
 <div class="banner-container">
     <img src="images/banner1.png" class="banner-slide active">
     <img src="images/banner2.png" class="banner-slide">
+</div>
+<div class="pontos">
+    <span data-index="0" class="active"></span>
+    <span data-index="1"></span>
 </div>
 
 <main>
@@ -96,15 +90,27 @@
     <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
 </footer>
 
-<!-- Script do Banner Slideshow -->
 <script>
     let index = 0;
     const slides = document.querySelectorAll('.banner-slide');
-    setInterval(() => {
+    const pontos = document.querySelectorAll('.pontos span');
+
+    function mudarSlide(novoIndex) {
         slides[index].classList.remove('active');
-        index = (index + 1) % slides.length;
+        pontos[index].classList.remove('active');
+        index = novoIndex;
         slides[index].classList.add('active');
-    }, 3000);  // Muda a cada 3 segundos
+        pontos[index].classList.add('active');
+    }
+
+    setInterval(() => {
+        let novoIndex = (index + 1) % slides.length;
+        mudarSlide(novoIndex);
+    }, 5000);
+
+    pontos.forEach((ponto, i) => {
+        ponto.addEventListener('click', () => mudarSlide(i));
+    });
 </script>
 
 </body>
