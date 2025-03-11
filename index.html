@@ -4,158 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Igreja Presbiteriana do Rio Comprido</title>
-    <style>
-    /* Cores principais */
-    :root {
-        --azul-escuro: #1f3b5f;
-        --azul-medio: #2a80be;
-        --azul-suave: #2b80bd;
-        --marrom-escuro: #1f1210;
-        --branco: #ffffff;
-        --cinza-claro: #f0f0f0;
-        --cinza-medio: #a3a3a3;
-    }
-
-    body {
-        background-color: var(--cinza-claro);
-        color: var(--marrom-escuro);
-        margin: 0;
-        font-family: Arial, sans-serif;
-        padding-top: 80px;
-    }
-
-    /* Menu superior fixo */
-    .menu-superior {
-        background-color: var(--cinza-claro);
-        color: var(--azul-medio);
-        padding: 2px 20px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 60px; /* Definindo altura menor */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 10;
-        display: flex;
-        align-items: center;
-    }
-
-    .menu-superior img {
-        height: 75px;  /* Aumenta a altura da logo */
-        margin-right: 13px;
-        background-color: transparent;
-        border-radius: 5px;
-        padding: 2px;
-    }
-
-    .menu-superior a {
-        color: var(--azul-escuro);
-        text-decoration: none;
-        margin: 0 15px;
-        padding: 5px 10px;
-        transition: background-color 0.3s;
-    }
-
-    .menu-superior a:hover {
-        background-color: var(--cinza-medio);
-        color: var(--branco);
-        border-radius: 5px;
-    }
-
-    /* Banner com transição suave */
-    .banner-container {
-        max-width: 100%;
-        overflow: hidden;
-        margin-bottom: 20px;  /* Diminui o espaço abaixo do banner */
-        padding-top: 0px;    /* Diminui o espaço entre o menu e o banner */
-        margin-top: -22px; /* Forçar o banner a subir */
-        position: relative;
-        z-index: 0;
-        height: 500px;
-    }
-
-    .banner-slide {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        background-color: var(--branco);
-        position: absolute;
-        top: 0;
-        left: 100%;
-        opacity: 0;
-        transition: all 1s ease-in-out;
-    }
-
-    .banner-slide.active {
-        left: 0;
-        opacity: 1;
-    }
-
-    .banner-slide.previous {
-        left: -100%;
-        opacity: 0;
-    }
-
-    /* Paginador do banner */
-    .pontos {
-        text-align: center;
-        margin-top: 10px;
-    }
-
-    .pontos span {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        background-color: var(--azul-suave);
-        border-radius: 50%;
-        margin: 0 5px;
-        transition: background-color 0.3s;
-        cursor: pointer;
-    }
-
-    .pontos span.active {
-        background-color: var(--azul-medio);
-    }
-
-    footer {
-        background-color: var(--azul-medio);
-        color: var(--branco);
-        text-align: center;
-        padding: 10px;
-        margin-top: 20px;
-    }
-
-    .video {
-        text-align: center;
-        margin: 20px 0;
-    }
-
-    main {
-        padding: 20px;
-        margin-top: 20px; /* Diminui o espaço abaixo do banner */
-    }
-</style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<!-- Menu Superior -->
-<nav class="menu-superior">
-    <img src="images/logoBlue.png" alt="Logo da Igreja">
-    <a href="index.html">Home</a>
-    <a href="estudos.html">Estudos Bíblicos</a>
-    <a href="boletim.html">Boletim</a>
-    <a href="hinario.html">Hinário</a>
-    <a href="contato.html">Contato</a>
-    <a href="login.html">Login</a>
-</nav>
+<!-- Incluindo o menu superior -->
+<div id="header-container"></div>
 
-<!-- Banner Slideshow -->
+<!-- Banner -->
 <div class="banner-container">
     <img src="images/banner1.png" class="banner-slide active">
     <img src="images/banner2.png" class="banner-slide">
 </div>
 
-<!-- Paginador do Banner -->
+<!-- Paginador -->
 <div class="pontos">
     <span data-index="0" class="active"></span>
     <span data-index="1"></span>
@@ -178,6 +40,12 @@
 </footer>
 
 <script>
+    // Carregar o menu superior automaticamente
+    fetch("includes/header.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("header-container").innerHTML = data);
+
+    // Script do banner
     let index = 0;
     const slides = document.querySelectorAll('.banner-slide');
     const pontos = document.querySelectorAll('.pontos span');
