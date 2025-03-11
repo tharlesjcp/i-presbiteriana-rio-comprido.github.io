@@ -1,0 +1,123 @@
+/* Cores principais */
+:root {
+    --azul-escuro: #1f3b5f;
+    --azul-medio: #2a80be;
+    --azul-suave: #2b80bd;
+    --marrom-escuro: #1f1210;
+    --branco: #ffffff;
+    --cinza-claro: #f0f0f0;
+    --cinza-medio: #a3a3a3;
+}
+
+body {
+    background-color: var(--cinza-claro);
+    color: var(--marrom-escuro);
+    margin: 0;
+    font-family: Arial, sans-serif;
+    padding-top: 80px;
+}
+
+/* Menu superior fixo */
+.menu-superior {
+    background-color: var(--cinza-claro);
+    color: var(--azul-medio);
+    padding: 2px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+}
+
+.menu-superior img {
+    height: 75px;
+    margin-right: 13px;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+.menu-superior a {
+    color: var(--azul-escuro);
+    text-decoration: none;
+    margin: 0 15px;
+    padding: 5px 10px;
+    transition: background-color 0.3s;
+}
+
+.menu-superior a:hover {
+    background-color: var(--cinza-medio);
+    color: var(--branco);
+    border-radius: 5px;
+}
+
+/* Banner */
+.banner-container {
+    max-width: 100%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    padding-top: 0px;
+    margin-top: -22px;
+    position: relative;
+    z-index: 0;
+    height: 500px;
+}
+
+.banner-slide {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: var(--branco);
+    position: absolute;
+    top: 0;
+    left: 100%;
+    opacity: 0;
+    transition: all 1s ease-in-out;
+}
+
+.banner-slide.active {
+    left: 0;
+    opacity: 1;
+}
+
+.pontos {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.pontos span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--azul-suave);
+    border-radius: 50%;
+    margin: 0 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.pontos span.active {
+    background-color: var(--azul-medio);
+}
+
+footer {
+    background-color: var(--azul-medio);
+    color: var(--branco);
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.video {
+    text-align: center;
+    margin: 20px 0;
+}
+
+main {
+    padding: 20px;
+    margin-top: 20px;
+}
