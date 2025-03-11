@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo à Igreja Presbiteriana do Rio Comprido!</title>
+    <title>Igreja Presbiteriana do Rio Comprido</title>
     <style>
-        /* Nova Paleta de Cores */
+        /* Cores principais */
         :root {
             --azul-medio: #2a80be;
             --azul-suave: #2b80bd;
@@ -13,65 +13,87 @@
             --branco: #ffffff;
             --cinza-claro: #f5f5f5;
         }
-        
-        body { background-color: var(--cinza-claro); color: var(--marrom-escuro); margin: 0; font-family: Arial, sans-serif; }
-        
-        header { background-color: var(--azul-medio); color: var(--branco); text-align: center; padding: 20px; }
-        
-        .banner-container { position: relative; max-width: 100%; overflow: hidden; }
-        .banner-slide { display: none; width: 100%; height: 400px; object-fit: cover; }
+
+        body { background-color: var(--cinza-claro); color: var(--marrom-escuro); margin: 0; font-family: Arial, sans-serif; padding-top: 60px; }
+
+        /* Menu superior fixo */
+        .menu-superior {
+            background-color: var(--azul-medio);
+            color: var(--branco);
+            text-align: right;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .menu-superior a {
+            color: var(--branco);
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 5px 10px;
+            transition: background-color 0.3s;
+        }
+
+        .menu-superior a:hover {
+            background-color: var(--marrom-escuro);
+            border-radius: 5px;
+        }
+
+        .banner-container { max-width: 100%; overflow: hidden; margin-bottom: 20px; }
+        .banner-slide { display: none; width: 100%; max-height: 500px; object-fit: contain; background-color: var(--branco); }
         .banner-slide.active { display: block; }
-        
-        .links a {
+
+        .links a, button {
             background-color: var(--azul-suave);
             color: var(--branco);
+            padding: 5px 10px;
             border-radius: 5px;
-            padding: 10px 20px;
             text-decoration: none;
+            margin: 5px;
             transition: 0.3s;
         }
-        
-        .links a:hover {
-            background-color: var(--marrom-escuro);
-        }
-        
+
+        .links a:hover, button:hover { background-color: var(--marrom-escuro); }
+
         footer { background-color: var(--azul-medio); color: var(--branco); text-align: center; padding: 10px; margin-top: 20px; }
-        
         .video { text-align: center; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Bem-vindo à Igreja Presbiteriana do Rio Comprido!</h1>
-    <p>Estamos felizes em receber você!</p>
-</header>
+<!-- Menu Superior -->
+<nav class="menu-superior">
+    <a href="index.html">Home</a>
+    <a href="estudos.html">Estudos Bíblicos</a>
+    <a href="boletim.html">Boletim</a>
+    <a href="hinario.html">Hinário</a>
+    <a href="contato.html">Contato</a>
+    <a href="login.html">Login</a>
+</nav>
 
 <!-- Banner Slideshow -->
 <div class="banner-container">
     <img src="images/banner1.png" class="banner-slide active">
     <img src="images/banner2.png" class="banner-slide">
-    <img src="images/banner3.png" class="banner-slide">
 </div>
 
 <main>
     <h2 style="color: var(--azul-medio);">Estudo Bíblico da Semana</h2>
     <div class="video">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/tANPdft2AQ0?si=1Kg8Wh9n75s4l6rM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/tANPdft2AQ0" frameborder="0" allowfullscreen></iframe>
     </div>
 
     <p>Confira nossos estudos semanais sobre a Palavra de Deus.</p>
     <div class="links">
-        <a href="biblia.html">Bíblia Online</a>
-        <a href="hinario.html">Hinário</a>
-        <a href="estudos.html">Estudos Bíblicos</a>
-        <a href="contato.html">Contato</a>
+        <a href="estudos.html">Ver Mais Estudos</a>
     </div>
 </main>
 
 <footer>
     <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-    <p>Siga-nos: <a href="#" style="color: var(--branco);">Instagram</a> | <a href="#" style="color: var(--branco);">YouTube</a></p>
 </footer>
 
 <!-- Script do Banner Slideshow -->
