@@ -5,128 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Igreja Presbiteriana do Rio Comprido</title>
     <style>
-        /* Cores principais */
-        :root {
-            --azul-medio: #2a80be;
-            --azul-suave: #2b80bd;
-            --marrom-escuro: #1f1210;
-            --branco: #ffffff;
-            --cinza-claro: #f0f0f0;
-        }
+    /* Cores principais */
+    :root {
+        --azul-medio: #2a80be;
+        --azul-suave: #2b80bd;
+        --marrom-escuro: #1f1210;
+        --branco: #ffffff;
+        --cinza-claro: #f0f0f0;
+    }
 
-        body {
-            background-color: var(--cinza-claro);
-            color: var(--marrom-escuro);
-            margin: 0;
-            font-family: Arial, sans-serif;
-            padding-top: 80px; /* Espaço para o menu fixo */
-        }
+    body {
+        background-color: var(--cinza-claro);
+        color: var(--marrom-escuro);
+        margin: 0;
+        font-family: Arial, sans-serif;
+        padding-top: 80px;
+    }
 
-        /* Menu superior fixo */
-        .menu-superior {
-            background-color: var(--cinza-claro);
-            color: var(--azul-medio);
-            padding: 10px 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 10; /* Garante que o menu fique abaixo do banner */
-            display: flex;
-            align-items: center;
-        }
+    /* Menu superior fixo */
+    .menu-superior {
+        background-color: var(--cinza-claro);
+        color: var(--azul-medio);
+        padding: 10px 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+    }
 
-        .menu-superior img {
-            height: 40px;
-            margin-right: 15px;
-        }
+    .menu-superior img {
+        height: 60px;  /* Aumenta a altura da logo */
+        margin-right: 15px;
+        background-color: var(--branco);
+        border-radius: 5px;
+        padding: 2px;
+    }
 
-        .menu-superior a {
-            color: var(--azul-medio);
-            text-decoration: none;
-            margin: 0 15px;
-            padding: 5px 10px;
-            transition: background-color 0.3s;
-        }
+    .menu-superior a {
+        color: var(--azul-medio);
+        text-decoration: none;
+        margin: 0 15px;
+        padding: 5px 10px;
+        transition: background-color 0.3s;
+    }
 
-        .menu-superior a:hover {
-            background-color: var(--marrom-escuro);
-            border-radius: 5px;
-        }
+    .menu-superior a:hover {
+        background-color: var(--azul-suave);
+        border-radius: 5px;
+    }
 
-        /* Banner com transição suave */
-        .banner-container {
-            max-width: 100%;
-            overflow: hidden;
-            margin-bottom: 60px;
-            padding-top: 80px;
-            position: relative;
-            z-index: 0; /* Ajusta o banner para não sobrepor o vídeo */
-            height: 500px;  /* Define uma altura fixa para o contêiner */
-        }
+    /* Banner com transição suave */
+    .banner-container {
+        max-width: 100%;
+        overflow: hidden;
+        margin-bottom: 40px;  /* Diminui o espaço abaixo do banner */
+        padding-top: 20px;    /* Diminui o espaço entre o menu e o banner */
+        position: relative;
+        z-index: 0;
+        height: 500px;
+    }
 
-        .banner-slide {
-            width: 100%;
-            height: 100%; /* Ajusta a altura para preencher o contêiner */
-            object-fit: contain;
-            background-color: var(--branco);
-            position: absolute;
-            top: 0;
-            left: 100%;
-            opacity: 0;
-            transition: all 1s ease-in-out;
-        }
+    .banner-slide {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background-color: var(--branco);
+        position: absolute;
+        top: 0;
+        left: 100%;
+        opacity: 0;
+        transition: all 1s ease-in-out;
+    }
 
-        .banner-slide.active {
-            left: 0;
-            opacity: 1;
-        }
+    .banner-slide.active {
+        left: 0;
+        opacity: 1;
+    }
 
-        .banner-slide.previous {
-            left: -100%;
-            opacity: 0;
-        }
+    .banner-slide.previous {
+        left: -100%;
+        opacity: 0;
+    }
 
-        /* Paginador do banner */
-        .pontos {
-            text-align: center;
-            margin-top: 10px;
-        }
+    /* Paginador do banner */
+    .pontos {
+        text-align: center;
+        margin-top: 10px;
+    }
 
-        .pontos span {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: var(--azul-suave);
-            border-radius: 50%;
-            margin: 0 5px;
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
+    .pontos span {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background-color: var(--azul-suave);
+        border-radius: 50%;
+        margin: 0 5px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
 
-        .pontos span.active {
-            background-color: var(--azul-medio);
-        }
+    .pontos span.active {
+        background-color: var(--azul-medio);
+    }
 
-        footer {
-            background-color: var(--azul-medio);
-            color: var(--branco);
-            text-align: center;
-            padding: 10px;
-            margin-top: 20px;
-        }
+    footer {
+        background-color: var(--azul-medio);
+        color: var(--branco);
+        text-align: center;
+        padding: 10px;
+        margin-top: 20px;
+    }
 
-        .video {
-            text-align: center;
-            margin: 20px 0;
-        }
+    .video {
+        text-align: center;
+        margin: 20px 0;
+    }
 
-        main {
-            padding: 20px;
-            margin-top: 40px; /* Garante espaçamento após o banner */
-        }
-    </style>
+    main {
+        padding: 20px;
+        margin-top: 20px; /* Diminui o espaço abaixo do banner */
+    }
+</style>
 </head>
 <body>
 
