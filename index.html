@@ -27,10 +27,19 @@
             left: 0;
             width: 100%;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
+            z-index: 10; /* Diminuiu a prioridade do menu sobre o banner de 1000 para 10 */
             display: flex;
             align-items: center;
         }
+        .banner-container {
+    max-width: 100%;
+    overflow: hidden;
+    margin-bottom: 60px;
+    padding-top: 80px;
+    position: relative;
+    z-index: 20;  /* Garante que o banner fique acima do menu */
+}
+
 
         .menu-superior img {
             height: 40px;
