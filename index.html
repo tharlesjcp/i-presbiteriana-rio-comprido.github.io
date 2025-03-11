@@ -1,196 +1,126 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Igreja Presbiteriana do Rio Comprido</title>
-    <style>
-        /* Cores principais */
-        :root {
-            --azul-medio: #2a80be;
-            --azul-suave: #2b80bd;
-            --marrom-escuro: #1f1210;
-            --branco: #ffffff;
-            --cinza-claro: #f5f5f5;
-        }
-
-        body {
-            background-color: var(--cinza-claro);
-            color: var(--marrom-escuro);
-            margin: 0;
-            font-family: Arial, sans-serif;
-            padding-top: 80px; /* Espaço para o menu fixo */
-        }
-
-        /* Menu superior fixo */
-        .menu-superior {
-            background-color: var(--azul-medio);
-            color: var(--branco);
-            padding: 10px 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 10; /* Garante que o menu fique abaixo do banner */
-            display: flex;
-            align-items: center;
-        }
-
-        .menu-superior img {
-            height: 40px;
-            margin-right: 15px;
-        }
-
-        .menu-superior a {
-            color: var(--branco);
-            text-decoration: none;
-            margin: 0 15px;
-            padding: 5px 10px;
-            transition: background-color 0.3s;
-        }
-
-        .menu-superior a:hover {
-            background-color: var(--marrom-escuro);
-            border-radius: 5px;
-        }
-
-        /* Banner com transição suave */
-        .banner-container {
-            max-width: 100%;
-            overflow: hidden;
-            margin-bottom: 60px;
-            padding-top: 80px;
-            position: relative;
-            z-index: 0; /* Ajusta o banner para não sobrepor o vídeo */
-            height: 500px;  /* Define uma altura fixa para o contêiner */
-        }
-
-        .banner-slide {
-            width: 100%;
-            height: 100%; /* Ajusta a altura para preencher o contêiner */
-            object-fit: contain;
-            background-color: var(--branco);
-            position: absolute;
-            top: 0;
-            left: 100%;
-            opacity: 0;
-            transition: all 1s ease-in-out;
-        }
-
-        .banner-slide.active {
-            left: 0;
-            opacity: 1;
-        }
-
-        .banner-slide.previous {
-            left: -100%;
-            opacity: 0;
-        }
-
-        /* Paginador do banner */
-        .pontos {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .pontos span {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: var(--azul-suave);
-            border-radius: 50%;
-            margin: 0 5px;
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
-
-        .pontos span.active {
-            background-color: var(--azul-medio);
-        }
-
-        footer {
-            background-color: var(--azul-medio);
-            color: var(--branco);
-            text-align: center;
-            padding: 10px;
-            margin-top: 20px;
-        }
-
-        .video {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        main {
-            padding: 20px;
-            margin-top: 40px; /* Garante espaçamento após o banner */
-        }
-    </style>
-</head>
-<body>
-
-<!-- Menu Superior -->
-<nav class="menu-superior">
-    <img src="images/logo.png" alt="Logo da Igreja">
-    <a href="index.html">Home</a>
-    <a href="estudos.html">Estudos Bíblicos</a>
-    <a href="boletim.html">Boletim</a>
-    <a href="hinario.html">Hinário</a>
-    <a href="contato.html">Contato</a>
-    <a href="login.html">Login</a>
-</nav>
-
-<!-- Banner Slideshow -->
-<div class="banner-container">
-    <img src="images/banner1.png" class="banner-slide active">
-    <img src="images/banner2.png" class="banner-slide">
-</div>
-
-<!-- Paginador do Banner -->
-<div class="pontos">
-    <span data-index="0" class="active"></span>
-    <span data-index="1"></span>
-</div>
-
-<main>
-    <h2 style="color: var(--azul-medio);">Estudo Bíblico da Semana</h2>
-    <div class="video">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/tANPdft2AQ0" frameborder="0" allowfullscreen></iframe>
-    </div>
-
-    <p>Confira nossos estudos semanais sobre a Palavra de Deus.</p>
-    <div class="links">
-        <a href="estudos.html">Ver Mais Estudos</a>
-    </div>
-</main>
-
-<footer>
-    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-</footer>
-
-<script>
-    let index = 0;
-    const slides = document.querySelectorAll('.banner-slide');
-    const pontos = document.querySelectorAll('.pontos span');
-
-    function mudarSlide(novoIndex) {
-        slides[index].classList.remove('active');
-        pontos[index].classList.remove('active');
-        index = novoIndex;
-        slides[index].classList.add('active');
-        pontos[index].classList.add('active');
+<style>
+    /* Cores principais */
+    :root {
+        --azul-medio: #2a80be;
+        --azul-suave: #2b80bd;
+        --marrom-escuro: #1f1210;
+        --branco: #ffffff;
+        --cinza-claro: #f0f0f0;  /* Ajuste para o fundo do menu */
     }
 
-    setInterval(() => {
-        let novoIndex = (index + 1) % slides.length;
-        mudarSlide(novoIndex);
-    }, 5000);
+    body {
+        background-color: var(--cinza-claro);
+        color: var(--marrom-escuro);
+        margin: 0;
+        font-family: Arial, sans-serif;
+        padding-top: 80px;
+    }
 
-    pontos.forEach((ponto, i) => {
-        ponto.addEventListener('click', () => mudarSlide(i));
-    });
-</script>
+    /* Menu superior fixo */
+    .menu-superior {
+        background-color: var(--cinza-claro);  /* Fundo cinza claro no menu */
+        color: var(--azul-medio);               /* Links em azul médio */
+        padding: 10px 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+    }
 
-</body>
-</html>
+    .menu-superior img {
+        height: 40px;
+        margin-right: 15px;
+        background-color: var(--branco);  /* Fundo branco para destacar a logo */
+        border-radius: 5px;
+        padding: 2px;
+    }
+
+    .menu-superior a {
+        color: var(--azul-medio);  /* Links em azul médio */
+        text-decoration: none;
+        margin: 0 15px;
+        padding: 5px 10px;
+        transition: background-color 0.3s;
+    }
+
+    .menu-superior a:hover {
+        background-color: var(--azul-suave);
+        border-radius: 5px;
+    }
+
+    /* Banner com transição suave */
+    .banner-container {
+        max-width: 100%;
+        overflow: hidden;
+        margin-bottom: 60px;
+        padding-top: 80px;
+        position: relative;
+        z-index: 0;
+        height: 500px;
+    }
+
+    .banner-slide {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background-color: var(--branco);
+        position: absolute;
+        top: 0;
+        left: 100%;
+        opacity: 0;
+        transition: all 1s ease-in-out;
+    }
+
+    .banner-slide.active {
+        left: 0;
+        opacity: 1;
+    }
+
+    .banner-slide.previous {
+        left: -100%;
+        opacity: 0;
+    }
+
+    /* Paginador do banner */
+    .pontos {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .pontos span {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background-color: var(--azul-suave);
+        border-radius: 50%;
+        margin: 0 5px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+
+    .pontos span.active {
+        background-color: var(--azul-medio);
+    }
+
+    footer {
+        background-color: var(--azul-medio);
+        color: var(--branco);
+        text-align: center;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+    .video {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    main {
+        padding: 20px;
+        margin-top: 40px;
+    }
+</style>
