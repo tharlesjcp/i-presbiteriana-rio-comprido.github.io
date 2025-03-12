@@ -82,6 +82,9 @@
             const imagem = document.getElementById("imagem").value;
             const youtube = document.getElementById("youtube").value;
 
+
+            
+
             try {
                 await addDoc(collection(db, "estudos"), {
                     titulo,
@@ -144,6 +147,69 @@
                     const id = botao.getAttribute("data-id");
                     await deleteDoc(doc(db, "estudos", id));
                     carregarEstudos(); // Atualiza a lista
+                    // Captura os elementos do formulário
+const formEstudo = document.getElementById("form-estudo");
+const tituloInput = document.getElementById("titulo");
+const resumoInput = document.getElementById("resumo");
+const textoInput = document.getElementById("texto");
+const imagemInput = document.getElementById("imagem");
+const youtubeInput = document.getElementById("youtube");
+
+// Captura os elementos da pré-visualização
+const previewImagem = document.getElementById("preview-imagem");
+const previewTitulo = document.getElementById("preview-titulo");
+const previewResumo = document.getElementById("preview-resumo");
+const previewVideo = document.getElementById("preview-video");
+const botaoSalvar = document.getElementById("confirmar-salvar");
+
+// Função para atualizar a pré-visualização
+function atualizarPreview() {
+    previewTitulo.innerText = tituloInput.value || "Título do Estudo";
+    previewResumo.innerText = resumoInput.value || "O resumo aparecerá aqui...";
+    previewImagem.src = imagemInput.value || "https://via.placeholder.com/300";
+    
+    // Converte o link do YouTube para um embed válido
+    let videoID = youtubeInput.value.split("v=")[1];
+    if (videoID) {
+        let ampersandPosition = videoID.indexOf("&");
+        if (ampersandPosition !== -1) {
+            videoID = videoID.substring(0, ampersandPosition);
+        }
+        previewVideo.src = `https://www.youtube.com/embed/${videoID}`;
+    } else {
+        previewVideo.src = "";
+    }
+
+    // Exibe o botão de salvar apenas se todos os campos estiverem preenchidos
+    botaoSalvar.style.display = (tituloInput.value && resumoInput.value && imagemInput.value && youtubeInput.value) ? "block" : "none";
+}
+
+// Atualiza a pré-visualização em tempo real enquanto o usuário digita
+[tituloInput, resumoInput, imagemInput, youtubeInput].forEach(input => {
+    input.addEventListener("input", atualizarPreview);
+});
+
+// Captura o evento do botão de salvar
+botaoSalvar.addEventListener("click", async () => {
+    try {
+        await addDoc(collection(db, "estudos"), {
+            titulo: tituloInput.value,
+            resumo: resumoInput.value,
+            texto: textoInput.value,
+            imagem: imagemInput.value,
+            link: youtubeInput.value,
+            data: new Date()
+        });
+
+        alert("Estudo salvo com sucesso!");
+        formEstudo.reset();
+        atualizarPreview();
+        carregarEstudos();
+    } catch (error) {
+        console.error("Erro ao salvar estudo:", error);
+    }
+});
+
                 });
             });
         }
