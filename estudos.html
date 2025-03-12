@@ -14,37 +14,41 @@
 <main>
     <h1 class="titulo-pagina">Estudos Bíblicos</h1>
     
-    <section class="estudos-container">
-        
-        <!-- Exemplo de um estudo -->
-        <div class="estudo">
-            <img src="images/estudo1.jpg" alt="Imagem do estudo">
-            <div class="info">
-                <h2>Título do Estudo 1</h2>
-                <p>Resumo breve do estudo bíblico. Um trecho introdutório que chame a atenção.</p>
-                <a href="estudo1.html" class="botao">Ler mais</a>
-            </div>
-        </div>
+<section class="estudos-container" id="lista-estudos">
+    <!-- Estudos serão carregados aqui via JavaScript -->
+</section>
 
-        <div class="estudo">
-            <img src="images/estudo2.jpg" alt="Imagem do estudo">
-            <div class="info">
-                <h2>Título do Estudo 2</h2>
-                <p>Resumo breve do estudo bíblico. Um trecho introdutório que chame a atenção.</p>
-                <a href="estudo2.html" class="botao">Ler mais</a>
-            </div>
-        </div>
+<script>
+    // Função para carregar os estudos do JSON
+    async function carregarEstudos() {
+        try {
+            const response = await fetch("estudos.json");
+            const estudos = await response.json();
+            const listaEstudos = document.getElementById("lista-estudos");
 
-        <div class="estudo">
-            <img src="images/estudo3.jpg" alt="Imagem do estudo">
-            <div class="info">
-                <h2>Título do Estudo 3</h2>
-                <p>Resumo breve do estudo bíblico. Um trecho introdutório que chame a atenção.</p>
-                <a href="estudo3.html" class="botao">Ler mais</a>
-            </div>
-        </div>
+            estudos.forEach(estudo => {
+                const divEstudo = document.createElement("div");
+                divEstudo.classList.add("estudo");
 
-    </section>
+                divEstudo.innerHTML = `
+                    <img src="${estudo.imagem}" alt="Imagem do estudo">
+                    <div class="info">
+                        <h2>${estudo.titulo}</h2>
+                        <p>${estudo.resumo}</p>
+                        <a href="${estudo.link}" class="botao">Ler mais</a>
+                    </div>
+                `;
+
+                listaEstudos.appendChild(divEstudo);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar os estudos:", error);
+        }
+    }
+
+    carregarEstudos();
+</script>
+
 </main>
 
 <footer>
