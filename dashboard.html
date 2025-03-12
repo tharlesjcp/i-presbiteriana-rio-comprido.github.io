@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- Menu Lateral -->
+    <div class="sidebar">
+        <h2>Administração</h2>
+        <ul>
+            <li><a href="#" onclick="mostrarSecao('estudos')">📜 Gerenciar Estudos</a></li>
+            <li><a href="#" onclick="mostrarSecao('boletim')">📰 Gerenciar Boletim</a></li>
+            <li><a href="#" onclick="mostrarSecao('hinario')">🎶 Gerenciar Hinário</a></li>
+            <li><a href="#" onclick="mostrarSecao('aniversariantes')">🎂 Aniversariantes</a></li>
+            <li><a href="#" onclick="mostrarSecao('configuracoes')">⚙️ Configurações</a></li>
+            <li><a href="index.html">🌍 Visualizar Site</a></li>
+            <li><a href="admin-login.html">🚪 Sair</a></li>
+        </ul>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <h1>Painel Administrativo</h1>
+
+        <section id="estudos" class="secao">
+            <h2>📜 Gerenciar Estudos Bíblicos</h2>
+            <p>Área para adicionar, editar e excluir estudos bíblicos.</p>
+            <button onclick="window.location.href='admin-estudos.html'">Gerenciar Estudos</button>
+        </section>
+
+        <section id="boletim" class="secao">
+            <h2>📰 Gerenciar Boletim</h2>
+            <p>Área para editar e publicar o boletim semanal.</p>
+            <button onclick="window.location.href='admin-boletim.html'">Gerenciar Boletim</button>
+        </section>
+
+        <section id="hinario" class="secao">
+            <h2>🎶 Gerenciar Hinário</h2>
+            <p>Adicione e edite os hinos da igreja.</p>
+            <button onclick="window.location.href='admin-hinario.html'">Gerenciar Hinário</button>
+        </section>
+
+        <section id="aniversariantes" class="secao">
+            <h2>🎂 Aniversariantes</h2>
+            <p>Veja os aniversariantes da semana e do mês.</p>
+            <button onclick="window.location.href='admin-aniversariantes.html'">Visualizar Aniversariantes</button>
+        </section>
+
+        <section id="configuracoes" class="secao">
+            <h2>⚙️ Configurações</h2>
+            <p>Gerencie usuários, permissões e configurações do sistema.</p>
+        </section>
+    </div>
+
+    <script>
+        function mostrarSecao(secao) {
+            // Esconder todas as seções
+            document.querySelectorAll('.secao').forEach(s => s.style.display = 'none');
+
+            // Mostrar apenas a seção clicada
+            document.getElementById(secao).style.display = 'block';
+        }
+
+        // Exibir a primeira seção por padrão
+        mostrarSecao('estudos');
+    </script>
+
+</body>
+</html>
