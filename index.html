@@ -35,17 +35,44 @@
     </div>
 </section>
 
-<script>
+<footer>
+    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
+</footer>
+
+<!-- Importando Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+        authDomain: "iprc-site.firebaseapp.com",
+        projectId: "iprc-site",
+        storageBucket: "iprc-site.firebasestorage.app",
+        messagingSenderId: "361636783794",
+        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Função para buscar o último estudo adicionado
     async function carregarUltimoEstudo() {
         try {
-            const response = await fetch("estudos.json");
-            const estudos = await response.json();
-            if (estudos.length > 0) {
-                const ultimoEstudo = estudos[estudos.length - 1]; // Último estudo adicionado
-                document.getElementById("capa-estudo").src = ultimoEstudo.imagem;
-                document.getElementById("titulo-estudo").innerText = ultimoEstudo.titulo;
-                document.getElementById("resumo-estudo").innerText = ultimoEstudo.resumo;
-                document.getElementById("link-estudo").href = `estudo-detalhe.html?id=${ultimoEstudo.id}`;
+            const estudosRef = collection(db, "estudos");
+            const q = query(estudosRef, orderBy("data", "desc"), limit(1)); // Pega o estudo mais recente
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];
+                const estudo = doc.data();
+
+                document.getElementById("capa-estudo").src = estudo.imagem;
+                document.getElementById("titulo-estudo").innerText = estudo.titulo;
+                document.getElementById("resumo-estudo").innerText = estudo.resumo;
+                document.getElementById("link-estudo").href = `estudo-detalhe.html?id=${doc.id}`;
             }
         } catch (error) {
             console.error("Erro ao carregar o estudo da semana:", error);
@@ -54,11 +81,6 @@
 
     carregarUltimoEstudo();
 </script>
-
-
-<footer>
-    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-</footer>
 
 <script>
     // Carregar o menu superior automaticamente
