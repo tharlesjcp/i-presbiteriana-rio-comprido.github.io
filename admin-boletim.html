@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Boletins - Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- Menu Lateral -->
+    <div class="sidebar">
+        <h2>Administração</h2>
+        <ul>
+            <li><a href="dashboard.html">⬅️ Voltar ao Painel</a></li>
+        </ul>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <h1>📰 Gerenciar Boletins</h1>
+
+        <section class="secao">
+            <h2>➕ Adicionar Novo Boletim</h2>
+            <form id="form-boletim">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" required>
+
+                <label for="agenda">Agenda:</label>
+                <textarea id="agenda" required></textarea>
+
+                <label for="conteudo">Conteúdo:</label>
+                <textarea id="conteudo" required></textarea>
+
+                <label for="capa">URL da Capa:</label>
+                <input type="url" id="capa" required>
+
+                <label for="pdf">Upload do PDF:</label>
+                <input type="file" id="pdf" accept=".pdf" required>
+
+                <button type="submit">Salvar Boletim</button>
+            </form>
+        </section>
+
+        <section class="secao">
+            <h2>📋 Boletins Cadastrados</h2>
+            <div id="lista-boletins">
+                <!-- Boletins aparecerão aqui -->
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2>👀 Pré-visualização</h2>
+            <div id="preview" class="preview-container">
+                <img id="preview-capa" src="" alt="Pré-visualização da capa">
+                <h3 id="preview-titulo">Título do Boletim</h3>
+                <p><strong>Agenda:</strong> <span id="preview-agenda">O evento aparecerá aqui...</span></p>
+                <p><strong>Conteúdo:</strong> <span id="preview-conteudo">O conteúdo aparecerá aqui...</span></p>
+                <p><strong>PDF:</strong> <a id="preview-pdf" href="#" target="_blank">Visualizar PDF</a></p>
+            </div>
+            <button id="confirmar-salvar" style="display: none;">Confirmar e Salvar</button>
+        </section>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+
+        // Configuração Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+            authDomain: "iprc-site.firebaseapp.com",
+            projectId: "iprc-site",
+            storageBucket: "iprc-site.appspot.com",
+            messagingSenderId: "361636783794",
+            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Captura os elementos do formulário
+        const formBoletim = document.getElementById("form-boletim");
+        const tituloInput = document.getElementById("titulo");
+        const agendaInput = document.getElementById("agenda");
+        const conteudoInput = document.getElementById("conteudo");
+        const capaInput = document.getElementById("capa");
+        const pdfInput = document.getElementById("pdf");
+
+        // Captura os elementos da pré-visualização
+        const previewCapa = document.getElementById("preview-capa");
+        const previewTitulo = document.getElementById("preview-titulo");
+        const previewAgenda = document.getElementById("preview-agenda");
+        const previewConteudo = document.getElementById("preview-conteudo");
+        const previewPdf = document.getElementById("preview-pdf");
+        const botaoSalvar = document.getElementById("confirmar-salvar");
+
+        // Atualiza a pré-visualização em tempo real
+        function atualizarPreview() {
+            previewTitulo.innerText = tituloInput.value || "Título do Boletim";
+            previewAgenda.innerText = agendaInput.value || "O evento aparecerá aqui...";
+            previewConteudo.innerText = conteudoInput.value || "O conteúdo aparecerá aqui...";
+            previewCapa.src = capaInput.value || "https://via.placeholder.com/300";
+            botaoSalvar.style.display = (tituloInput.value && agendaInput.value && conteudoInput.value && capaInput.value && pdfInput.files.length) ? "block" : "none";
+        }
+
+        [tituloInput, agendaInput, conteudoInput, capaInput, pdfInput].forEach(input => {
+            input.addEventListener("input", atualizarPreview);
+        });
+
+        // Enviar o PDF para o Firebase Storage
+        async function uploadPdf(file) {
+            const pdfRef = ref(storage, `boletins/${file.name}`);
+            await uploadBytes(pdfRef, file);
+            return getDownloadURL(pdfRef);
+        }
+
+        // Salvar boletim no Firestore
+        botaoSalvar.addEventListener("click", async () => {
+            try {
+                const pdfUrl = await uploadPdf(pdfInput.files[0]);
+
+                await addDoc(collection(db, "boletins"), {
+                    titulo: tituloInput.value,
+                    agenda: agendaInput.value,
+                    conteudo: conteudoInput.value,
+                    capa: capaInput.value,
+                    pdf: pdfUrl,
+                    data: new Date()
+                });
+
+                alert("Boletim salvo com sucesso!");
+                formBoletim.reset();
+                atualizarPreview();
+                carregarBoletins();
+            } catch (error) {
+                console.error("Erro ao salvar boletim:", error);
+            }
+        });
+
+        // Carregar boletins cadastrados
+        async function carregarBoletins() {
+            const listaBoletins = document.getElementById("lista-boletins");
+            listaBoletins.innerHTML = "";
+
+            const querySnapshot = await getDocs(collection(db, "boletins"));
+
+            querySnapshot.forEach((doc) => {
+                const boletim = doc.data();
+
+                const divBoletim = document.createElement("div");
+                divBoletim.classList.add("boletim");
+
+                divBoletim.innerHTML = `
+                    <img src="${boletim.capa}" alt="Capa do boletim">
+                    <h2>${boletim.titulo}</h2>
+                    <p><strong>Agenda:</strong> ${boletim.agenda}</p>
+                    <a href="${boletim.pdf}" target="_blank" class="botao">📄 Ver PDF</a>
+                    <button class="excluir" data-id="${doc.id}">❌ Excluir</button>
+                `;
+
+                listaBoletins.appendChild(divBoletim);
+            });
+        }
+
+        // Carregar os boletins ao abrir a página
+        carregarBoletins();
+    </script>
+
+</body>
+</html>
