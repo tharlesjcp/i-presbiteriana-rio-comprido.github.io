@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <div class="admin-container">
+        <h2>Painel Administrativo</h2>
+        <button id="logout">Sair</button>
+
+        <h3>Adicionar Novo Estudo</h3>
+        <form id="add-estudo-form">
+            <input type="text" id="titulo" placeholder="Título do Estudo" required>
+            <textarea id="resumo" placeholder="Resumo do Estudo" required></textarea>
+            <textarea id="texto" placeholder="Texto Completo do Estudo" required></textarea>
+            <input type="text" id="imagem" placeholder="URL da Imagem" required>
+            <input type="text" id="link" placeholder="URL do Vídeo do YouTube" required>
+            <button type="submit">Adicionar Estudo</button>
+        </form>
+
+        <h3>Estudos Adicionados</h3>
+        <div id="lista-estudos"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+            authDomain: "iprc-site.firebaseapp.com",
+            projectId: "iprc-site",
+            storageBucket: "iprc-site.firebasestorage.app",
+            messagingSenderId: "361636783794",
+            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Verificar se o usuário está autenticado
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "admin-login.html";
+            }
+        });
+
+        // Logout
+        document.getElementById("logout").addEventListener("click", function() {
+            signOut(auth).then(() => {
+                window.location.href = "admin-login.html";
+            }).catch((error) => {
+                console.error("Erro ao sair:", error);
+            });
+        });
+
+        // Adicionar estudo
+        document.getElementById("add-estudo-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const titulo = document.getElementById("titulo").value;
+            const resumo = document.getElementById("resumo").value;
+            const texto = document.getElementById("texto").value;
+            const imagem = document.getElementById("imagem").value;
+            const link = document.getElementById("link").value;
+
+            try {
+                await addDoc(collection(db, "estudos"), {
+                    titulo,
+                    resumo,
+                    texto,
+                    imagem,
+                    link,
+                    data: new Date()
+                });
+                alert("Estudo adicionado com sucesso!");
+                location.reload();
+            } catch (error) {
+                console.error("Erro ao adicionar estudo:", error);
+            }
+        });
+
+        // Carregar estudos cadastrados
+        async function carregarEstudos() {
+            const querySnapshot = await getDocs(collection(db, "estudos"));
+            const listaEstudos = document.getElementById("lista-estudos");
+
+            querySnapshot.forEach((doc) => {
+                const estudo = doc.data();
+                const div = document.createElement("div");
+                div.innerHTML = `<h4>${estudo.titulo}</h4><p>${estudo.resumo}</p>`;
+                listaEstudos.appendChild(div);
+            });
+        }
+
+        carregarEstudos();
+    </script>
+
+</body>
+</html>
