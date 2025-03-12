@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos de Oração - Igreja Presbiteriana do Rio Comprido</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Incluindo o menu superior -->
+    <div id="header-container"></div>
+
+    <main>
+        <h1>🙏 Pedidos de Oração</h1>
+        
+        <section class="secao">
+            <h2>✍️ Faça um Pedido</h2>
+            <form id="form-oracao">
+                <label for="nome">Seu Nome:</label>
+                <input type="text" id="nome" required>
+
+                <label for="pedido">Pedido de Oração:</label>
+                <textarea id="pedido" required></textarea>
+
+                <button type="submit">Enviar Pedido</button>
+            </form>
+        </section>
+
+        <section class="secao">
+            <h2>📜 Pedidos Recentes</h2>
+            <ul id="lista-pedidos">
+                <!-- Pedidos aparecerão aqui -->
+            </ul>
+        </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
+        <div class="links-rapidos">
+            <a href="contato.html">📞 Contato</a>
+        </div>
+    </footer>
+
+    <!-- Carregar o menu fixo -->
+    <script>
+        fetch("includes/header.html")
+            .then(response => response.text())
+            .then(data => document.getElementById("header-container").innerHTML = data);
+    </script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Captura o formulário
+        const formOracao = document.getElementById("form-oracao");
+
+        formOracao.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const nome = document.getElementById("nome").value;
+            const pedido = document.getElementById("pedido").value;
+
+            try {
+                await addDoc(collection(db, "pedidos"), {
+                    nome,
+                    pedido,
+                    data: new Date()
+                });
+
+                alert("Pedido enviado com sucesso!");
+                formOracao.reset();
+                carregarPedidos(); // Atualiza a lista
+            } catch (error) {
+                console.error("Erro ao enviar pedido:", error);
+            }
+        });
+
+        // Função para carregar pedidos cadastrados
+        async function carregarPedidos() {
+            const listaPedidos = document.getElementById("lista-pedidos");
+            listaPedidos.innerHTML = "";
+
+            const pedidosRef = collection(db, "pedidos");
+            const q = query(pedidosRef, orderBy("data", "desc"));
+            const querySnapshot = await getDocs(q);
+
+            querySnapshot.forEach((doc) => {
+                const pedido = doc.data();
+                const li = document.createElement("li");
+                li.innerHTML = `<strong>${pedido.nome}:</strong> ${pedido.pedido}`;
+                listaPedidos.appendChild(li);
+            });
+        }
+
+        carregarPedidos();
+    </script>
+
+</body>
+</html>
