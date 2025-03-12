@@ -58,32 +58,33 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Verifica se o usuário está autenticado antes de carregar a página
+        // Espera o Firebase carregar antes de agir
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                console.log("❌ Usuário não autenticado! Redirecionando para login...");
-                window.location.href = "admin-login.html";
-            } else {
+            if (user) {
                 console.log("✅ Usuário autenticado:", user.email);
-                carregarUsuarios();
-                carregarEstudos();
-                carregarBoletins();
+                carregarDados();
+            } else {
+                console.log("❌ Nenhum usuário autenticado. Redirecionando...");
+                window.location.href = "admin-login.html";
             }
         });
 
-        // Carregar total de usuários
+        async function carregarDados() {
+            await carregarUsuarios();
+            await carregarEstudos();
+            await carregarBoletins();
+        }
+
         async function carregarUsuarios() {
             const querySnapshot = await getDocs(collection(db, "users"));
             document.getElementById("total-usuarios").innerText = querySnapshot.size;
         }
 
-        // Carregar total de estudos
         async function carregarEstudos() {
             const querySnapshot = await getDocs(collection(db, "estudos"));
             document.getElementById("total-estudos").innerText = querySnapshot.size;
         }
 
-        // Carregar total de boletins
         async function carregarBoletins() {
             const querySnapshot = await getDocs(collection(db, "boletins"));
             document.getElementById("total-boletins").innerText = querySnapshot.size;
