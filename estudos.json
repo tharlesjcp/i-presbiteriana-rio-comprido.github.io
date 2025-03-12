@@ -1,0 +1,20 @@
+[
+    {
+        "titulo": "A Graça de Deus",
+        "resumo": "Um estudo sobre a graça de Deus e sua importância em nossas vidas.",
+        "imagem": "images/estudo1.jpg",
+        "link": "estudo1.html"
+    },
+    {
+        "titulo": "A Fé que Move Montanhas",
+        "resumo": "Uma reflexão sobre como a fé pode transformar nossa caminhada.",
+        "imagem": "images/estudo2.jpg",
+        "link": "estudo2.html"
+    },
+    {
+        "titulo": "O Poder da Oração",
+        "resumo": "A oração como ferramenta de transformação na vida cristã.",
+        "imagem": "images/estudo3.jpg",
+        "link": "estudo3.html"
+    }
+]
