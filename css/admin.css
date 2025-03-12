@@ -173,4 +173,38 @@ form button:hover {
 .excluir:hover {
     background: darkred;
 }
+.preview-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    text-align: center;
+}
+
+.preview-container img {
+    width: 300px;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.preview-container h3 {
+    color: #2a80be;
+    margin-bottom: 5px;
+}
+
+.preview-container p {
+    font-size: 14px;
+    color: #333;
+    max-width: 500px;
+    margin-bottom: 10px;
+}
+
+.preview-container iframe {
+    margin-top: 10px;
+}
 
