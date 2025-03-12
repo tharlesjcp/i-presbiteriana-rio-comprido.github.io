@@ -11,11 +11,10 @@
 <!-- Menu Superior -->
 <div id="header-container"></div>
 
-<main>
+<main class="admin-container">
     <h1 class="titulo-pagina">Gerenciar Estudos Bíblicos</h1>
 
-    <!-- Formulário para adicionar novo estudo -->
-    <section class="admin-form">
+    <section class="form-container">
         <h2>Adicionar Novo Estudo</h2>
         <form id="form-estudo">
             <label for="titulo">Título:</label>
@@ -24,8 +23,8 @@
             <label for="resumo">Resumo:</label>
             <textarea id="resumo" required></textarea>
 
-            <label for="textoCompleto">Texto Completo:</label>
-            <textarea id="textoCompleto" required></textarea>
+            <label for="texto">Texto Completo:</label>
+            <textarea id="texto" required></textarea>
 
             <label for="imagem">URL da Imagem:</label>
             <input type="text" id="imagem" required>
@@ -37,14 +36,12 @@
         </form>
     </section>
 
-    <!-- Lista de estudos já cadastrados -->
-    <section class="lista-estudos">
-        <h2>Estudos Cadastrados</h2>
-        <div id="lista-estudos">
-            <!-- Estudos carregados do Firebase aparecerão aqui -->
-        </div>
+    <h2>Estudos Cadastrados</h2>
+    <section class="estudos-lista" id="lista-estudos">
+        <!-- Estudos serão carregados aqui via Firebase -->
     </section>
 </main>
+
 
 <footer>
     <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
