@@ -1,4 +1,4 @@
-/* Cores principais */
+/* 🔹 Cores principais */
 :root {
     --azul-escuro: #1f3b5f;
     --azul-medio: #2a80be;
@@ -9,15 +9,23 @@
     --cinza-medio: #a3a3a3;
 }
 
+/* 🔹 Reset de estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     background-color: var(--cinza-claro);
     color: var(--marrom-escuro);
-    margin: 0;
     font-family: Arial, sans-serif;
-    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* Menu superior fixo */
+/* 🔹 Menu superior fixo */
 .menu-superior {
     background-color: var(--cinza-claro);
     color: var(--azul-medio);
@@ -55,13 +63,18 @@ body {
     border-radius: 5px;
 }
 
-/* Banner */
+/* 🔹 Conteúdo principal */
+main {
+    flex: 1;
+    padding: 20px;
+    margin-top: 80px; /* Evita que o menu fixo sobreponha o conteúdo */
+}
+
+/* 🔹 Banner */
 .banner-container {
     max-width: 100%;
     overflow: hidden;
     margin-bottom: 20px;
-    padding-top: 0px;
-    margin-top: -22px;
     position: relative;
     z-index: 0;
     height: 500px;
@@ -104,187 +117,110 @@ body {
     background-color: var(--azul-medio);
 }
 
+/* 🔹 Seção de pedidos de oração */
+.secao {
+    background: var(--branco);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.secao h2 {
+    color: var(--azul-medio);
+}
+
+/* 🔹 Formulários */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+}
+
+form label {
+    font-weight: bold;
+}
+
+form input, form textarea {
+    padding: 10px;
+    border: 1px solid var(--cinza-medio);
+    border-radius: 5px;
+    width: 100%;
+}
+
+/* 🔹 Botões */
+button {
+    padding: 10px 15px;
+    border: none;
+    background: var(--azul-medio);
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: var(--azul-escuro);
+}
+
+/* 🔹 Rodapé */
 footer {
     background-color: var(--azul-medio);
     color: var(--branco);
     text-align: center;
+    padding: 15px;
+    margin-top: auto;
+    width: 100%;
+}
+
+/* 🔹 Links rápidos no rodapé */
+.links-rapidos {
+    margin-top: 10px;
+}
+
+.links-rapidos a {
+    color: var(--branco);
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.links-rapidos a:hover {
+    text-decoration: underline;
+}
+
+/* 🔹 Estilização para lista de pedidos de oração */
+ul#lista-pedidos {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul#lista-pedidos li {
+    background: var(--branco);
     padding: 10px;
-    margin-top: 20px;
-}
-
-.video {
-    text-align: center;
-    margin: 20px 0;
-}
-
-main {
-    padding: 20px;
-    margin-top: 20px;
-}
-/* Estilos da página de estudos */
-.titulo-pagina {
-    text-align: center;
-    color: var(--azul-medio);
-    margin-bottom: 20px;
-}
-
-.estudos-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-}
-
-.estudo {
-    background-color: var(--branco);
-    border-radius: 8px;
-    overflow: hidden;
-    width: 300px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
-}
-
-.estudo:hover {
-    transform: scale(1.05);
-}
-
-.estudo img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-}
-
-.estudo .info {
-    padding: 15px;
-    text-align: center;
-}
-
-.estudo .info h2 {
-    color: var(--azul-escuro);
-    font-size: 20px;
+    border-radius: 5px;
     margin-bottom: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.estudo .info p {
-    color: var(--marrom-escuro);
-    font-size: 14px;
-    margin-bottom: 15px;
-}
+/* 🔹 Responsividade */
+@media (max-width: 768px) {
+    .menu-superior {
+        flex-direction: column;
+        height: auto;
+    }
 
-.botao {
-    display: inline-block;
-    background-color: var(--azul-medio);
-    color: var(--branco);
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease-in-out;
-}
+    .menu-superior a {
+        margin: 5px 0;
+        display: block;
+    }
 
-.botao:hover {
-    background-color: var(--azul-escuro);
-}
+    .banner-container {
+        height: auto;
+    }
 
-/* Estilizando o título principal */
-.titulo-pagina {
-    text-align: center;
-    font-size: 24px;
-    color: var(--azul-medio);
-    margin-bottom: 20px;
-}
-
-/* Container principal do admin */
-.admin-container {
-    width: 90%;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-/* Estilizando o formulário */
-.form-container {
-    background: var(--branco);
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.form-container label {
-    font-weight: bold;
-}
-
-.form-container input, .form-container textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    border: 1px solid var(--cinza-medio);
-    border-radius: 5px;
-}
-
-.form-container button {
-    background-color: var(--azul-medio);
-    color: var(--branco);
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.form-container button:hover {
-    background-color: var(--azul-escuro);
-}
-
-/* Estilizando a listagem dos estudos */
-.estudos-lista {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-}
-
-.estudo-card {
-    background: var(--branco);
-    width: 280px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    text-align: center;
-}
-
-.estudo-card img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.estudo-card h2 {
-    font-size: 18px;
-    color: var(--azul-medio);
-    margin: 10px 0;
-}
-
-.estudo-card p {
-    font-size: 14px;
-    color: var(--marrom-escuro);
-}
-
-.botao-acao {
-    display: inline-block;
-    margin: 5px;
-    padding: 8px 10px;
-    text-decoration: none;
-    border-radius: 5px;
-}
-
-.botao-ler {
-    background-color: var(--azul-medio);
-    color: var(--branco);
-}
-
-.botao-excluir {
-    background-color: red;
-    color: var(--branco);
+    .estudo {
+        width: 100%;
+    }
 }
