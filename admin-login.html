@@ -20,20 +20,31 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
             authDomain: "iprc-site.firebaseapp.com",
             projectId: "iprc-site",
-            storageBucket: "iprc-site.firebasestorage.app",
+            storageBucket: "iprc-site.appspot.com",
             messagingSenderId: "361636783794",
             appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
         };
 
+        // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // Verifica se o usuário já está autenticado ao carregar a página
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("🔄 Usuário autenticado, redirecionando...");
+                window.location.href = "dashboard.html";
+            }
+        });
+
+        // Captura o formulário de login
         document.getElementById("login-form").addEventListener("submit", function(event) {
             event.preventDefault();
             const email = document.getElementById("email").value;
@@ -41,11 +52,13 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    window.location.href = "dashboard.html"; // Redireciona para a área admin
+                    console.log("✅ Login bem-sucedido:", userCredential.user);
+                    localStorage.setItem("adminLoggedIn", "true");
+                    window.location.href = "dashboard.html";
                 })
                 .catch((error) => {
+                    console.error("❌ Erro de login:", error);
                     document.getElementById("login-error").innerText = "Erro ao fazer login. Verifique suas credenciais.";
-                    console.error("Erro de login:", error);
                 });
         });
     </script>
