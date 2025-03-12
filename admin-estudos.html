@@ -99,6 +99,18 @@
                 console.error("Erro ao salvar estudo:", error);
             }
         });
+        
+        <section class="secao">
+    <h2>👀 Pré-visualização</h2>
+    <div id="preview" class="preview-container">
+        <img id="preview-imagem" src="" alt="Pré-visualização da imagem">
+        <h3 id="preview-titulo">Título do Estudo</h3>
+        <p id="preview-resumo">O resumo aparecerá aqui...</p>
+        <iframe id="preview-video" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <button id="confirmar-salvar" style="display: none;">Confirmar e Salvar</button>
+</section>
+
 
         // Função para carregar estudos cadastrados
         async function carregarEstudos() {
