@@ -24,7 +24,7 @@
 </div>
 
 <section id="estudo-semana">
-    <h2 style="color: var(--azul-medio);">Estudo Bíblico da Semana</h2>
+    <h2>📖 Estudo Bíblico da Semana</h2>
     <div class="estudo">
         <img id="capa-estudo" src="" alt="Capa do estudo">
         <div class="info">
@@ -33,6 +33,36 @@
             <a id="link-estudo" href="#" class="botao">Leia mais</a>
         </div>
     </div>
+</section>
+
+<!-- Seção Boletim -->
+<section id="boletim-semana">
+    <h2>📰 Boletim Semanal</h2>
+    <div class="boletim">
+        <p id="boletim-titulo">Carregando...</p>
+        <a href="boletim.html" class="botao">Acessar Boletim</a>
+    </div>
+</section>
+
+<!-- Seção Hinário -->
+<section id="hinario">
+    <h2>🎶 Hinário Presbiteriano</h2>
+    <p>Acesse os hinos e letras.</p>
+    <a href="hinario.html" class="botao">Acessar Hinário</a>
+</section>
+
+<!-- Seção Contato -->
+<section id="contato">
+    <h2>📞 Entre em Contato</h2>
+    <p>Se tiver dúvidas ou precisar de oração, entre em contato conosco.</p>
+    <a href="contato.html" class="botao">Fale Conosco</a>
+</section>
+
+<!-- Seção Login -->
+<section id="login">
+    <h2>🔑 Área Restrita</h2>
+    <p>Acesso para administradores.</p>
+    <a href="admin-login.html" class="botao">Login</a>
 </section>
 
 <footer>
@@ -49,7 +79,7 @@
         apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
         authDomain: "iprc-site.firebaseapp.com",
         projectId: "iprc-site",
-        storageBucket: "iprc-site.firebasestorage.app",
+        storageBucket: "iprc-site.appspot.com",
         messagingSenderId: "361636783794",
         appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
     };
@@ -58,11 +88,11 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Função para buscar o último estudo adicionado
+    // Carregar o último estudo bíblico
     async function carregarUltimoEstudo() {
         try {
             const estudosRef = collection(db, "estudos");
-            const q = query(estudosRef, orderBy("data", "desc"), limit(1)); // Pega o estudo mais recente
+            const q = query(estudosRef, orderBy("data", "desc"), limit(1));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
@@ -79,7 +109,26 @@
         }
     }
 
+    // Carregar o boletim semanal
+    async function carregarBoletim() {
+        try {
+            const boletinsRef = collection(db, "boletins");
+            const q = query(boletinsRef, orderBy("data", "desc"), limit(1));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];
+                const boletim = doc.data();
+                document.getElementById("boletim-titulo").innerText = boletim.titulo;
+            }
+        } catch (error) {
+            console.error("Erro ao carregar o boletim:", error);
+        }
+    }
+
+    // Executar as funções para carregar os dados
     carregarUltimoEstudo();
+    carregarBoletim();
 </script>
 
 <script>
