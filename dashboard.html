@@ -58,10 +58,16 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Verifica se o usuário está autenticado
+        // Verifica se o usuário está autenticado antes de carregar a página
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
+                console.log("❌ Usuário não autenticado! Redirecionando para login...");
                 window.location.href = "admin-login.html";
+            } else {
+                console.log("✅ Usuário autenticado:", user.email);
+                carregarUsuarios();
+                carregarEstudos();
+                carregarBoletins();
             }
         });
 
@@ -86,13 +92,10 @@
         // Logout
         document.getElementById("logout").addEventListener("click", async () => {
             await signOut(auth);
+            console.log("🚪 Usuário saiu!");
             window.location.href = "admin-login.html";
         });
 
-        // Chamar funções ao carregar a página
-        carregarUsuarios();
-        carregarEstudos();
-        carregarBoletins();
     </script>
 
 </body>
