@@ -22,7 +22,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
             authDomain: "iprc-site.firebaseapp.com",
@@ -32,35 +31,34 @@
             appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
         };
 
-        // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Verifica se o usuário já está autenticado ao carregar a página
+        // Verifica se o usuário já está autenticado para evitar login duplicado
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("🔄 Usuário autenticado, redirecionando...");
+                console.log("✅ Usuário já está logado. Redirecionando...");
                 window.location.href = "dashboard.html";
             }
         });
 
-        // Captura o formulário de login
+        // Processar login
         document.getElementById("login-form").addEventListener("submit", function(event) {
             event.preventDefault();
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    console.log("✅ Login bem-sucedido:", userCredential.user);
-                    localStorage.setItem("adminLoggedIn", "true");
+                .then(() => {
+                    console.log("🔑 Login bem-sucedido! Redirecionando...");
                     window.location.href = "dashboard.html";
                 })
                 .catch((error) => {
-                    console.error("❌ Erro de login:", error);
                     document.getElementById("login-error").innerText = "Erro ao fazer login. Verifique suas credenciais.";
+                    console.error("❌ Erro de login:", error);
                 });
         });
+
     </script>
 
 </body>
