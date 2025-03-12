@@ -94,3 +94,83 @@ button {
 button:hover {
     background: #1f3b5f;
 }
+
+/* Formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    font-weight: bold;
+}
+
+form input, form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+}
+
+form button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    background: #2a80be;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+form button:hover {
+    background: #1f3b5f;
+}
+
+/* Lista de Estudos */
+.estudo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.estudo img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.estudo .info {
+    flex-grow: 1;
+}
+
+.estudo h2 {
+    color: #2a80be;
+}
+
+.excluir {
+    background: red;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.excluir:hover {
+    background: darkred;
+}
+
