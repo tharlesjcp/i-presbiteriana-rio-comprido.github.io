@@ -1,55 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Menu Superior -->
+<div id="header-container"></div>
+
 <main>
     <h1 class="titulo-pagina">Estudos Bíblicos</h1>
-    
-    <!-- Estudo da Semana -->
-    <section id="estudo-semana">
-        <h2 id="titulo-semana"></h2>
-        <img id="capa-semana" src="" alt="Capa do estudo">
-        <p id="texto-semana"></p>
-        <iframe id="video-semana" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+
+    <section class="estudos-container" id="lista-estudos">
+        <!-- Estudos serão carregados aqui via Firebase -->
     </section>
-
-    <h3>Últimos Estudos</h3>
-    <div class="carrossel" id="ultimos-estudos">
-        <!-- Estudos serão carregados aqui -->
-    </div>
-
-    <a href="todos-estudos.html" class="botao">Ver mais estudos</a>
-
-    <script>
-        async function carregarEstudoSemana() {
-            try {
-                const response = await fetch("estudos.json");
-                const estudos = await response.json();
-                if (estudos.length > 0) {
-                    const estudoSemana = estudos[estudos.length - 1]; // Último estudo
-
-                    document.getElementById("titulo-semana").innerText = estudoSemana.titulo;
-                    document.getElementById("capa-semana").src = estudoSemana.imagem;
-                    document.getElementById("texto-semana").innerHTML = estudoSemana.textoCompleto;
-                    document.getElementById("video-semana").src = estudoSemana.video;
-                }
-
-                // Carregar os três últimos estudos
-                const ultimosEstudosContainer = document.getElementById("ultimos-estudos");
-                estudos.slice(-4, -1).reverse().forEach(estudo => {
-                    const divEstudo = document.createElement("div");
-                    divEstudo.classList.add("estudo-carrossel");
-                    divEstudo.innerHTML = `
-                        <img src="${estudo.imagem}" alt="Imagem do estudo">
-                        <h3>${estudo.titulo}</h3>
-                        <p>${estudo.resumo}</p>
-                        <a href="estudo-detalhe.html?id=${estudo.id}" class="botao">Leia mais</a>
-                    `;
-                    ultimosEstudosContainer.appendChild(divEstudo);
-                });
-
-            } catch (error) {
-                console.error("Erro ao carregar o estudo da semana:", error);
-            }
-        }
-
-        carregarEstudoSemana();
-    </script>
-
 </main>
+
+<footer>
+    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
+</footer>
+
+<!-- Importando Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+        authDomain: "iprc-site.firebaseapp.com",
+        projectId: "iprc-site",
+        storageBucket: "iprc-site.firebasestorage.app",
+        messagingSenderId: "361636783794",
+        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Função para carregar todos os estudos
+    async function carregarEstudos() {
+        try {
+            const estudosRef = collection(db, "estudos");
+            const q = query(estudosRef, orderBy("data", "desc"));
+            const querySnapshot = await getDocs(q);
+            const listaEstudos = document.getElementById("lista-estudos");
+
+            querySnapshot.forEach((doc) => {
+                const estudo = doc.data();
+
+                const divEstudo = document.createElement("div");
+                divEstudo.classList.add("estudo");
+
+                divEstudo.innerHTML = `
+                    <img src="${estudo.imagem}" alt="Imagem do estudo">
+                    <div class="info">
+                        <h2>${estudo.titulo}</h2>
+                        <p>${estudo.resumo}</p>
+                        <a href="estudo-detalhe.html?id=${doc.id}" class="botao">Ler mais</a>
+                    </div>
+                `;
+
+                listaEstudos.appendChild(divEstudo);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar os estudos:", error);
+        }
+    }
+
+    carregarEstudos();
+</script>
+
+<script>
+    // Carregar o menu superior automaticamente
+    fetch("includes/header.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("header-container").innerHTML = data);
+</script>
+
+</body>
+</html>
