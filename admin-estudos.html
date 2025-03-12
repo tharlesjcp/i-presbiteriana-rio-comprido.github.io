@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -42,6 +42,19 @@
             </form>
         </section>
 
+        <!-- 🌟 Seção de Pré-visualização -->
+        <section class="secao">
+            <h2>👀 Pré-visualização</h2>
+            <div id="preview" class="preview-container">
+                <img id="preview-imagem" src="https://via.placeholder.com/300" alt="Pré-visualização da imagem">
+                <h3 id="preview-titulo">Título do Estudo</h3>
+                <p id="preview-resumo">O resumo aparecerá aqui...</p>
+                <iframe id="preview-video" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <button id="confirmar-salvar" style="display: none;">Confirmar e Salvar</button>
+        </section>
+
+        <!-- 📋 Estudos Cadastrados -->
         <section class="secao">
             <h2>📋 Estudos Cadastrados</h2>
             <div id="lista-estudos">
@@ -57,63 +70,80 @@
 
         // Configuração Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
         };
 
         // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Captura o formulário
+        // Captura os elementos do formulário
         const formEstudo = document.getElementById("form-estudo");
+        const tituloInput = document.getElementById("titulo");
+        const resumoInput = document.getElementById("resumo");
+        const textoInput = document.getElementById("texto");
+        const imagemInput = document.getElementById("imagem");
+        const youtubeInput = document.getElementById("youtube");
 
-        // Função para salvar um novo estudo
-        formEstudo.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        // Captura os elementos da pré-visualização
+        const previewImagem = document.getElementById("preview-imagem");
+        const previewTitulo = document.getElementById("preview-titulo");
+        const previewResumo = document.getElementById("preview-resumo");
+        const previewVideo = document.getElementById("preview-video");
+        const botaoSalvar = document.getElementById("confirmar-salvar");
 
-            const titulo = document.getElementById("titulo").value;
-            const resumo = document.getElementById("resumo").value;
-            const texto = document.getElementById("texto").value;
-            const imagem = document.getElementById("imagem").value;
-            const youtube = document.getElementById("youtube").value;
-
-
+        // Função para atualizar a pré-visualização
+        function atualizarPreview() {
+            previewTitulo.innerText = tituloInput.value || "Título do Estudo";
+            previewResumo.innerText = resumoInput.value || "O resumo aparecerá aqui...";
+            previewImagem.src = imagemInput.value || "https://via.placeholder.com/300";
             
+            // Converte o link do YouTube para um embed válido
+            let videoID = youtubeInput.value.split("v=")[1];
+            if (videoID) {
+                let ampersandPosition = videoID.indexOf("&");
+                if (ampersandPosition !== -1) {
+                    videoID = videoID.substring(0, ampersandPosition);
+                }
+                previewVideo.src = `https://www.youtube.com/embed/${videoID}`;
+            } else {
+                previewVideo.src = "";
+            }
 
+            // Exibe o botão de salvar apenas se todos os campos estiverem preenchidos
+            botaoSalvar.style.display = (tituloInput.value && resumoInput.value && imagemInput.value && youtubeInput.value) ? "block" : "none";
+        }
+
+        // Atualiza a pré-visualização em tempo real enquanto o usuário digita
+        [tituloInput, resumoInput, imagemInput, youtubeInput].forEach(input => {
+            input.addEventListener("input", atualizarPreview);
+        });
+
+        // Captura o evento do botão de salvar
+        botaoSalvar.addEventListener("click", async () => {
             try {
                 await addDoc(collection(db, "estudos"), {
-                    titulo,
-                    resumo,
-                    texto,
-                    imagem,
-                    link: youtube,
+                    titulo: tituloInput.value,
+                    resumo: resumoInput.value,
+                    texto: textoInput.value,
+                    imagem: imagemInput.value,
+                    link: youtubeInput.value,
                     data: new Date()
                 });
 
                 alert("Estudo salvo com sucesso!");
                 formEstudo.reset();
-                carregarEstudos(); // Atualiza a lista
+                atualizarPreview();
+                carregarEstudos();
             } catch (error) {
                 console.error("Erro ao salvar estudo:", error);
             }
         });
-        
-        <section class="secao">
-    <h2>👀 Pré-visualização</h2>
-    <div id="preview" class="preview-container">
-        <img id="preview-imagem" src="" alt="Pré-visualização da imagem">
-        <h3 id="preview-titulo">Título do Estudo</h3>
-        <p id="preview-resumo">O resumo aparecerá aqui...</p>
-        <iframe id="preview-video" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <button id="confirmar-salvar" style="display: none;">Confirmar e Salvar</button>
-</section>
-
 
         // Função para carregar estudos cadastrados
         async function carregarEstudos() {
@@ -146,70 +176,7 @@
                 botao.addEventListener("click", async () => {
                     const id = botao.getAttribute("data-id");
                     await deleteDoc(doc(db, "estudos", id));
-                    carregarEstudos(); // Atualiza a lista
-                    // Captura os elementos do formulário
-const formEstudo = document.getElementById("form-estudo");
-const tituloInput = document.getElementById("titulo");
-const resumoInput = document.getElementById("resumo");
-const textoInput = document.getElementById("texto");
-const imagemInput = document.getElementById("imagem");
-const youtubeInput = document.getElementById("youtube");
-
-// Captura os elementos da pré-visualização
-const previewImagem = document.getElementById("preview-imagem");
-const previewTitulo = document.getElementById("preview-titulo");
-const previewResumo = document.getElementById("preview-resumo");
-const previewVideo = document.getElementById("preview-video");
-const botaoSalvar = document.getElementById("confirmar-salvar");
-
-// Função para atualizar a pré-visualização
-function atualizarPreview() {
-    previewTitulo.innerText = tituloInput.value || "Título do Estudo";
-    previewResumo.innerText = resumoInput.value || "O resumo aparecerá aqui...";
-    previewImagem.src = imagemInput.value || "https://via.placeholder.com/300";
-    
-    // Converte o link do YouTube para um embed válido
-    let videoID = youtubeInput.value.split("v=")[1];
-    if (videoID) {
-        let ampersandPosition = videoID.indexOf("&");
-        if (ampersandPosition !== -1) {
-            videoID = videoID.substring(0, ampersandPosition);
-        }
-        previewVideo.src = `https://www.youtube.com/embed/${videoID}`;
-    } else {
-        previewVideo.src = "";
-    }
-
-    // Exibe o botão de salvar apenas se todos os campos estiverem preenchidos
-    botaoSalvar.style.display = (tituloInput.value && resumoInput.value && imagemInput.value && youtubeInput.value) ? "block" : "none";
-}
-
-// Atualiza a pré-visualização em tempo real enquanto o usuário digita
-[tituloInput, resumoInput, imagemInput, youtubeInput].forEach(input => {
-    input.addEventListener("input", atualizarPreview);
-});
-
-// Captura o evento do botão de salvar
-botaoSalvar.addEventListener("click", async () => {
-    try {
-        await addDoc(collection(db, "estudos"), {
-            titulo: tituloInput.value,
-            resumo: resumoInput.value,
-            texto: textoInput.value,
-            imagem: imagemInput.value,
-            link: youtubeInput.value,
-            data: new Date()
-        });
-
-        alert("Estudo salvo com sucesso!");
-        formEstudo.reset();
-        atualizarPreview();
-        carregarEstudos();
-    } catch (error) {
-        console.error("Erro ao salvar estudo:", error);
-    }
-});
-
+                    carregarEstudos();
                 });
             });
         }
