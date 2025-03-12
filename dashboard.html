@@ -12,13 +12,11 @@
     <div class="sidebar">
         <h2>Administração</h2>
         <ul>
-            <li><a href="#" onclick="mostrarSecao('estudos')">📜 Gerenciar Estudos</a></li>
-            <li><a href="#" onclick="mostrarSecao('boletim')">📰 Gerenciar Boletim</a></li>
-            <li><a href="#" onclick="mostrarSecao('hinario')">🎶 Gerenciar Hinário</a></li>
-            <li><a href="#" onclick="mostrarSecao('aniversariantes')">🎂 Aniversariantes</a></li>
-            <li><a href="#" onclick="mostrarSecao('configuracoes')">⚙️ Configurações</a></li>
-            <li><a href="index.html">🌍 Visualizar Site</a></li>
-            <li><a href="admin-login.html">🚪 Sair</a></li>
+            <li><a href="admin-estudos.html">📖 Gerenciar Estudos</a></li>
+            <li><a href="admin-boletim.html">📰 Gerenciar Boletins</a></li>
+            <li><a href="admin-pedidos.html">🙏 Pedidos de Oração</a></li>
+            <li><a href="admin-usuarios.html">👥 Gerenciar Usuários</a></li>
+            <li><button id="logout">🚪 Sair</button></li>
         </ul>
     </div>
 
@@ -26,47 +24,118 @@
     <div class="main-content">
         <h1>Painel Administrativo</h1>
 
-        <section id="estudos" class="secao">
-            <h2>📜 Gerenciar Estudos Bíblicos</h2>
-            <p>Área para adicionar, editar e excluir estudos bíblicos.</p>
-            <button onclick="window.location.href='admin-estudos.html'">Gerenciar Estudos</button>
+        <!-- 📊 Overview -->
+        <section id="overview">
+            <h2>📊 Visão Geral</h2>
+            <p>📖 Estudos publicados: <span id="total-estudos">0</span></p>
+            <p>📰 Boletins publicados: <span id="total-boletins">0</span></p>
+            <p>🙏 Pedidos de oração: <span id="total-oracoes">0</span></p>
+            <p>👥 Usuários cadastrados: <span id="total-usuarios">0</span></p>
         </section>
 
-        <section id="boletim" class="secao">
-            <h2>📰 Gerenciar Boletim</h2>
-            <p>Área para editar e publicar o boletim semanal.</p>
-            <button onclick="window.location.href='admin-boletim.html'">Gerenciar Boletim</button>
-        </section>
-
-        <section id="hinario" class="secao">
-            <h2>🎶 Gerenciar Hinário</h2>
-            <p>Adicione e edite os hinos da igreja.</p>
-            <button onclick="window.location.href='admin-hinario.html'">Gerenciar Hinário</button>
-        </section>
-
-        <section id="aniversariantes" class="secao">
+        <!-- 🎉 Aniversariantes -->
+        <section id="aniversariantes">
             <h2>🎂 Aniversariantes</h2>
-            <p>Veja os aniversariantes da semana e do mês.</p>
-            <button onclick="window.location.href='admin-aniversariantes.html'">Visualizar Aniversariantes</button>
-        </section>
-
-        <section id="configuracoes" class="secao">
-            <h2>⚙️ Configurações</h2>
-            <p>Gerencie usuários, permissões e configurações do sistema.</p>
+            <p>🎈 Hoje: <span id="aniversariantes-dia">Nenhum</span></p>
+            <p>📅 Semana: <span id="aniversariantes-semana">Nenhum</span></p>
+            <p>📆 Mês: <span id="aniversariantes-mes">Nenhum</span></p>
         </section>
     </div>
 
-    <script>
-        function mostrarSecao(secao) {
-            // Esconder todas as seções
-            document.querySelectorAll('.secao').forEach(s => s.style.display = 'none');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-            // Mostrar apenas a seção clicada
-            document.getElementById(secao).style.display = 'block';
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Verificar usuário autenticado
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "admin-login.html";
+            }
+        });
+
+        // Carregar total de estudos
+        async function carregarEstudos() {
+            const querySnapshot = await getDocs(collection(db, "estudos"));
+            document.getElementById("total-estudos").innerText = querySnapshot.size;
         }
 
-        // Exibir a primeira seção por padrão
-        mostrarSecao('estudos');
+        // Carregar total de boletins
+        async function carregarBoletins() {
+            const querySnapshot = await getDocs(collection(db, "boletins"));
+            document.getElementById("total-boletins").innerText = querySnapshot.size;
+        }
+
+        // Carregar total de pedidos de oração
+        async function carregarOracoes() {
+            const querySnapshot = await getDocs(collection(db, "pedidos_oracao"));
+            document.getElementById("total-oracoes").innerText = querySnapshot.size;
+        }
+
+        // Carregar total de usuários
+        async function carregarUsuarios() {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            document.getElementById("total-usuarios").innerText = querySnapshot.size;
+        }
+
+        // Carregar aniversariantes
+        async function carregarAniversariantes() {
+            const hoje = new Date();
+            const dia = hoje.getDate();
+            const mes = hoje.getMonth() + 1;
+
+            const querySnapshot = await getDocs(collection(db, "users"));
+            let aniversariantesHoje = [];
+            let aniversariantesSemana = [];
+            let aniversariantesMes = [];
+
+            querySnapshot.forEach(doc => {
+                const user = doc.data();
+                if (user.dataNascimento) {
+                    const [ano, mesNasc, diaNasc] = user.dataNascimento.split("-").map(Number);
+                    if (mesNasc === mes) {
+                        if (diaNasc === dia) {
+                            aniversariantesHoje.push(user.nome);
+                        }
+                        if (diaNasc >= dia && diaNasc <= dia + 7) {
+                            aniversariantesSemana.push(user.nome);
+                        }
+                        aniversariantesMes.push(user.nome);
+                    }
+                }
+            });
+
+            document.getElementById("aniversariantes-dia").innerText = aniversariantesHoje.length ? aniversariantesHoje.join(", ") : "Nenhum";
+            document.getElementById("aniversariantes-semana").innerText = aniversariantesSemana.length ? aniversariantesSemana.join(", ") : "Nenhum";
+            document.getElementById("aniversariantes-mes").innerText = aniversariantesMes.length ? aniversariantesMes.join(", ") : "Nenhum";
+        }
+
+        // Chamar funções ao carregar a página
+        carregarEstudos();
+        carregarBoletins();
+        carregarOracoes();
+        carregarUsuarios();
+        carregarAniversariantes();
+
+        // Logout
+        document.getElementById("logout").addEventListener("click", async () => {
+            await signOut(auth);
+            window.location.href = "admin-login.html";
+        });
+
     </script>
 
 </body>
