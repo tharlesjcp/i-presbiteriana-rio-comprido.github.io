@@ -3,105 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo</title>
+    <title>Painel Admin</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+    <!-- Menu Superior -->
     <div id="header-container"></div>
 
-    <div class="admin-container">
-        <h2>Painel Administrativo</h2>
+    <main>
+        <h1>Painel Administrativo</h1>
+
+        <!-- 📊 Overview -->
+        <section id="overview">
+            <h2>Visão Geral</h2>
+            <p>Usuários cadastrados: <span id="total-usuarios">0</span></p>
+            <p>Estudos publicados: <span id="total-estudos">0</span></p>
+            <p>Boletins publicados: <span id="total-boletins">0</span></p>
+        </section>
+
+        <!-- 🎉 Aniversariantes -->
+        <section id="aniversariantes">
+            <h2>Aniversariantes</h2>
+            <p>Hoje: <span id="aniversariantes-dia">Nenhum</span></p>
+            <p>Semana: <span id="aniversariantes-semana">Nenhum</span></p>
+            <p>Mês: <span id="aniversariantes-mes">Nenhum</span></p>
+        </section>
+
+        <!-- 📖 Gerenciamento de Estudos -->
+        <section id="gerenciar-estudos">
+            <h2>Gerenciar Estudos</h2>
+            <button onclick="window.location.href='admin-estudos.html'">Acessar Estudos</button>
+        </section>
+
+        <!-- 📰 Gerenciamento de Boletim -->
+        <section id="gerenciar-boletins">
+            <h2>Gerenciar Boletins</h2>
+            <button onclick="window.location.href='admin-boletim.html'">Acessar Boletins</button>
+        </section>
+
+        <!-- 🛠️ Gerenciamento de Usuários -->
+        <section id="gerenciar-usuarios">
+            <h2>Gerenciar Usuários</h2>
+            <button onclick="window.location.href='admin-usuarios.html'">Acessar Usuários</button>
+        </section>
+
+        <!-- Botão de Logout -->
         <button id="logout">Sair</button>
 
-        <h3>Adicionar Novo Estudo</h3>
-        <form id="add-estudo-form">
-            <input type="text" id="titulo" placeholder="Título do Estudo" required>
-            <textarea id="resumo" placeholder="Resumo do Estudo" required></textarea>
-            <textarea id="texto" placeholder="Texto Completo do Estudo" required></textarea>
-            <input type="text" id="imagem" placeholder="URL da Imagem" required>
-            <input type="text" id="link" placeholder="URL do Vídeo do YouTube" required>
-            <button type="submit">Adicionar Estudo</button>
-        </form>
-
-        <h3>Estudos Adicionados</h3>
-        <div id="lista-estudos"></div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.firebasestorage.app",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_AUTH_DOMAIN",
+            projectId: "SEU_PROJECT_ID",
+            storageBucket: "SEU_STORAGE_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+            appId: "SEU_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Verificar se o usuário está autenticado
-        onAuthStateChanged(auth, (user) => {
+        // Verificar usuário autenticado
+        onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.href = "admin-login.html";
             }
         });
 
-        // Logout
-        document.getElementById("logout").addEventListener("click", function() {
-            signOut(auth).then(() => {
-                window.location.href = "admin-login.html";
-            }).catch((error) => {
-                console.error("Erro ao sair:", error);
-            });
-        });
-
-        // Adicionar estudo
-        document.getElementById("add-estudo-form").addEventListener("submit", async function(event) {
-            event.preventDefault();
-
-            const titulo = document.getElementById("titulo").value;
-            const resumo = document.getElementById("resumo").value;
-            const texto = document.getElementById("texto").value;
-            const imagem = document.getElementById("imagem").value;
-            const link = document.getElementById("link").value;
-
-            try {
-                await addDoc(collection(db, "estudos"), {
-                    titulo,
-                    resumo,
-                    texto,
-                    imagem,
-                    link,
-                    data: new Date()
-                });
-                alert("Estudo adicionado com sucesso!");
-                location.reload();
-            } catch (error) {
-                console.error("Erro ao adicionar estudo:", error);
-            }
-        });
-
-        // Carregar estudos cadastrados
-        async function carregarEstudos() {
-            const querySnapshot = await getDocs(collection(db, "estudos"));
-            const listaEstudos = document.getElementById("lista-estudos");
-
-            querySnapshot.forEach((doc) => {
-                const estudo = doc.data();
-                const div = document.createElement("div");
-                div.innerHTML = `<h4>${estudo.titulo}</h4><p>${estudo.resumo}</p>`;
-                listaEstudos.appendChild(div);
-            });
+        // Carregar total de usuários
+        async function carregarUsuarios() {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            document.getElementById("total-usuarios").innerText = querySnapshot.size;
         }
 
+        // Carregar total de estudos
+        async function carregarEstudos() {
+            const querySnapshot = await getDocs(collection(db, "estudos"));
+            document.getElementById("total-estudos").innerText = querySnapshot.size;
+        }
+
+        // Carregar total de boletins
+        async function carregarBoletins() {
+            const querySnapshot = await getDocs(collection(db, "boletins"));
+            document.getElementById("total-boletins").innerText = querySnapshot.size;
+        }
+
+        // Carregar aniversariantes
+        async function carregarAniversariantes() {
+            const hoje = new Date();
+            const dia = hoje.getDate();
+            const mes = hoje.getMonth() + 1; // Janeiro é 0
+
+            const querySnapshot = await getDocs(collection(db, "users"));
+            let aniversariantesHoje = [];
+            let aniversariantesSemana = [];
+            let aniversariantesMes = [];
+
+            querySnapshot.forEach(doc => {
+                const user = doc.data();
+                if (user.dataNascimento) {
+                    const [ano, mesNasc, diaNasc] = user.dataNascimento.split("-").map(Number);
+                    if (mesNasc === mes) {
+                        if (diaNasc === dia) {
+                            aniversariantesHoje.push(user.nome);
+                        }
+                        if (diaNasc >= dia && diaNasc <= dia + 7) {
+                            aniversariantesSemana.push(user.nome);
+                        }
+                        aniversariantesMes.push(user.nome);
+                    }
+                }
+            });
+
+            document.getElementById("aniversariantes-dia").innerText = aniversariantesHoje.length ? aniversariantesHoje.join(", ") : "Nenhum";
+            document.getElementById("aniversariantes-semana").innerText = aniversariantesSemana.length ? aniversariantesSemana.join(", ") : "Nenhum";
+            document.getElementById("aniversariantes-mes").innerText = aniversariantesMes.length ? aniversariantesMes.join(", ") : "Nenhum";
+        }
+
+        // Chamar funções ao carregar a página
+        carregarUsuarios();
         carregarEstudos();
+        carregarBoletins();
+        carregarAniversariantes();
+
+        // Logout
+        document.getElementById("logout").addEventListener("click", async () => {
+            await signOut(auth);
+            window.location.href = "admin-login.html";
+        });
+
     </script>
 
 </body>
