@@ -23,17 +23,38 @@
     <span data-index="1"></span>
 </div>
 
-<main>
+<section id="estudo-semana">
     <h2 style="color: var(--azul-medio);">Estudo Bíblico da Semana</h2>
-    <div class="video">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/tANPdft2AQ0" frameborder="0" allowfullscreen></iframe>
+    <div class="estudo">
+        <img id="capa-estudo" src="" alt="Capa do estudo">
+        <div class="info">
+            <h2 id="titulo-estudo"></h2>
+            <p id="resumo-estudo"></p>
+            <a id="link-estudo" href="#" class="botao">Leia mais</a>
+        </div>
     </div>
+</section>
 
-    <p>Confira nossos estudos semanais sobre a Palavra de Deus.</p>
-    <div class="links">
-        <a href="estudos.html">Ver Mais Estudos</a>
-    </div>
-</main>
+<script>
+    async function carregarUltimoEstudo() {
+        try {
+            const response = await fetch("estudos.json");
+            const estudos = await response.json();
+            if (estudos.length > 0) {
+                const ultimoEstudo = estudos[estudos.length - 1]; // Último estudo adicionado
+                document.getElementById("capa-estudo").src = ultimoEstudo.imagem;
+                document.getElementById("titulo-estudo").innerText = ultimoEstudo.titulo;
+                document.getElementById("resumo-estudo").innerText = ultimoEstudo.resumo;
+                document.getElementById("link-estudo").href = `estudo-detalhe.html?id=${ultimoEstudo.id}`;
+            }
+        } catch (error) {
+            console.error("Erro ao carregar o estudo da semana:", error);
+        }
+    }
+
+    carregarUltimoEstudo();
+</script>
+
 
 <footer>
     <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
