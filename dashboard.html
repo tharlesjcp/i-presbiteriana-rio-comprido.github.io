@@ -19,6 +19,30 @@
             <li><button id="logout">🚪 Sair</button></li>
         </ul>
     </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "SUA_API_KEY",
+        authDomain: "SEU_DOMINIO.firebaseapp.com",
+        projectId: "SEU_PROJETO_ID",
+        storageBucket: "SEU_BUCKET",
+        messagingSenderId: "SEU_MESSAGING_ID",
+        appId: "SEU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Verificar se o usuário está autenticado
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = "admin-login.html"; // Redireciona para login se não estiver autenticado
+        }
+    });
+</script>
+    
 
     <!-- Conteúdo Principal -->
     <div class="main-content">
