@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Estudos - Painel Admin</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Menu Superior -->
+<div id="header-container"></div>
+
+<main>
+    <h1 class="titulo-pagina">Gerenciar Estudos Bíblicos</h1>
+
+    <!-- Formulário para adicionar novo estudo -->
+    <section class="admin-form">
+        <h2>Adicionar Novo Estudo</h2>
+        <form id="form-estudo">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" required>
+
+            <label for="resumo">Resumo:</label>
+            <textarea id="resumo" required></textarea>
+
+            <label for="textoCompleto">Texto Completo:</label>
+            <textarea id="textoCompleto" required></textarea>
+
+            <label for="imagem">URL da Imagem:</label>
+            <input type="text" id="imagem" required>
+
+            <label for="link">Link do YouTube:</label>
+            <input type="text" id="link" required>
+
+            <button type="submit">Salvar Estudo</button>
+        </form>
+    </section>
+
+    <!-- Lista de estudos já cadastrados -->
+    <section class="lista-estudos">
+        <h2>Estudos Cadastrados</h2>
+        <div id="lista-estudos">
+            <!-- Estudos carregados do Firebase aparecerão aqui -->
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
+</footer>
+
+<!-- Importando Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+        authDomain: "iprc-site.firebaseapp.com",
+        projectId: "iprc-site",
+        storageBucket: "iprc-site.appspot.com",
+        messagingSenderId: "361636783794",
+        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Adicionar um novo estudo
+    document.getElementById("form-estudo").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const titulo = document.getElementById("titulo").value;
+        const resumo = document.getElementById("resumo").value;
+        const textoCompleto = document.getElementById("textoCompleto").value;
+        const imagem = document.getElementById("imagem").value;
+        const link = document.getElementById("link").value;
+
+        try {
+            await addDoc(collection(db, "estudos"), {
+                titulo,
+                resumo,
+                textoCompleto,
+                imagem,
+                link,
+                data: new Date() // Data de criação
+            });
+
+            alert("Estudo adicionado com sucesso!");
+            document.getElementById("form-estudo").reset();
+            carregarEstudos(); // Atualiza a lista
+        } catch (error) {
+            console.error("Erro ao adicionar estudo:", error);
+        }
+    });
+
+    // Função para carregar os estudos
+    async function carregarEstudos() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "estudos"));
+            const listaEstudos = document.getElementById("lista-estudos");
+            listaEstudos.innerHTML = "";
+
+            querySnapshot.forEach((doc) => {
+                const estudo = doc.data();
+                const divEstudo = document.createElement("div");
+                divEstudo.classList.add("estudo");
+
+                divEstudo.innerHTML = `
+                    <img src="${estudo.imagem}" alt="Imagem do estudo">
+                    <div class="info">
+                        <h2>${estudo.titulo}</h2>
+                        <p>${estudo.resumo}</p>
+                        <a href="estudo-detalhe.html?id=${doc.id}" class="botao">Ler mais</a>
+                        <button onclick="excluirEstudo('${doc.id}')">Excluir</button>
+                    </div>
+                `;
+
+                listaEstudos.appendChild(divEstudo);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar os estudos:", error);
+        }
+    }
+
+    // Função para excluir estudo
+    async function excluirEstudo(id) {
+        if (confirm("Tem certeza que deseja excluir este estudo?")) {
+            try {
+                await deleteDoc(doc(db, "estudos", id));
+                alert("Estudo excluído com sucesso!");
+                carregarEstudos(); // Atualiza a lista
+            } catch (error) {
+                console.error("Erro ao excluir estudo:", error);
+            }
+        }
+    }
+
+    carregarEstudos();
+</script>
+
+<script>
+    // Carregar o menu superior automaticamente
+    fetch("includes/header.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("header-container").innerHTML = data);
+</script>
+
+</body>
+</html>
