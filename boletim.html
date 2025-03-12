@@ -3,6 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim Semanal - Igreja Presbiteriana do Rio Comprido</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Incluindo o menu superior -->
+    <div id="header-container"></div>
+
+    <main>
+        <h1>📰 Boletim Semanal</h1>
+        
+        <section id="boletim-atual">
+            <h2 id="boletim-titulo">Carregando...</h2>
+            <p id="boletim-texto">Aguarde...</p>
+            <a id="boletim-download" href="#" class="botao" target="_blank">📥 Baixar PDF</a>
+        </section>
+
+        <h2>📚 Boletins Anteriores</h2>
+        <ul id="lista-boletins">
+            <!-- Lista de boletins será carregada aqui -->
+        </ul>
+    </main>
+
+    <!-- Rodapé fixado na parte inferior -->
+    <footer>
+        <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
+    </footer>
+
+    <!-- Script para carregar o menu automaticamente -->
+    <script>
+        fetch("includes/header.html")
+            .then(response => response.text())
+            .then(data => document.getElementById("header-container").innerHTML = data);
+    </script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+            authDomain: "iprc-site.firebaseapp.com",
+            projectId: "iprc-site",
+            storageBucket: "iprc-site.appspot.com",
+            messagingSenderId: "361636783794",
+            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function carregarBoletins() {
+            try {
+                const boletinsRef = collection(db, "boletins");
+                const q = query(boletinsRef, orderBy("data", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                const listaBoletins = document.getElementById("lista-boletins");
+                listaBoletins.innerHTML = ""; // Limpa antes de carregar
+
+                querySnapshot.forEach((doc, index) => {
+                    const boletim = doc.data();
+
+                    if (index === 0) {
+                        document.getElementById("boletim-titulo").innerText = boletim.titulo;
+                        document.getElementById("boletim-texto").innerText = boletim.texto;
+                        document.getElementById("boletim-download").href = boletim.arquivo;
+                    } else {
+                        const li = document.createElement("li");
+                        li.innerHTML = `<a href="${boletim.arquivo}" target="_blank">${boletim.titulo}</a>`;
+                        listaBoletins.appendChild(li);
+                    }
+                });
+            } catch (error) {
+                console.error("Erro ao carregar boletins:", error);
+            }
+        }
+
+        carregarBoletins();
+    </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boletim Semanal</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
