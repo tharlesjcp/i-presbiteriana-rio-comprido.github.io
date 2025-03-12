@@ -16,6 +16,8 @@
             <li><a href="admin-boletim.html">📰 Gerenciar Boletins</a></li>
             <li><a href="admin-pedidos.html">🙏 Pedidos de Oração</a></li>
             <li><a href="admin-usuarios.html">👤 Gerenciar Usuários</a></li>
+            <li><a href="admin-config.html">⚙️ Configurações</a></li>
+            <li><a href="index.html" target="_blank">🌍 Visualizar Site</a></li>
             <li><button id="logout">🚪 Sair</button></li>
         </ul>
     </div>
@@ -58,7 +60,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Espera o Firebase carregar antes de agir
+        // Verifica autenticação
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 console.log("✅ Usuário autenticado:", user.email);
