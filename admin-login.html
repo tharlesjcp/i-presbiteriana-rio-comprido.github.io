@@ -41,7 +41,7 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    window.location.href = "admin.html"; // Redireciona para a área admin
+                    window.location.href = "dashboard.html"; // Redireciona para a área admin
                 })
                 .catch((error) => {
                     document.getElementById("login-error").innerText = "Erro ao fazer login. Verifique suas credenciais.";
