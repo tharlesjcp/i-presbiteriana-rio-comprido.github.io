@@ -20,6 +20,9 @@
             <p>Usuários cadastrados: <span id="total-usuarios">0</span></p>
             <p>Estudos publicados: <span id="total-estudos">0</span></p>
             <p>Boletins publicados: <span id="total-boletins">0</span></p>
+            <p>📜 Pedidos de Oração: <span id="total-oracoes">0</span></p>
+            <p>⏳ Pendentes: <span id="oracoes-pendentes">0</span></p>
+            <p>✅ Atendidos: <span id="oracoes-oradas">0</span></p>
         </section>
 
         <!-- 🎉 Aniversariantes -->
@@ -40,6 +43,12 @@
         <section id="gerenciar-boletins">
             <h2>Gerenciar Boletins</h2>
             <button onclick="window.location.href='admin-boletim.html'">Acessar Boletins</button>
+        </section>
+
+        <!-- 🙏 Gerenciamento de Pedidos de Oração -->
+        <section id="gerenciar-oracoes">
+            <h2>Gerenciar Pedidos de Oração</h2>
+            <button onclick="window.location.href='admin-oracoes.html'">Acessar Pedidos</button>
         </section>
 
         <!-- 🛠️ Gerenciamento de Usuários -->
@@ -96,6 +105,28 @@
             document.getElementById("total-boletins").innerText = querySnapshot.size;
         }
 
+        // Carregar total de pedidos de oração
+        async function carregarOracoes() {
+            const querySnapshot = await getDocs(collection(db, "oracoes"));
+            let totalOracoes = 0;
+            let pendentes = 0;
+            let oradas = 0;
+
+            querySnapshot.forEach(doc => {
+                const oracao = doc.data();
+                totalOracoes++;
+                if (oracao.status === "Orado") {
+                    oradas++;
+                } else {
+                    pendentes++;
+                }
+            });
+
+            document.getElementById("total-oracoes").innerText = totalOracoes;
+            document.getElementById("oracoes-pendentes").innerText = pendentes;
+            document.getElementById("oracoes-oradas").innerText = oradas;
+        }
+
         // Carregar aniversariantes
         async function carregarAniversariantes() {
             const hoje = new Date();
@@ -132,6 +163,7 @@
         carregarUsuarios();
         carregarEstudos();
         carregarBoletins();
+        carregarOracoes();
         carregarAniversariantes();
 
         // Logout
