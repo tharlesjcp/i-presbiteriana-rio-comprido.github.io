@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Boletins - Admin</title>
     <link rel="stylesheet" href="css/admin.css">
+    <!-- Adicionando um editor de texto WYSIWYG -->
+    <script src="https://cdn.ckeditor.com/4.18.0/standard/ckeditor.js"></script>
 </head>
 <body>
 
@@ -21,23 +23,41 @@
         <h1>📰 Gerenciar Boletins</h1>
 
         <section class="secao">
-            <h2>➕ Adicionar Novo Boletim</h2>
+            <h2>➕ Criar Novo Boletim</h2>
             <form id="form-boletim">
-                <label for="boletim-semana">Semana:</label>
-                <input type="text" id="boletim-semana" required>
+                <!-- Upload da Imagem -->
+                <label for="upload-capa">Upload da Capa:</label>
+                <input type="file" id="upload-capa" accept="image/*">
+                <img id="preview-capa" src="https://via.placeholder.com/300" alt="Pré-visualização da capa" style="max-width: 300px; display: none; margin-top: 10px;">
+                <input type="hidden" id="capa-url">
 
-                <label for="upload-boletim">Upload do PDF:</label>
-                <input type="file" id="upload-boletim" accept="application/pdf" required>
+                <!-- Título e Subtítulo -->
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" required>
+
+                <label for="subtitulo">Subtítulo:</label>
+                <input type="text" id="subtitulo">
+
+                <!-- Editor de Texto -->
+                <label for="texto">Texto Principal:</label>
+                <textarea id="texto"></textarea>
+
+                <!-- Configuração de cores -->
+                <label for="cor-fundo">Cor de Fundo:</label>
+                <input type="color" id="cor-fundo" value="#ffffff">
+
+                <label for="cor-texto">Cor do Texto:</label>
+                <input type="color" id="cor-texto" value="#000000">
 
                 <button type="submit">Salvar Boletim</button>
             </form>
         </section>
 
         <section class="secao">
-            <h2>📋 Boletins Cadastrados</h2>
-            <ul id="lista-boletins">
-                <!-- Lista de boletins será carregada aqui -->
-            </ul>
+            <h2>📋 Boletins Publicados</h2>
+            <div id="lista-boletins">
+                <!-- Os boletins aparecerão aqui -->
+            </div>
         </section>
     </div>
 
@@ -62,17 +82,94 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        // Inicializa o editor WYSIWYG
+        CKEDITOR.replace("texto");
+
+        // Upload da imagem de capa
+        const fileInput = document.getElementById("upload-capa");
+        const previewCapa = document.getElementById("preview-capa");
+        const capaUrl = document.getElementById("capa-url");
+
+        fileInput.addEventListener("change", async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const storageRef = ref(storage, `boletins-capas/${Date.now()}_${file.name}`);
+                const uploadTask = await uploadBytes(storageRef, file);
+                const imageUrl = await getDownloadURL(uploadTask.ref);
+                previewCapa.src = imageUrl;
+                previewCapa.style.display = "block";
+                capaUrl.value = imageUrl;
+            }
+        });
+
+        // Função para salvar um novo boletim
+        document.getElementById("form-boletim").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const titulo = document.getElementById("titulo").value;
+            const subtitulo = document.getElementById("subtitulo").value;
+            const texto = CKEDITOR.instances.texto.getData();
+            const corFundo = document.getElementById("cor-fundo").value;
+            const corTexto = document.getElementById("cor-texto").value;
+            const capa = capaUrl.value;
+
+            if (!capa) {
+                alert("Por favor, envie uma imagem de capa antes de salvar.");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "boletins"), {
+                    titulo,
+                    subtitulo,
+                    texto,
+                    corFundo,
+                    corTexto,
+                    capa,
+                    data: new Date()
+                });
+
+                alert("Boletim salvo com sucesso!");
+                document.getElementById("form-boletim").reset();
+                previewCapa.style.display = "none";
+                carregarBoletins();
+            } catch (error) {
+                console.error("Erro ao salvar boletim:", error);
+            }
+        });
+
+        // Função para carregar boletins cadastrados
         async function carregarBoletins() {
             const listaBoletins = document.getElementById("lista-boletins");
             listaBoletins.innerHTML = "";
 
             const querySnapshot = await getDocs(collection(db, "boletins"));
+
             querySnapshot.forEach((doc) => {
                 const boletim = doc.data();
-                const li = document.createElement("li");
-                li.innerHTML = `<a href="${boletim.arquivo}" target="_blank">${boletim.semana}</a> 
-                <button class="excluir" data-id="${doc.id}">Excluir</button>`;
-                listaBoletins.appendChild(li);
+
+                const divBoletim = document.createElement("div");
+                divBoletim.classList.add("boletim");
+
+                divBoletim.innerHTML = `
+                    <img src="${boletim.capa}" alt="Capa do boletim" style="max-width: 200px;">
+                    <h2>${boletim.titulo}</h2>
+                    <h3>${boletim.subtitulo}</h3>
+                    <div style="background-color:${boletim.corFundo}; color:${boletim.corTexto}; padding: 10px;">
+                        ${boletim.texto}
+                    </div>
+                    <button class="excluir" data-id="${doc.id}">Excluir</button>
+                `;
+
+                listaBoletins.appendChild(divBoletim);
+            });
+
+            document.querySelectorAll(".excluir").forEach((botao) => {
+                botao.addEventListener("click", async () => {
+                    const id = botao.getAttribute("data-id");
+                    await deleteDoc(doc(db, "boletins", id));
+                    carregarBoletins();
+                });
             });
         }
 
