@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletim Semanal</title>
+    <title>Boletins - Igreja Presbiteriana</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <!-- Menu Superior -->
     <div id="header-container"></div>
 
     <main>
-        <h1>📄 Boletim Semanal</h1>
+        <h1>📰 Boletins Semanais</h1>
 
-        <section id="boletim-atual">
-            <h2>📅 Última Edição</h2>
-            <p><strong>Semana:</strong> <span id="boletim-semana">Carregando...</span></p>
-            <a id="boletim-link" href="#" target="_blank" class="botao" style="display:none;">📥 Baixar PDF</a>
+        <section id="boletim-recente">
+            <h2>📌 Último Boletim</h2>
+            <div id="ultimo-boletim">
+                <!-- O último boletim será carregado aqui -->
+            </div>
         </section>
 
         <section id="boletins-anteriores">
-            <h2>📚 Boletins Anteriores</h2>
-            <ul id="lista-boletins">
-                <!-- Lista de boletins anteriores será carregada aqui -->
-            </ul>
+            <h2>📋 Boletins Anteriores</h2>
+            <div id="lista-boletins">
+                <!-- Lista de boletins carregada dinamicamente -->
+            </div>
         </section>
     </main>
 
@@ -32,62 +32,37 @@
         <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
     </footer>
 
-    <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-        // Configuração Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+            apiKey: "API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
         };
 
-        // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         async function carregarBoletins() {
-            const boletimSemana = document.getElementById("boletim-semana");
-            const boletimLink = document.getElementById("boletim-link");
-            const listaBoletins = document.getElementById("lista-boletins");
+            const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
 
-            try {
-                const boletinsRef = collection(db, "boletins");
-                const q = query(boletinsRef, orderBy("data", "desc"));
-                const querySnapshot = await getDocs(q);
+            let primeiro = true;
+            querySnapshot.forEach((doc) => {
+                const boletim = doc.data();
+                const html = `<p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>`;
 
-                if (!querySnapshot.empty) {
-                    let primeiro = true;
-                    querySnapshot.forEach((doc) => {
-                        const boletim = doc.data();
-                        const linkBoletim = document.createElement("a");
-                        linkBoletim.href = boletim.arquivo;
-                        linkBoletim.target = "_blank";
-                        linkBoletim.innerText = boletim.semana;
-                        linkBoletim.classList.add("botao");
-
-                        if (primeiro) {
-                            boletimSemana.innerText = boletim.semana;
-                            boletimLink.href = boletim.arquivo;
-                            boletimLink.style.display = "inline-block";
-                            primeiro = false;
-                        } else {
-                            const li = document.createElement("li");
-                            li.appendChild(linkBoletim);
-                            listaBoletins.appendChild(li);
-                        }
-                    });
+                if (primeiro) {
+                    document.getElementById("ultimo-boletim").innerHTML = html;
+                    primeiro = false;
                 } else {
-                    boletimSemana.innerText = "Nenhum boletim disponível";
+                    document.getElementById("lista-boletins").innerHTML += html;
                 }
-            } catch (error) {
-                console.error("Erro ao carregar boletins:", error);
-            }
+            });
         }
 
         carregarBoletins();
