@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletim Semanal - Igreja Presbiteriana do Rio Comprido</title>
+    <title>Boletim Semanal</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <!-- Incluindo o menu superior -->
+    <!-- Menu Superior -->
     <div id="header-container"></div>
 
     <main>
-        <h1>📰 Boletim Semanal</h1>
-        
+        <h1>📄 Boletim Semanal</h1>
+
         <section id="boletim-atual">
-            <h2 id="boletim-titulo">Carregando...</h2>
-            <p id="boletim-texto">Aguarde...</p>
-            <a id="boletim-download" href="#" class="botao" target="_blank">📥 Baixar PDF</a>
+            <h2>📅 Última Edição</h2>
+            <p><strong>Semana:</strong> <span id="boletim-semana">Carregando...</span></p>
+            <a id="boletim-link" href="#" target="_blank" class="botao" style="display:none;">📥 Baixar PDF</a>
         </section>
 
-        <h2>📚 Boletins Anteriores</h2>
-        <ul id="lista-boletins">
-            <!-- Lista de boletins será carregada aqui -->
-        </ul>
+        <section id="boletins-anteriores">
+            <h2>📚 Boletins Anteriores</h2>
+            <ul id="lista-boletins">
+                <!-- Lista de boletins anteriores será carregada aqui -->
+            </ul>
+        </section>
     </main>
 
-    <!-- Rodapé fixado na parte inferior -->
     <footer>
         <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
     </footer>
 
-    <!-- Script para carregar o menu automaticamente -->
-    <script>
-        fetch("includes/header.html")
-            .then(response => response.text())
-            .then(data => document.getElementById("header-container").innerHTML = data);
-    </script>
-
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
+        // Configuração Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
             authDomain: "iprc-site.firebaseapp.com",
@@ -52,95 +47,50 @@
             appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
         };
 
+        // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         async function carregarBoletins() {
+            const boletimSemana = document.getElementById("boletim-semana");
+            const boletimLink = document.getElementById("boletim-link");
+            const listaBoletins = document.getElementById("lista-boletins");
+
             try {
                 const boletinsRef = collection(db, "boletins");
                 const q = query(boletinsRef, orderBy("data", "desc"));
                 const querySnapshot = await getDocs(q);
 
-                const listaBoletins = document.getElementById("lista-boletins");
-                listaBoletins.innerHTML = ""; // Limpa antes de carregar
+                if (!querySnapshot.empty) {
+                    let primeiro = true;
+                    querySnapshot.forEach((doc) => {
+                        const boletim = doc.data();
+                        const linkBoletim = document.createElement("a");
+                        linkBoletim.href = boletim.arquivo;
+                        linkBoletim.target = "_blank";
+                        linkBoletim.innerText = boletim.semana;
+                        linkBoletim.classList.add("botao");
 
-                querySnapshot.forEach((doc, index) => {
-                    const boletim = doc.data();
-
-                    if (index === 0) {
-                        document.getElementById("boletim-titulo").innerText = boletim.titulo;
-                        document.getElementById("boletim-texto").innerText = boletim.texto;
-                        document.getElementById("boletim-download").href = boletim.arquivo;
-                    } else {
-                        const li = document.createElement("li");
-                        li.innerHTML = `<a href="${boletim.arquivo}" target="_blank">${boletim.titulo}</a>`;
-                        listaBoletins.appendChild(li);
-                    }
-                });
+                        if (primeiro) {
+                            boletimSemana.innerText = boletim.semana;
+                            boletimLink.href = boletim.arquivo;
+                            boletimLink.style.display = "inline-block";
+                            primeiro = false;
+                        } else {
+                            const li = document.createElement("li");
+                            li.appendChild(linkBoletim);
+                            listaBoletins.appendChild(li);
+                        }
+                    });
+                } else {
+                    boletimSemana.innerText = "Nenhum boletim disponível";
+                }
             } catch (error) {
                 console.error("Erro ao carregar boletins:", error);
             }
         }
 
         carregarBoletins();
-    </script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletim Semanal</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-
-    <div id="header-container"></div>
-
-    <main>
-        <h1>📰 Boletim Semanal</h1>
-        <section id="boletim-conteudo">
-            <h2 id="boletim-titulo">Carregando...</h2>
-            <p id="boletim-texto"></p>
-            <a id="boletim-download" href="#" class="botao" download>Baixar PDF</a>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-    </footer>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        async function carregarBoletim() {
-            const boletinsRef = collection(db, "boletins");
-            const q = query(boletinsRef, orderBy("data", "desc"));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                const boletim = querySnapshot.docs[0].data();
-                document.getElementById("boletim-titulo").innerText = boletim.titulo;
-                document.getElementById("boletim-texto").innerText = boletim.texto;
-                document.getElementById("boletim-download").href = boletim.pdf;
-            }
-        }
-
-        carregarBoletim();
     </script>
 
 </body>
