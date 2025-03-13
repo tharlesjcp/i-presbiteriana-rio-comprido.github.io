@@ -60,12 +60,12 @@
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+            apiKey: "API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -110,13 +110,7 @@
 
                 <!-- Pré-visualização do Ícone -->
                 <i class="preview-icon fa-brands fa-2x" style="display: none;"></i>
-
-                <label>Tamanho do Ícone:</label>
-                <select class="icon-size">
-                    <option value="small">Pequeno</option>
-                    <option value="medium" selected>Médio</option>
-                    <option value="large">Grande</option>
-                </select>
+                <button type="button" class="inserir-icone">Inserir Ícone no Texto</button>
 
                 <div class="conteudo">
                     <textarea class="texto-pagina"></textarea>
@@ -149,6 +143,15 @@
                 }
             });
 
+            // Inserir Ícone no Texto Editável
+            pageDiv.querySelector(".inserir-icone").addEventListener("click", () => {
+                const iconClass = pageDiv.querySelector(".icon-selector").value;
+                if (iconClass) {
+                    const editorInstance = CKEDITOR.instances[pageDiv.querySelector(".texto-pagina").name];
+                    editorInstance.insertHtml(`<i class="fa-brands ${iconClass}"></i>`);
+                }
+            });
+
             pageDiv.querySelector(".remover-pagina").addEventListener("click", () => {
                 pageDiv.remove();
                 pageCounter--;
@@ -167,14 +170,13 @@
             document.querySelectorAll(".pagina").forEach((paginaDiv) => {
                 const tipo = paginaDiv.querySelector(".tipo-pagina").value;
                 const icon = paginaDiv.querySelector(".icon-selector").value;
-                const iconSize = paginaDiv.querySelector(".icon-size").value;
                 let conteudo = "";
 
                 if (tipo === "texto") {
                     conteudo = CKEDITOR.instances[paginaDiv.querySelector(".texto-pagina").name].getData();
                 }
 
-                paginas.push({ tipo, conteudo, icon, iconSize });
+                paginas.push({ tipo, conteudo, icon });
             });
 
             try {
@@ -187,13 +189,11 @@
 
                 alert("Boletim salvo com sucesso!");
                 document.getElementById("form-boletim").reset();
-                carregarBoletins();
             } catch (error) {
                 console.error("Erro ao salvar boletim:", error);
             }
         });
 
-        carregarBoletins();
     </script>
 
 </body>
