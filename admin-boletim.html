@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Boletins - Admin</title>
     <link rel="stylesheet" href="css/admin.css">
-    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
 </head>
 <body>
 
@@ -13,7 +12,7 @@
     <div class="sidebar">
         <h2>Administração</h2>
         <ul>
-            <li><a href="dashboard.html">⬅ Voltar ao Painel</a></li>
+            <li><a href="dashboard.html">⬅️ Voltar ao Painel</a></li>
         </ul>
     </div>
 
@@ -22,32 +21,19 @@
         <h1>📰 Gerenciar Boletins</h1>
 
         <section class="secao">
-            <h2>➕ Criar Novo Boletim</h2>
+            <h2>➕ Fazer Upload de Boletim</h2>
             <form id="form-boletim">
-                
-                <!-- Número do Boletim -->
-                <label for="numero-boletim">Número do Boletim:</label>
-                <input type="number" id="numero-boletim" placeholder="Ex: 45" required>
+                <label for="arquivo">Selecionar arquivo PDF:</label>
+                <input type="file" id="arquivo" accept="application/pdf" required>
 
-                <!-- Data do Boletim -->
-                <label for="data-boletim">Data do Boletim:</label>
-                <input type="date" id="data-boletim" required>
-
-                <!-- Botão para adicionar páginas -->
-                <button type="button" id="add-pagina">➕ Adicionar Página</button>
-
-                <div id="paginas-container">
-                    <!-- As páginas do boletim serão adicionadas aqui -->
-                </div>
-
-                <button type="submit">Salvar Boletim</button>
+                <button type="submit">📤 Enviar Boletim</button>
             </form>
         </section>
 
         <section class="secao">
             <h2>📋 Boletins Publicados</h2>
             <div id="lista-boletins">
-                <!-- Os boletins aparecerão aqui -->
+                <!-- Lista de boletins carregados dinamicamente -->
             </div>
         </section>
     </div>
@@ -55,8 +41,8 @@
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
@@ -71,91 +57,72 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        let pageCounter = 0;
+        const formBoletim = document.getElementById("form-boletim");
+        const listaBoletins = document.getElementById("lista-boletins");
 
-        document.getElementById("add-pagina").addEventListener("click", () => {
-            if (pageCounter >= 6) {
-                alert("Máximo de 6 páginas por boletim!");
+        formBoletim.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const arquivo = document.getElementById("arquivo").files[0];
+
+            if (!arquivo) {
+                alert("Por favor, selecione um arquivo PDF.");
                 return;
             }
 
-            const container = document.getElementById("paginas-container");
-            const pageDiv = document.createElement("div");
-            pageDiv.classList.add("pagina");
-            pageDiv.dataset.index = pageCounter;
-
-            pageDiv.innerHTML = `
-                <h3>Página ${pageCounter + 1}</h3>
-                <label>Escolher tipo:</label>
-                <select class="tipo-pagina">
-                    <option value="texto">Texto</option>
-                    <option value="imagem">Imagem</option>
-                </select>
-
-                <!-- Campo de Upload de Imagem -->
-                <input type="file" class="upload-imagem" accept="image/*" style="display: none;">
-                <img class="preview-imagem" src="" alt="Pré-visualização" style="max-width: 150px; display: none;">
-                
-                <div class="conteudo">
-                    <textarea class="texto-pagina"></textarea>
-                </div>
-                <button type="button" class="remover-pagina">❌ Remover Página</button>
-            `;
-
-            container.appendChild(pageDiv);
-            CKEDITOR.replace(pageDiv.querySelector(".texto-pagina"));
-
-            // Atualizar exibição do campo de imagem
-            pageDiv.querySelector(".tipo-pagina").addEventListener("change", (e) => {
-                const tipo = e.target.value;
-                if (tipo === "texto") {
-                    pageDiv.querySelector(".upload-imagem").style.display = "none";
-                } else {
-                    pageDiv.querySelector(".upload-imagem").style.display = "block";
-                }
-            });
-
-            pageDiv.querySelector(".remover-pagina").addEventListener("click", () => {
-                pageDiv.remove();
-                pageCounter--;
-            });
-
-            pageCounter++;
-        });
-
-        document.getElementById("form-boletim").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const numeroBoletim = document.getElementById("numero-boletim").value;
-            const dataBoletim = document.getElementById("data-boletim").value;
-            const paginas = [];
-
-            document.querySelectorAll(".pagina").forEach((paginaDiv) => {
-                const tipo = paginaDiv.querySelector(".tipo-pagina").value;
-                let conteudo = "";
-
-                if (tipo === "texto") {
-                    conteudo = CKEDITOR.instances[paginaDiv.querySelector(".texto-pagina").name].getData();
-                }
-
-                paginas.push({ tipo, conteudo });
-            });
+            const dataAtual = new Date();
+            const dataFormatada = dataAtual.toISOString().split("T")[0]; // Formato YYYY-MM-DD
+            const nomeArquivo = `boletim_${dataFormatada}.pdf`;
+            const storageRef = ref(storage, `boletins/${nomeArquivo}`);
 
             try {
+                const snapshot = await uploadBytes(storageRef, arquivo);
+                const url = await getDownloadURL(snapshot.ref);
+
                 await addDoc(collection(db, "boletins"), {
-                    numero: numeroBoletim,
-                    data: dataBoletim,
-                    paginas,
-                    dataCriacao: new Date()
+                    nome: nomeArquivo,
+                    url: url,
+                    data: dataAtual
                 });
 
-                alert("Boletim salvo com sucesso!");
-                document.getElementById("form-boletim").reset();
+                alert("Boletim enviado com sucesso!");
+                formBoletim.reset();
+                carregarBoletins();
             } catch (error) {
-                console.error("Erro ao salvar boletim:", error);
+                console.error("Erro ao enviar boletim:", error);
             }
         });
 
+        async function carregarBoletins() {
+            listaBoletins.innerHTML = "";
+            const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
+
+            querySnapshot.forEach((doc) => {
+                const boletim = doc.data();
+                const div = document.createElement("div");
+                div.classList.add("boletim-item");
+
+                div.innerHTML = `
+                    <p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>
+                    <button class="excluir" data-id="${doc.id}" data-url="${boletim.url}">🗑️ Excluir</button>
+                `;
+
+                listaBoletins.appendChild(div);
+            });
+
+            document.querySelectorAll(".excluir").forEach((btn) => {
+                btn.addEventListener("click", async () => {
+                    const id = btn.getAttribute("data-id");
+                    const fileUrl = btn.getAttribute("data-url");
+                    const fileRef = ref(storage, fileUrl);
+
+                    await deleteDoc(doc(db, "boletins", id));
+                    await deleteObject(fileRef);
+                    carregarBoletins();
+                });
+            });
+        }
+
+        carregarBoletins();
     </script>
 
 </body>
