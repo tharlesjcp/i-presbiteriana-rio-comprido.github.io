@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Boletins - Admin</title>
     <link rel="stylesheet" href="css/admin.css">
-    <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
 </head>
 <body>
 
@@ -13,7 +13,7 @@
     <div class="sidebar">
         <h2>Administração</h2>
         <ul>
-            <li><a href="dashboard.html">⬅️ Voltar ao Painel</a></li>
+            <li><a href="dashboard.html">⬅ Voltar ao Painel</a></li>
         </ul>
     </div>
 
@@ -59,12 +59,12 @@
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+            apiKey: "API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
