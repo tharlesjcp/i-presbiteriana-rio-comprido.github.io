@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Boletins - Admin</title>
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.ckeditor.com/4.18.0/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
 </head>
 <body>
 
@@ -57,6 +56,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
@@ -69,6 +69,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         let pageCounter = 0;
 
@@ -90,25 +91,11 @@
                     <option value="texto">Texto</option>
                     <option value="imagem">Imagem</option>
                 </select>
+
+                <!-- Campo de Upload de Imagem -->
+                <input type="file" class="upload-imagem" accept="image/*" style="display: none;">
+                <img class="preview-imagem" src="" alt="Pré-visualização" style="max-width: 150px; display: none;">
                 
-                <label>Escolher Ícone de Rede Social:</label>
-                <select class="icon-selector">
-                    <option value="">Nenhum</option>
-                    <option value="fa-facebook">Facebook</option>
-                    <option value="fa-instagram">Instagram</option>
-                    <option value="fa-youtube">YouTube</option>
-                    <option value="fa-whatsapp">WhatsApp</option>
-                    <option value="fa-twitter">Twitter</option>
-                    <option value="fa-tiktok">TikTok</option>
-                </select>
-
-                <label>Tamanho do Ícone:</label>
-                <select class="icon-size">
-                    <option value="small">Pequeno</option>
-                    <option value="medium" selected>Médio</option>
-                    <option value="large">Grande</option>
-                </select>
-
                 <div class="conteudo">
                     <textarea class="texto-pagina"></textarea>
                 </div>
@@ -117,6 +104,16 @@
 
             container.appendChild(pageDiv);
             CKEDITOR.replace(pageDiv.querySelector(".texto-pagina"));
+
+            // Atualizar exibição do campo de imagem
+            pageDiv.querySelector(".tipo-pagina").addEventListener("change", (e) => {
+                const tipo = e.target.value;
+                if (tipo === "texto") {
+                    pageDiv.querySelector(".upload-imagem").style.display = "none";
+                } else {
+                    pageDiv.querySelector(".upload-imagem").style.display = "block";
+                }
+            });
 
             pageDiv.querySelector(".remover-pagina").addEventListener("click", () => {
                 pageDiv.remove();
@@ -135,15 +132,13 @@
 
             document.querySelectorAll(".pagina").forEach((paginaDiv) => {
                 const tipo = paginaDiv.querySelector(".tipo-pagina").value;
-                const icon = paginaDiv.querySelector(".icon-selector").value;
-                const iconSize = paginaDiv.querySelector(".icon-size").value;
                 let conteudo = "";
 
                 if (tipo === "texto") {
                     conteudo = CKEDITOR.instances[paginaDiv.querySelector(".texto-pagina").name].getData();
                 }
 
-                paginas.push({ tipo, conteudo, icon, iconSize });
+                paginas.push({ tipo, conteudo });
             });
 
             try {
@@ -156,28 +151,11 @@
 
                 alert("Boletim salvo com sucesso!");
                 document.getElementById("form-boletim").reset();
-                carregarBoletins();
             } catch (error) {
                 console.error("Erro ao salvar boletim:", error);
             }
         });
 
-        async function carregarBoletins() {
-            const listaBoletins = document.getElementById("lista-boletins");
-            listaBoletins.innerHTML = "";
-
-            const querySnapshot = await getDocs(collection(db, "boletins"));
-
-            querySnapshot.forEach((doc) => {
-                const boletim = doc.data();
-                const divBoletim = document.createElement("div");
-                divBoletim.classList.add("boletim");
-                divBoletim.innerHTML = `<h2>Boletim nº ${boletim.numero} - ${boletim.data}</h2>`;
-                listaBoletins.appendChild(divBoletim);
-            });
-        }
-
-        carregarBoletins();
     </script>
 
 </body>
