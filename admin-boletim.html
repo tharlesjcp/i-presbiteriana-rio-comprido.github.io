@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Boletins - Admin</title>
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.ckeditor.com/4.18.0/standard/ckeditor.js"></script>
 </head>
 <body>
@@ -25,11 +25,14 @@
         <section class="secao">
             <h2>➕ Criar Novo Boletim</h2>
             <form id="form-boletim">
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" required>
+                
+                <!-- Número do Boletim -->
+                <label for="numero-boletim">Número do Boletim:</label>
+                <input type="number" id="numero-boletim" placeholder="Ex: 45" required>
 
-                <label for="subtitulo">Subtítulo:</label>
-                <input type="text" id="subtitulo">
+                <!-- Data do Boletim -->
+                <label for="data-boletim">Data do Boletim:</label>
+                <input type="date" id="data-boletim" required>
 
                 <!-- Botão para adicionar páginas -->
                 <button type="button" id="add-pagina">➕ Adicionar Página</button>
@@ -54,7 +57,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "API_KEY",
@@ -67,9 +69,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
-        // Inicializa CKEditor para os textos
         let pageCounter = 0;
 
         document.getElementById("add-pagina").addEventListener("click", () => {
@@ -91,16 +91,15 @@
                     <option value="imagem">Imagem</option>
                 </select>
                 
-                <label>Escolher ícone:</label>
+                <label>Escolher Ícone de Rede Social:</label>
                 <select class="icon-selector">
                     <option value="">Nenhum</option>
-                    <option value="calendar_today">📅 Calendário</option>
-                    <option value="schedule">⏰ Relógio</option>
-                    <option value="location_on">📍 Localização</option>
-                    <option value="call">📞 Telefone</option>
-                    <option value="email">📧 E-mail</option>
-                    <option value="public">🌍 Internet</option>
-                    <option value="music_note">🎵 Música</option>
+                    <option value="fa-facebook">Facebook</option>
+                    <option value="fa-instagram">Instagram</option>
+                    <option value="fa-youtube">YouTube</option>
+                    <option value="fa-whatsapp">WhatsApp</option>
+                    <option value="fa-twitter">Twitter</option>
+                    <option value="fa-tiktok">TikTok</option>
                 </select>
 
                 <label>Tamanho do Ícone:</label>
@@ -112,25 +111,12 @@
 
                 <div class="conteudo">
                     <textarea class="texto-pagina"></textarea>
-                    <input type="file" class="upload-imagem" accept="image/*" style="display: none;">
-                    <img class="preview-imagem" src="" alt="Pré-visualização" style="max-width: 150px; display: none;">
                 </div>
                 <button type="button" class="remover-pagina">❌ Remover Página</button>
             `;
 
             container.appendChild(pageDiv);
             CKEDITOR.replace(pageDiv.querySelector(".texto-pagina"));
-
-            pageDiv.querySelector(".tipo-pagina").addEventListener("change", (e) => {
-                const tipo = e.target.value;
-                if (tipo === "texto") {
-                    pageDiv.querySelector(".texto-pagina").style.display = "block";
-                    pageDiv.querySelector(".upload-imagem").style.display = "none";
-                } else {
-                    pageDiv.querySelector(".texto-pagina").style.display = "none";
-                    pageDiv.querySelector(".upload-imagem").style.display = "block";
-                }
-            });
 
             pageDiv.querySelector(".remover-pagina").addEventListener("click", () => {
                 pageDiv.remove();
@@ -143,8 +129,8 @@
         document.getElementById("form-boletim").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const titulo = document.getElementById("titulo").value;
-            const subtitulo = document.getElementById("subtitulo").value;
+            const numeroBoletim = document.getElementById("numero-boletim").value;
+            const dataBoletim = document.getElementById("data-boletim").value;
             const paginas = [];
 
             document.querySelectorAll(".pagina").forEach((paginaDiv) => {
@@ -155,8 +141,6 @@
 
                 if (tipo === "texto") {
                     conteudo = CKEDITOR.instances[paginaDiv.querySelector(".texto-pagina").name].getData();
-                } else {
-                    conteudo = paginaDiv.querySelector(".upload-imagem").files[0];
                 }
 
                 paginas.push({ tipo, conteudo, icon, iconSize });
@@ -164,10 +148,10 @@
 
             try {
                 await addDoc(collection(db, "boletins"), {
-                    titulo,
-                    subtitulo,
+                    numero: numeroBoletim,
+                    data: dataBoletim,
                     paginas,
-                    data: new Date()
+                    dataCriacao: new Date()
                 });
 
                 alert("Boletim salvo com sucesso!");
@@ -188,7 +172,7 @@
                 const boletim = doc.data();
                 const divBoletim = document.createElement("div");
                 divBoletim.classList.add("boletim");
-                divBoletim.innerHTML = `<h2>${boletim.titulo}</h2>`;
+                divBoletim.innerHTML = `<h2>Boletim nº ${boletim.numero} - ${boletim.data}</h2>`;
                 listaBoletins.appendChild(divBoletim);
             });
         }
