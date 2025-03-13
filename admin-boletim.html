@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Boletins - Admin</title>
     <link rel="stylesheet" href="css/admin.css">
-    <!-- Adicionando um editor de texto WYSIWYG -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://cdn.ckeditor.com/4.18.0/standard/ckeditor.js"></script>
 </head>
 <body>
@@ -25,29 +25,18 @@
         <section class="secao">
             <h2>➕ Criar Novo Boletim</h2>
             <form id="form-boletim">
-                <!-- Upload da Imagem -->
-                <label for="upload-capa">Upload da Capa:</label>
-                <input type="file" id="upload-capa" accept="image/*">
-                <img id="preview-capa" src="https://via.placeholder.com/300" alt="Pré-visualização da capa" style="max-width: 300px; display: none; margin-top: 10px;">
-                <input type="hidden" id="capa-url">
-
-                <!-- Título e Subtítulo -->
                 <label for="titulo">Título:</label>
                 <input type="text" id="titulo" required>
 
                 <label for="subtitulo">Subtítulo:</label>
                 <input type="text" id="subtitulo">
 
-                <!-- Editor de Texto -->
-                <label for="texto">Texto Principal:</label>
-                <textarea id="texto"></textarea>
+                <!-- Botão para adicionar páginas -->
+                <button type="button" id="add-pagina">➕ Adicionar Página</button>
 
-                <!-- Configuração de cores -->
-                <label for="cor-fundo">Cor de Fundo:</label>
-                <input type="color" id="cor-fundo" value="#ffffff">
-
-                <label for="cor-texto">Cor do Texto:</label>
-                <input type="color" id="cor-texto" value="#000000">
+                <div id="paginas-container">
+                    <!-- As páginas do boletim serão adicionadas aqui -->
+                </div>
 
                 <button type="submit">Salvar Boletim</button>
             </form>
@@ -67,78 +56,128 @@
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
-        // Configuração Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+            apiKey: "API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
         };
 
-        // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // Inicializa o editor WYSIWYG
-        CKEDITOR.replace("texto");
+        // Inicializa CKEditor para os textos
+        let pageCounter = 0;
 
-        // Upload da imagem de capa
-        const fileInput = document.getElementById("upload-capa");
-        const previewCapa = document.getElementById("preview-capa");
-        const capaUrl = document.getElementById("capa-url");
-
-        fileInput.addEventListener("change", async (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const storageRef = ref(storage, `boletins-capas/${Date.now()}_${file.name}`);
-                const uploadTask = await uploadBytes(storageRef, file);
-                const imageUrl = await getDownloadURL(uploadTask.ref);
-                previewCapa.src = imageUrl;
-                previewCapa.style.display = "block";
-                capaUrl.value = imageUrl;
+        document.getElementById("add-pagina").addEventListener("click", () => {
+            if (pageCounter >= 6) {
+                alert("Máximo de 6 páginas por boletim!");
+                return;
             }
+
+            const container = document.getElementById("paginas-container");
+            const pageDiv = document.createElement("div");
+            pageDiv.classList.add("pagina");
+            pageDiv.dataset.index = pageCounter;
+
+            pageDiv.innerHTML = `
+                <h3>Página ${pageCounter + 1}</h3>
+                <label>Escolher tipo:</label>
+                <select class="tipo-pagina">
+                    <option value="texto">Texto</option>
+                    <option value="imagem">Imagem</option>
+                </select>
+                
+                <label>Escolher ícone:</label>
+                <select class="icon-selector">
+                    <option value="">Nenhum</option>
+                    <option value="calendar_today">📅 Calendário</option>
+                    <option value="schedule">⏰ Relógio</option>
+                    <option value="location_on">📍 Localização</option>
+                    <option value="call">📞 Telefone</option>
+                    <option value="email">📧 E-mail</option>
+                    <option value="public">🌍 Internet</option>
+                    <option value="music_note">🎵 Música</option>
+                </select>
+
+                <label>Tamanho do Ícone:</label>
+                <select class="icon-size">
+                    <option value="small">Pequeno</option>
+                    <option value="medium" selected>Médio</option>
+                    <option value="large">Grande</option>
+                </select>
+
+                <div class="conteudo">
+                    <textarea class="texto-pagina"></textarea>
+                    <input type="file" class="upload-imagem" accept="image/*" style="display: none;">
+                    <img class="preview-imagem" src="" alt="Pré-visualização" style="max-width: 150px; display: none;">
+                </div>
+                <button type="button" class="remover-pagina">❌ Remover Página</button>
+            `;
+
+            container.appendChild(pageDiv);
+            CKEDITOR.replace(pageDiv.querySelector(".texto-pagina"));
+
+            pageDiv.querySelector(".tipo-pagina").addEventListener("change", (e) => {
+                const tipo = e.target.value;
+                if (tipo === "texto") {
+                    pageDiv.querySelector(".texto-pagina").style.display = "block";
+                    pageDiv.querySelector(".upload-imagem").style.display = "none";
+                } else {
+                    pageDiv.querySelector(".texto-pagina").style.display = "none";
+                    pageDiv.querySelector(".upload-imagem").style.display = "block";
+                }
+            });
+
+            pageDiv.querySelector(".remover-pagina").addEventListener("click", () => {
+                pageDiv.remove();
+                pageCounter--;
+            });
+
+            pageCounter++;
         });
 
-        // Função para salvar um novo boletim
         document.getElementById("form-boletim").addEventListener("submit", async (e) => {
             e.preventDefault();
 
             const titulo = document.getElementById("titulo").value;
             const subtitulo = document.getElementById("subtitulo").value;
-            const texto = CKEDITOR.instances.texto.getData();
-            const corFundo = document.getElementById("cor-fundo").value;
-            const corTexto = document.getElementById("cor-texto").value;
-            const capa = capaUrl.value;
+            const paginas = [];
 
-            if (!capa) {
-                alert("Por favor, envie uma imagem de capa antes de salvar.");
-                return;
-            }
+            document.querySelectorAll(".pagina").forEach((paginaDiv) => {
+                const tipo = paginaDiv.querySelector(".tipo-pagina").value;
+                const icon = paginaDiv.querySelector(".icon-selector").value;
+                const iconSize = paginaDiv.querySelector(".icon-size").value;
+                let conteudo = "";
+
+                if (tipo === "texto") {
+                    conteudo = CKEDITOR.instances[paginaDiv.querySelector(".texto-pagina").name].getData();
+                } else {
+                    conteudo = paginaDiv.querySelector(".upload-imagem").files[0];
+                }
+
+                paginas.push({ tipo, conteudo, icon, iconSize });
+            });
 
             try {
                 await addDoc(collection(db, "boletins"), {
                     titulo,
                     subtitulo,
-                    texto,
-                    corFundo,
-                    corTexto,
-                    capa,
+                    paginas,
                     data: new Date()
                 });
 
                 alert("Boletim salvo com sucesso!");
                 document.getElementById("form-boletim").reset();
-                previewCapa.style.display = "none";
                 carregarBoletins();
             } catch (error) {
                 console.error("Erro ao salvar boletim:", error);
             }
         });
 
-        // Função para carregar boletins cadastrados
         async function carregarBoletins() {
             const listaBoletins = document.getElementById("lista-boletins");
             listaBoletins.innerHTML = "";
@@ -147,29 +186,10 @@
 
             querySnapshot.forEach((doc) => {
                 const boletim = doc.data();
-
                 const divBoletim = document.createElement("div");
                 divBoletim.classList.add("boletim");
-
-                divBoletim.innerHTML = `
-                    <img src="${boletim.capa}" alt="Capa do boletim" style="max-width: 200px;">
-                    <h2>${boletim.titulo}</h2>
-                    <h3>${boletim.subtitulo}</h3>
-                    <div style="background-color:${boletim.corFundo}; color:${boletim.corTexto}; padding: 10px;">
-                        ${boletim.texto}
-                    </div>
-                    <button class="excluir" data-id="${doc.id}">Excluir</button>
-                `;
-
+                divBoletim.innerHTML = `<h2>${boletim.titulo}</h2>`;
                 listaBoletins.appendChild(divBoletim);
-            });
-
-            document.querySelectorAll(".excluir").forEach((botao) => {
-                botao.addEventListener("click", async () => {
-                    const id = botao.getAttribute("data-id");
-                    await deleteDoc(doc(db, "boletins", id));
-                    carregarBoletins();
-                });
             });
         }
 
