@@ -6,7 +6,7 @@
     <title>Gerenciar Boletins - Admin</title>
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
 </head>
 <body>
 
@@ -57,6 +57,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "API_KEY",
@@ -69,6 +70,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         let pageCounter = 0;
 
@@ -90,6 +92,10 @@
                     <option value="texto">Texto</option>
                     <option value="imagem">Imagem</option>
                 </select>
+
+                <!-- Campo de Upload de Imagem -->
+                <input type="file" class="upload-imagem" accept="image/*" style="display: none;">
+                <img class="preview-imagem" src="" alt="Pré-visualização" style="max-width: 150px; display: none;">
                 
                 <label>Escolher Ícone de Rede Social:</label>
                 <select class="icon-selector">
@@ -101,6 +107,9 @@
                     <option value="fa-twitter">Twitter</option>
                     <option value="fa-tiktok">TikTok</option>
                 </select>
+
+                <!-- Pré-visualização do Ícone -->
+                <i class="preview-icon fa-brands fa-2x" style="display: none;"></i>
 
                 <label>Tamanho do Ícone:</label>
                 <select class="icon-size">
@@ -117,6 +126,28 @@
 
             container.appendChild(pageDiv);
             CKEDITOR.replace(pageDiv.querySelector(".texto-pagina"));
+
+            // Atualizar exibição do campo de imagem
+            pageDiv.querySelector(".tipo-pagina").addEventListener("change", (e) => {
+                const tipo = e.target.value;
+                if (tipo === "texto") {
+                    pageDiv.querySelector(".upload-imagem").style.display = "none";
+                } else {
+                    pageDiv.querySelector(".upload-imagem").style.display = "block";
+                }
+            });
+
+            // Atualizar pré-visualização do ícone
+            pageDiv.querySelector(".icon-selector").addEventListener("change", (e) => {
+                const iconClass = e.target.value;
+                const previewIcon = pageDiv.querySelector(".preview-icon");
+                if (iconClass) {
+                    previewIcon.className = `preview-icon fa-brands ${iconClass} fa-2x`;
+                    previewIcon.style.display = "inline-block";
+                } else {
+                    previewIcon.style.display = "none";
+                }
+            });
 
             pageDiv.querySelector(".remover-pagina").addEventListener("click", () => {
                 pageDiv.remove();
@@ -161,21 +192,6 @@
                 console.error("Erro ao salvar boletim:", error);
             }
         });
-
-        async function carregarBoletins() {
-            const listaBoletins = document.getElementById("lista-boletins");
-            listaBoletins.innerHTML = "";
-
-            const querySnapshot = await getDocs(collection(db, "boletins"));
-
-            querySnapshot.forEach((doc) => {
-                const boletim = doc.data();
-                const divBoletim = document.createElement("div");
-                divBoletim.classList.add("boletim");
-                divBoletim.innerHTML = `<h2>Boletim nº ${boletim.numero} - ${boletim.data}</h2>`;
-                listaBoletins.appendChild(divBoletim);
-            });
-        }
 
         carregarBoletins();
     </script>
