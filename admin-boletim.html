@@ -44,13 +44,14 @@
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
 
+        // 🔥 Configuração do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+            apiKey: "API_KEY",
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -60,8 +61,11 @@
         const formBoletim = document.getElementById("form-boletim");
         const listaBoletins = document.getElementById("lista-boletins");
 
+        // 📌 Evento de envio do formulário
         formBoletim.addEventListener("submit", async (e) => {
             e.preventDefault();
+            console.log("📢 Tentando enviar o boletim...");
+
             const arquivo = document.getElementById("arquivo").files[0];
 
             if (!arquivo) {
@@ -75,53 +79,72 @@
             const storageRef = ref(storage, `boletins/${nomeArquivo}`);
 
             try {
+                console.log("📤 Enviando para o Firebase Storage...");
                 const snapshot = await uploadBytes(storageRef, arquivo);
                 const url = await getDownloadURL(snapshot.ref);
+                console.log("✅ Upload concluído! URL:", url);
 
-                await addDoc(collection(db, "boletins"), {
+                console.log("📄 Salvando no Firestore...");
+                const docRef = await addDoc(collection(db, "boletins"), {
                     nome: nomeArquivo,
                     url: url,
                     data: dataAtual
                 });
 
-                alert("Boletim enviado com sucesso!");
+                console.log("✅ Documento salvo no Firestore com ID:", docRef.id);
+                alert("✅ Boletim enviado com sucesso!");
                 formBoletim.reset();
                 carregarBoletins();
             } catch (error) {
-                console.error("Erro ao enviar boletim:", error);
+                console.error("❌ Erro ao enviar boletim:", error);
+                alert("Erro ao enviar boletim. Verifique o console.");
             }
         });
 
+        // 🔄 Função para carregar os boletins publicados
         async function carregarBoletins() {
+            console.log("🔄 Carregando boletins...");
             listaBoletins.innerHTML = "";
-            const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
 
-            querySnapshot.forEach((doc) => {
-                const boletim = doc.data();
-                const div = document.createElement("div");
-                div.classList.add("boletim-item");
+            try {
+                const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
 
-                div.innerHTML = `
-                    <p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>
-                    <button class="excluir" data-id="${doc.id}" data-url="${boletim.url}">🗑️ Excluir</button>
-                `;
+                if (querySnapshot.empty) {
+                    listaBoletins.innerHTML = "<p>Nenhum boletim publicado ainda.</p>";
+                    return;
+                }
 
-                listaBoletins.appendChild(div);
-            });
+                querySnapshot.forEach((doc) => {
+                    const boletim = doc.data();
+                    const div = document.createElement("div");
+                    div.classList.add("boletim-item");
 
-            document.querySelectorAll(".excluir").forEach((btn) => {
-                btn.addEventListener("click", async () => {
-                    const id = btn.getAttribute("data-id");
-                    const fileUrl = btn.getAttribute("data-url");
-                    const fileRef = ref(storage, fileUrl);
+                    div.innerHTML = `
+                        <p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>
+                        <button class="excluir" data-id="${doc.id}" data-url="${boletim.url}">🗑️ Excluir</button>
+                    `;
 
-                    await deleteDoc(doc(db, "boletins", id));
-                    await deleteObject(fileRef);
-                    carregarBoletins();
+                    listaBoletins.appendChild(div);
                 });
-            });
+
+                document.querySelectorAll(".excluir").forEach((btn) => {
+                    btn.addEventListener("click", async () => {
+                        const id = btn.getAttribute("data-id");
+                        const fileUrl = btn.getAttribute("data-url");
+                        const fileRef = ref(storage, fileUrl);
+
+                        await deleteDoc(doc(db, "boletins", id));
+                        await deleteObject(fileRef);
+                        carregarBoletins();
+                    });
+                });
+
+            } catch (error) {
+                console.error("❌ Erro ao carregar boletins:", error);
+            }
         }
 
+        // 🔄 Carregar boletins ao abrir a página
         carregarBoletins();
     </script>
 
