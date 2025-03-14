@@ -35,14 +35,13 @@
         const GITHUB_USERNAME = "tharlesjcp";
         const REPO_NAME = "iprc-boletins";
         const BRANCH_NAME = "main";
-        const ACCESS_TOKEN = process.env.PATH_REPO || "";
 
         async function uploadBoletim() {
             const fileInput = document.getElementById("boletimFile");
             const file = fileInput.files[0];
 
             if (!file) {
-                alert("Selecione um arquivo PDF primeiro.");
+                alert("⚠️ Selecione um arquivo PDF primeiro.");
                 return;
             }
 
@@ -53,48 +52,70 @@
                 const fileName = `boletim_${new Date().toISOString().split("T")[0]}.pdf`;
                 const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${fileName}`;
 
-                const response = await fetch(apiUrl, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${ACCESS_TOKEN}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: `📄 Adicionando boletim: ${fileName}`,
-                        content: base64Content,
-                        branch: BRANCH_NAME
-                    })
-                });
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: "PUT",
+                        headers: {
+                            "Authorization": `token ${ACCESS_TOKEN}`, // Token não pode estar no frontend
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            message: `📄 Adicionando boletim: ${fileName}`,
+                            content: base64Content,
+                            branch: BRANCH_NAME
+                        })
+                    });
 
-                if (response.ok) {
-                    alert("✅ Boletim enviado com sucesso!");
-                    carregarBoletins();
-                } else {
-                    alert("❌ Erro ao enviar boletim. Verifique suas credenciais.");
+                    if (response.ok) {
+                        alert("✅ Boletim enviado com sucesso!");
+                        carregarBoletins();
+                    } else {
+                        const errorData = await response.json();
+                        alert(`❌ Erro ao enviar boletim: ${errorData.message}`);
+                    }
+                } catch (error) {
+                    alert("❌ Erro ao conectar com o GitHub. Verifique sua conexão.");
+                    console.error(error);
                 }
             };
         }
 
         async function carregarBoletins() {
             const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`;
-            const response = await fetch(apiUrl, {
-                headers: { "Authorization": `token ${ACCESS_TOKEN}` }
-            });
-            const data = await response.json();
 
-            const listaBoletins = document.getElementById("lista-boletins");
-            listaBoletins.innerHTML = "";
+            try {
+                const response = await fetch(apiUrl, {
+                    headers: { "Authorization": `token ${ACCESS_TOKEN}` }
+                });
 
-            data.filter(file => file.name.endsWith(".pdf")).forEach(file => {
-                const link = document.createElement("a");
-                link.href = file.download_url;
-                link.textContent = file.name;
-                link.target = "_blank";
+                if (!response.ok) {
+                    alert("❌ Erro ao carregar boletins.");
+                    return;
+                }
 
-                const div = document.createElement("div");
-                div.appendChild(link);
-                listaBoletins.appendChild(div);
-            });
+                const data = await response.json();
+                if (!Array.isArray(data)) {
+                    alert("⚠️ Nenhum boletim encontrado.");
+                    return;
+                }
+
+                const listaBoletins = document.getElementById("lista-boletins");
+                listaBoletins.innerHTML = "";
+
+                data.filter(file => file.name.endsWith(".pdf")).forEach(file => {
+                    const link = document.createElement("a");
+                    link.href = file.download_url;
+                    link.textContent = file.name;
+                    link.target = "_blank";
+
+                    const div = document.createElement("div");
+                    div.appendChild(link);
+                    listaBoletins.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar boletins:", error);
+                alert("❌ Falha ao buscar boletins.");
+            }
         }
 
         carregarBoletins();
