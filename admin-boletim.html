@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Boletins - Admin</title>
+    <title>Admin - Gerenciar Boletins</title>
     <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-
     <!-- Menu Lateral -->
     <div class="sidebar">
         <h2>Administração</h2>
@@ -18,135 +17,87 @@
 
     <!-- Conteúdo Principal -->
     <div class="main-content">
-        <h1>📰 Gerenciar Boletins</h1>
+        <h1>📂 Gerenciar Boletins</h1>
 
         <section class="secao">
-            <h2>➕ Fazer Upload de Boletim</h2>
-            <form id="form-boletim">
-                <label for="arquivo">Selecionar arquivo PDF:</label>
-                <input type="file" id="arquivo" accept="application/pdf" required>
-
-                <button type="submit">📤 Enviar Boletim</button>
-            </form>
+            <h2>📤 Enviar Novo Boletim</h2>
+            <input type="file" id="boletimFile" accept=".pdf">
+            <button onclick="uploadBoletim()">Enviar Boletim</button>
         </section>
 
         <section class="secao">
-            <h2>📋 Boletins Publicados</h2>
-            <div id="lista-boletins">
-                <!-- Lista de boletins carregados dinamicamente -->
-            </div>
+            <h2>📜 Boletins Publicados</h2>
+            <div id="lista-boletins"></div>
         </section>
     </div>
 
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+    <script>
+        const GITHUB_USERNAME = "tharlesjcp";
+        const REPO_NAME = "iprc-boletins";
+        const BRANCH_NAME = "main";
+        const ACCESS_TOKEN = "process.env.PATH_REPO";
 
-        // 🔥 Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-        };
+        async function uploadBoletim() {
+            const fileInput = document.getElementById("boletimFile");
+            const file = fileInput.files[0];
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        const formBoletim = document.getElementById("form-boletim");
-        const listaBoletins = document.getElementById("lista-boletins");
-
-        // 📌 Evento de envio do formulário
-        formBoletim.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            console.log("📢 Tentando enviar o boletim...");
-
-            const arquivo = document.getElementById("arquivo").files[0];
-
-            if (!arquivo) {
-                alert("Por favor, selecione um arquivo PDF.");
+            if (!file) {
+                alert("Selecione um arquivo PDF primeiro.");
                 return;
             }
 
-            const dataAtual = new Date();
-            const dataFormatada = dataAtual.toISOString().split("T")[0]; // Formato YYYY-MM-DD
-            const nomeArquivo = `boletim_${dataFormatada}.pdf`;
-            const storageRef = ref(storage, `boletins/${nomeArquivo}`);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64Content = reader.result.split(",")[1];
+                const fileName = `boletim_${new Date().toISOString().split("T")[0]}.pdf`;
+                const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${fileName}`;
 
-            try {
-                console.log("📤 Enviando para o Firebase Storage...");
-                const snapshot = await uploadBytes(storageRef, arquivo);
-                const url = await getDownloadURL(snapshot.ref);
-                console.log("✅ Upload concluído! URL:", url);
-
-                console.log("📄 Salvando no Firestore...");
-                const docRef = await addDoc(collection(db, "boletins"), {
-                    nome: nomeArquivo,
-                    url: url,
-                    data: dataAtual
+                const response = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${ACCESS_TOKEN}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: `📄 Adicionando boletim: ${fileName}`,
+                        content: base64Content,
+                        branch: BRANCH_NAME
+                    })
                 });
 
-                console.log("✅ Documento salvo no Firestore com ID:", docRef.id);
-                alert("✅ Boletim enviado com sucesso!");
-                formBoletim.reset();
-                carregarBoletins();
-            } catch (error) {
-                console.error("❌ Erro ao enviar boletim:", error);
-                alert("Erro ao enviar boletim. Verifique o console.");
-            }
-        });
-
-        // 🔄 Função para carregar os boletins publicados
-        async function carregarBoletins() {
-            console.log("🔄 Carregando boletins...");
-            listaBoletins.innerHTML = "";
-
-            try {
-                const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
-
-                if (querySnapshot.empty) {
-                    listaBoletins.innerHTML = "<p>Nenhum boletim publicado ainda.</p>";
-                    return;
+                if (response.ok) {
+                    alert("✅ Boletim enviado com sucesso!");
+                    carregarBoletins();
+                } else {
+                    alert("❌ Erro ao enviar boletim. Verifique suas credenciais.");
                 }
-
-                querySnapshot.forEach((doc) => {
-                    const boletim = doc.data();
-                    const div = document.createElement("div");
-                    div.classList.add("boletim-item");
-
-                    div.innerHTML = `
-                        <p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>
-                        <button class="excluir" data-id="${doc.id}" data-url="${boletim.url}">🗑️ Excluir</button>
-                    `;
-
-                    listaBoletins.appendChild(div);
-                });
-
-                document.querySelectorAll(".excluir").forEach((btn) => {
-                    btn.addEventListener("click", async () => {
-                        const id = btn.getAttribute("data-id");
-                        const fileUrl = btn.getAttribute("data-url");
-                        const fileRef = ref(storage, fileUrl);
-
-                        await deleteDoc(doc(db, "boletins", id));
-                        await deleteObject(fileRef);
-                        carregarBoletins();
-                    });
-                });
-
-            } catch (error) {
-                console.error("❌ Erro ao carregar boletins:", error);
-            }
+            };
         }
 
-        // 🔄 Carregar boletins ao abrir a página
+        async function carregarBoletins() {
+            const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`;
+            const response = await fetch(apiUrl, {
+                headers: { "Authorization": `token ${ACCESS_TOKEN}` }
+            });
+            const data = await response.json();
+
+            const listaBoletins = document.getElementById("lista-boletins");
+            listaBoletins.innerHTML = "";
+
+            data.filter(file => file.name.endsWith(".pdf")).forEach(file => {
+                const link = document.createElement("a");
+                link.href = file.download_url;
+                link.textContent = file.name;
+                link.target = "_blank";
+
+                const div = document.createElement("div");
+                div.appendChild(link);
+                listaBoletins.appendChild(div);
+            });
+        }
+
         carregarBoletins();
     </script>
-
 </body>
 </html>
