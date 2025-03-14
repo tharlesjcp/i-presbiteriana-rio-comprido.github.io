@@ -35,7 +35,7 @@
         const GITHUB_USERNAME = "tharlesjcp";
         const REPO_NAME = "iprc-boletins";
         const BRANCH_NAME = "main";
-        const ACCESS_TOKEN = "process.env.PATH_REPO";
+        const ACCESS_TOKEN = process.env.PATH_REPO || "";
 
         async function uploadBoletim() {
             const fileInput = document.getElementById("boletimFile");
