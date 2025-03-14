@@ -29,54 +29,51 @@
         </section>
     </div>
 
-    <script>
-        const GITHUB_USERNAME = "tharlesjcp";
-        const REPO_NAME = "iprc-boletins";
-        const BRANCH_NAME = "main";
-        const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`;
+    <script>const GITHUB_USERNAME = "tharlesjcp";
+const REPO_NAME = "iprc-boletins";
+const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/dispatches`;
 
-        async function uploadBoletim() {
-            const fileInput = document.getElementById("boletimFile");
-            const file = fileInput.files[0];
+async function uploadBoletim() {
+    const fileInput = document.getElementById("boletimFile");
+    const file = fileInput.files[0];
 
-            if (!file) {
-                alert("⚠️ Selecione um arquivo PDF primeiro.");
-                return;
+    if (!file) {
+        alert("⚠️ Selecione um arquivo PDF primeiro.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+        const base64Content = reader.result.split(",")[1];
+        const fileName = new Date().toISOString().split("T")[0];
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Authorization": `token GITHUB_PAT_AQUI`,
+                    "Accept": "application/vnd.github.v3+json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    event_type: "upload_boletim",
+                    client_payload: { fileName, content: base64Content }
+                })
+            });
+
+            if (response.ok) {
+                alert("✅ Boletim enviado com sucesso! Aguarde alguns minutos para o processamento.");
+            } else {
+                const errorData = await response.json();
+                alert(`❌ Erro ao enviar boletim: ${errorData.message}`);
             }
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async () => {
-                const base64Content = reader.result.split(",")[1];
-                const fileName = `boletim_${new Date().toISOString().split("T")[0]}.pdf`;
-
-                try {
-                    const response = await fetch(API_URL + fileName, {
-                        method: "PUT",
-                        headers: {
-                            "Authorization": `token ${ACCESS_TOKEN}`,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            message: `📄 Adicionando boletim: ${fileName}`,
-                            content: base64Content,
-                            branch: BRANCH_NAME
-                        })
-                    });
-
-                    if (response.ok) {
-                        alert("✅ Boletim enviado com sucesso!");
-                        carregarBoletins();
-                    } else {
-                        const errorData = await response.json();
-                        alert(`❌ Erro ao enviar boletim: ${errorData.message}`);
-                    }
-                } catch (error) {
-                    alert("❌ Erro ao conectar com o GitHub. Verifique sua conexão.");
-                    console.error(error);
-                }
-            };
+        } catch (error) {
+            alert("❌ Erro ao conectar com o GitHub.");
+            console.error(error);
         }
+    };
+}
 
         async function carregarBoletins() {
             try {
