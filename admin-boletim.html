@@ -1,27 +1,80 @@
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwAErAgp0aBVklPlIrCAonhrKpJTOQPCtM4C0hhwvYYSU2RfzpGP9lQuZE7xpjJfMh4/exec";
-async function carregarBoletins() {
-    try {
-        const response = await fetch(API_URL);
-        const boletins = await response.json();
-        const listaBoletins = document.getElementById("lista-boletins");
-        listaBoletins.innerHTML = "";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gerenciar Boletins</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Administração</h2>
+        <ul>
+            <li><a href="dashboard.html">⬅️ Voltar ao Painel</a></li>
+        </ul>
+    </div>
 
-        boletins.forEach(file => {
-            const link = document.createElement("a");
-            link.href = file.url;
-            link.textContent = file.name;
-            link.target = "_blank";
+    <div class="main-content">
+        <h1>📂 Gerenciar Boletins</h1>
 
-            const div = document.createElement("div");
-            div.appendChild(link);
-            listaBoletins.appendChild(div);
-        });
-    } catch (error) {
-        console.error("Erro ao carregar boletins:", error);
-        alert("❌ Falha ao buscar boletins.");
-    }
-}
+        <section class="secao">
+            <h2>📤 Enviar Novo Boletim</h2>
+            <input type="file" id="boletimFile" accept=".pdf">
+            <button onclick="uploadBoletim()">Enviar Boletim</button>
+        </section>
 
-carregarBoletins();
-</script>
+        <section class="secao">
+            <h2>📜 Boletins Publicados</h2>
+            <div id="lista-boletins"></div>
+        </section>
+    </div>
+
+    <script>
+        // 🔹 Configuração da API do Google Drive
+        const FOLDER_ID = "1kP1i0srKOtgAhQfmi3B6Hwnmq4hGyL1k"; // ID da pasta do Drive
+        const API_KEY = "AIzaSyCRkszqvu-km5xKvphx5bBOqHgna_WZZLc";
+        const API_URL = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name)`;
+
+        // 🔹 Função para carregar os boletins do Google Drive
+        async function carregarBoletins() {
+            try {
+                const response = await fetch(API_URL);
+
+                if (!response.ok) {
+                    throw new Error(`Erro ao carregar boletins: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const listaBoletins = document.getElementById("lista-boletins");
+
+                if (!data.files || data.files.length === 0) {
+                    listaBoletins.innerHTML = "<p style='color:red;'>Nenhum boletim encontrado.</p>";
+                    return;
+                }
+
+                listaBoletins.innerHTML = "";
+
+                data.files.forEach(file => {
+                    const driveLink = `https://drive.google.com/uc?export=download&id=${file.id}`;
+
+                    const link = document.createElement("a");
+                    link.href = driveLink;
+                    link.textContent = file.name;
+                    link.target = "_blank";
+
+                    const div = document.createElement("div");
+                    div.appendChild(link);
+                    listaBoletins.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error("Erro ao carregar boletins:", error);
+                document.getElementById("lista-boletins").innerHTML = `<p style="color:red;">❌ ${error.message}</p>`;
+            }
+        }
+
+        // 🔹 Chamar a função para carregar os boletins ao carregar a página
+        carregarBoletins();
+    </script>
+</body>
+</html>
