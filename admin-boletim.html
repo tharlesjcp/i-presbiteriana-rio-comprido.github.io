@@ -1,123 +1,27 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Gerenciar Boletins</title>
-    <link rel="stylesheet" href="css/admin.css">
-</head>
-<body>
-    <div class="sidebar">
-        <h2>Administração</h2>
-        <ul>
-            <li><a href="dashboard.html">⬅️ Voltar ao Painel</a></li>
-        </ul>
-    </div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwAErAgp0aBVklPlIrCAonhrKpJTOQPCtM4C0hhwvYYSU2RfzpGP9lQuZE7xpjJfMh4/exec";
+async function carregarBoletins() {
+    try {
+        const response = await fetch(API_URL);
+        const boletins = await response.json();
+        const listaBoletins = document.getElementById("lista-boletins");
+        listaBoletins.innerHTML = "";
 
-    <div class="main-content">
-        <h1>📂 Gerenciar Boletins</h1>
+        boletins.forEach(file => {
+            const link = document.createElement("a");
+            link.href = file.url;
+            link.textContent = file.name;
+            link.target = "_blank";
 
-        <section class="secao">
-            <h2>📤 Enviar Novo Boletim</h2>
-            <input type="file" id="boletimFile" accept=".pdf">
-            <button onclick="uploadBoletim()">Enviar Boletim</button>
-        </section>
+            const div = document.createElement("div");
+            div.appendChild(link);
+            listaBoletins.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Erro ao carregar boletins:", error);
+        alert("❌ Falha ao buscar boletins.");
+    }
+}
 
-        <section class="secao">
-            <h2>📜 Boletins Publicados</h2>
-            <div id="lista-boletins"></div>
-        </section>
-    </div>
-
-    <script>
-        const GITHUB_USERNAME = "tharlesjcp";
-        const REPO_NAME = "iprc-boletins-publico";
-        const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/dispatches`;
-        const ACCESS_TOKEN = "PUBLIC_PATH_REPO";
-
-        async function uploadBoletim() {
-            const fileInput = document.getElementById("boletimFile");
-            const file = fileInput.files[0];
-
-            if (!file) {
-                alert("⚠️ Selecione um arquivo PDF primeiro.");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async () => {
-                const base64Content = reader.result.split(",")[1];
-                const fileName = `boletim_${new Date().toISOString().split("T")[0]}.pdf`;
-
-                try {
-                    const response = await fetch(API_URL, {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${ACCESS_TOKEN}`,
-                            "Accept": "application/vnd.github.v3+json",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            event_type: "upload-boletim",
-                            client_payload: {
-                                filename: fileName,
-                                content: base64Content
-                            }
-                        })
-                    });
-
-                    if (response.ok) {
-                        alert("✅ Boletim enviado com sucesso!");
-                        carregarBoletins();
-                    } else {
-                        const errorData = await response.json();
-                        alert(`❌ Erro ao enviar boletim: ${errorData.message}`);
-                    }
-                } catch (error) {
-                    alert("❌ Erro ao conectar com o GitHub. Verifique suas credenciais.");
-                    console.error(error);
-                }
-            };
-        }
-
-        async function carregarBoletins() {
-            try {
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/boletins`, {
-                    headers: { "Authorization": `Bearer ${ACCESS_TOKEN}` }
-                });
-
-                if (!response.ok) {
-                    alert("❌ Erro ao carregar boletins.");
-                    return;
-                }
-
-                const data = await response.json();
-                if (!Array.isArray(data)) {
-                    alert("⚠️ Nenhum boletim encontrado.");
-                    return;
-                }
-
-                const listaBoletins = document.getElementById("lista-boletins");
-                listaBoletins.innerHTML = "";
-
-                data.forEach(file => {
-                    const link = document.createElement("a");
-                    link.href = file.download_url;
-                    link.textContent = file.name;
-                    link.target = "_blank";
-
-                    const div = document.createElement("div");
-                    div.appendChild(link);
-                    listaBoletins.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar boletins:", error);
-                alert("❌ Falha ao buscar boletins.");
-            }
-        }
-
-        carregarBoletins();
-    </script>
-</body>
-</html>
+carregarBoletins();
+</script>
