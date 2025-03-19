@@ -30,13 +30,12 @@
     </div>
 
     <script>
-        const FOLDER_ID = "1kP1i0srKOtgAhQfmi3B6Hwnmq4hGyL1k"; // Substitua pelo ID correto da pasta do Drive
-        const API_KEY = "AIzaSyCRkszqvu-km5xKvphx5bBOqHgna_WZZLc"; // 🔹 Substitua pela chave da API gerada no Google Cloud
-        const API_URL = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name)`;
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuF3gl7Cwytv2ONckNX5hH7J3kgyg6QLXlmwyWAVo8BNjUCcpG7l1YHBqDKYMniZJr/exec"; // 🔹 URL do Google Apps Script
+        const FOLDER_ID = "1kP1i0srKOtgAhQfmi3B6Hwnmq4hGyL1k"; // 🔹 ID da pasta no Google Drive
 
         async function carregarBoletins() {
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=list`);
 
                 if (!response.ok) {
                     throw new Error(`Erro ao carregar boletins: ${response.status}`);
@@ -53,10 +52,8 @@
                 listaBoletins.innerHTML = "";
 
                 data.files.forEach(file => {
-                    const driveLink = `https://drive.google.com/uc?export=download&id=${file.id}`;
-
                     const link = document.createElement("a");
-                    link.href = driveLink;
+                    link.href = file.url;
                     link.textContent = file.name;
                     link.target = "_blank";
 
@@ -82,10 +79,10 @@
 
             const formData = new FormData();
             formData.append("file", file);
-            formData.append("folderId", FOLDER_ID);
+            formData.append("action", "upload");
 
             try {
-                const response = await fetch("URL_DO_SEU_GOOGLE_APPS_SCRIPT", {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     body: formData
                 });
