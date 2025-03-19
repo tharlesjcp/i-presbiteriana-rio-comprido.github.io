@@ -20,7 +20,7 @@
         <section class="secao">
             <h2>📤 Enviar Novo Boletim</h2>
             <input type="file" id="boletimFile" accept=".pdf">
-            <button onclick="uploadBoletim()">Enviar Boletim</button>
+            <button id="enviarBoletim">Enviar Boletim</button>
         </section>
 
         <section class="secao">
@@ -30,12 +30,10 @@
     </div>
 
     <script>
-        // 🔹 Configuração da API do Google Drive
-        const FOLDER_ID = "1kP1i0srKOtgAhQfmi3B6Hwnmq4hGyL1k"; // ID da pasta do Drive
-        const API_KEY = "AIzaSyCRkszqvu-km5xKvphx5bBOqHgna_WZZLc";
+        const FOLDER_ID = "1kP1i0srKOtgAhQfmi3B6Hwnmq4hGyL1k"; // Substitua pelo ID correto da pasta do Drive
+        const API_KEY = "AIzaSyCRkszqvu-km5xKvphx5bBOqHgna_WZZLc"; // 🔹 Substitua pela chave da API gerada no Google Cloud
         const API_URL = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name)`;
 
-        // 🔹 Função para carregar os boletins do Google Drive
         async function carregarBoletins() {
             try {
                 const response = await fetch(API_URL);
@@ -73,8 +71,41 @@
             }
         }
 
-        // 🔹 Chamar a função para carregar os boletins ao carregar a página
-        carregarBoletins();
+        async function uploadBoletim() {
+            const fileInput = document.getElementById("boletimFile");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("⚠️ Selecione um arquivo PDF primeiro.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("folderId", FOLDER_ID);
+
+            try {
+                const response = await fetch("URL_DO_SEU_GOOGLE_APPS_SCRIPT", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("✅ Boletim enviado com sucesso!");
+                    carregarBoletins();
+                } else {
+                    alert(`❌ Erro ao enviar boletim: ${result.message}`);
+                }
+            } catch (error) {
+                alert("❌ Erro ao conectar com o Google Drive.");
+                console.error(error);
+            }
+        }
+
+        document.getElementById("enviarBoletim").addEventListener("click", uploadBoletim);
+        document.addEventListener("DOMContentLoaded", carregarBoletins);
     </script>
 </body>
 </html>
