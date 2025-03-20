@@ -81,20 +81,29 @@ main {
 
 /* 🔹 Banner */
 .banner-container {
-    max-width: 100%;
-    overflow: hidden;
+    width: 100%;
+    height: 400px;
     position: relative;
-    height: auto;
+    overflow: hidden;
 }
 
 .banner-slide {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    background-color: var(--branco);
-    transition: opacity 1s ease-in-out;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out, left 1s ease-in-out;
 }
 
+.banner-slide.active {
+    left: 0;
+    opacity: 1;
+}
+
+/* 🔹 Paginador (indicadores abaixo do banner) */
 .pontos {
     text-align: center;
     margin-top: 10px;
@@ -104,14 +113,15 @@ main {
     display: inline-block;
     width: 12px;
     height: 12px;
-    background-color: var(--azul-suave);
+    background-color: #bbb;
     border-radius: 50%;
     margin: 0 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .pontos span.active {
-    background-color: var(--azul-medio);
+    background-color: #2a80be;
 }
 
 /* 🔹 Seções da página */
