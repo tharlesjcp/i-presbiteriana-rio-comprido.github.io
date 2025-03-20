@@ -62,9 +62,9 @@
         <a href="https://maps.google.com/?q=Igreja+Presbiteriana+Rio+Comprido" target="_blank">Localização</a>
     </div>
     <div class="redes-sociais">
-        <a href="#"><img src="images/facebook.png" alt="Facebook"></a>
-        <a href="#"><img src="images/instaLogoPNG.jpg" alt="Instagram"></a>
-        <a href="#"><img src="images/youtubeLogoPNG.png" alt="YouTube"></a>
+        <a href="#"><img src="images/facebook.svg" alt="Facebook"></a>
+        <a href="#"><img src="images/instagram.svg" alt="Instagram"></a>
+        <a href="#"><img src="images/youtube.svg" alt="YouTube"></a>
     </div>
     <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
 </footer>
@@ -83,21 +83,32 @@
     const pontos = document.querySelectorAll('.pontos span');
 
     function mudarSlide(novoIndex) {
-        slides[index].classList.remove('active');
-        pontos[index].classList.remove('active');
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+            slide.style.left = "100%"; // Todos os banners começam fora da tela
+        });
+        
+        pontos.forEach(ponto => ponto.classList.remove('active'));
+
+        slides[novoIndex].classList.add('active');
+        slides[novoIndex].style.left = "0"; // O banner ativo fica visível
+        pontos[novoIndex].classList.add('active');
+
         index = novoIndex;
-        slides[index].classList.add('active');
-        pontos[index].classList.add('active');
     }
 
-    setInterval(() => {
+    function avancarSlide() {
         let novoIndex = (index + 1) % slides.length;
         mudarSlide(novoIndex);
-    }, 5000);
+    }
+
+    setInterval(avancarSlide, 5000); // Troca a cada 5 segundos
 
     pontos.forEach((ponto, i) => {
         ponto.addEventListener('click', () => mudarSlide(i));
     });
+
+    mudarSlide(0); // Exibe o primeiro banner ao carregar a página
 </script>
 
 </body>
