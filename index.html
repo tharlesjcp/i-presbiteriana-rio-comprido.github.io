@@ -8,21 +8,32 @@
 </head>
 <body>
 
-<!-- Incluindo o menu superior -->
-<div id="header-container"></div>
+<!-- 🔹 Menu Superior -->
+<div class="menu-superior">
+    <img src="images/logo.png" alt="Logo da Igreja">
+    <span class="menu-toggle">☰</span>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="estudos.html">Estudos Bíblicos</a>
+        <a href="boletim.html">Boletim</a>
+        <a href="biblia.html">Bíblia</a>
+        <a href="oracao.html">Pedidos de Oração</a>
+    </nav>
+</div>
 
-<!-- Banner -->
+<!-- 🔹 Banner -->
 <div class="banner-container">
     <img src="images/banner1.png" class="banner-slide active">
     <img src="images/banner2.png" class="banner-slide">
 </div>
 
-<!-- Paginador -->
+<!-- 🔹 Paginador -->
 <div class="pontos">
     <span data-index="0" class="active"></span>
     <span data-index="1"></span>
 </div>
 
+<!-- 🔹 Estudo Bíblico da Semana -->
 <section id="estudo-semana">
     <h2>📖 Estudo Bíblico da Semana</h2>
     <div class="estudo">
@@ -35,7 +46,7 @@
     </div>
 </section>
 
-<!-- Seção Boletim -->
+<!-- 🔹 Boletim Semanal -->
 <section id="boletim-semana">
     <h2>📰 Boletim Semanal</h2>
     <div class="boletim">
@@ -44,100 +55,29 @@
     </div>
 </section>
 
-<!-- Seção Hinário -->
-<section id="hinario">
-    <h2>🎶 Hinário Presbiteriano</h2>
-    <p>Acesse os hinos e letras.</p>
-    <a href="hinario.html" class="botao">Acessar Hinário</a>
-</section>
-
-<!-- Seção Contato -->
-<section id="contato">
-    <h2>📞 Entre em Contato</h2>
-    <p>Se tiver dúvidas ou precisar de oração, entre em contato conosco.</p>
-    <a href="contato.html" class="botao">Fale Conosco</a>
-</section>
-
-<!-- Seção Login -->
-<section id="login">
-    <h2>🔑 Área Restrita</h2>
-    <p>Acesso para administradores.</p>
-    <a href="admin-login.html" class="botao">Login</a>
-</section>
-
+<!-- 🔹 Rodapé -->
 <footer>
+    <div class="links-rapidos">
+        <a href="sobre.html">Sobre Nós</a>
+        <a href="https://maps.google.com/?q=Igreja+Presbiteriana+Rio+Comprido" target="_blank">Localização</a>
+    </div>
+    <div class="redes-sociais">
+        <a href="#"><img src="images/facebook.png" alt="Facebook"></a>
+        <a href="#"><img src="images/instagram.png" alt="Instagram"></a>
+        <a href="#"><img src="images/youtube.png" alt="YouTube"></a>
+    </div>
     <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
 </footer>
 
-<!-- Importando Firebase -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
-    // Configuração do Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-        authDomain: "iprc-site.firebaseapp.com",
-        projectId: "iprc-site",
-        storageBucket: "iprc-site.appspot.com",
-        messagingSenderId: "361636783794",
-        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
-
-    // Inicializa Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Carregar o último estudo bíblico
-    async function carregarUltimoEstudo() {
-        try {
-            const estudosRef = collection(db, "estudos");
-            const q = query(estudosRef, orderBy("data", "desc"), limit(1));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                const doc = querySnapshot.docs[0];
-                const estudo = doc.data();
-
-                document.getElementById("capa-estudo").src = estudo.imagem;
-                document.getElementById("titulo-estudo").innerText = estudo.titulo;
-                document.getElementById("resumo-estudo").innerText = estudo.resumo;
-                document.getElementById("link-estudo").href = `estudo-detalhe.html?id=${doc.id}`;
-            }
-        } catch (error) {
-            console.error("Erro ao carregar o estudo da semana:", error);
-        }
-    }
-
-    // Carregar o boletim semanal
-    async function carregarBoletim() {
-        try {
-            const boletinsRef = collection(db, "boletins");
-            const q = query(boletinsRef, orderBy("data", "desc"), limit(1));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                const doc = querySnapshot.docs[0];
-                const boletim = doc.data();
-                document.getElementById("boletim-titulo").innerText = boletim.titulo;
-            }
-        } catch (error) {
-            console.error("Erro ao carregar o boletim:", error);
-        }
-    }
-
-    // Executar as funções para carregar os dados
-    carregarUltimoEstudo();
-    carregarBoletim();
+<!-- 🔹 Script para o Menu Hamburguer -->
+<script>
+    document.querySelector(".menu-toggle").addEventListener("click", function () {
+        document.querySelector(".menu-superior nav").classList.toggle("active");
+    });
 </script>
 
+<!-- 🔹 Script do Banner -->
 <script>
-    // Carregar o menu superior automaticamente
-    fetch("includes/header.html")
-        .then(response => response.text())
-        .then(data => document.getElementById("header-container").innerHTML = data);
-
-    // Script do banner
     let index = 0;
     const slides = document.querySelectorAll('.banner-slide');
     const pontos = document.querySelectorAll('.pontos span');
