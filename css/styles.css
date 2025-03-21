@@ -76,7 +76,7 @@ body {
 main {
     flex: 1;
     padding: 20px;
-    margin-top: 80px; /* Garante que o conteúdo não fique coberto pelo menu */
+    margin-top: 120px; /* Garante que o conteúdo não fique coberto pelo menu */
 }
 
 /* 🔹 Banner */
