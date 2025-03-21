@@ -1,37 +1,76 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobre Nós - Igreja Presbiteriana do Rio Comprido</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sobre Nós - Igreja Presbiteriana do Rio Comprido</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
-<div class="menu-superior">
-    <img src="images/logoBlue.png" alt="Logo da Igreja">
-    <a href="index.html">Home</a>
-    <a href="estudos.html">Estudos Bíblicos</a>
-    <a href="boletim.html">Boletim</a>
-    <a href="biblia.html">Bíblia</a>
-    <a href="sobre.html">Sobre Nós</a>
-</div>
+  <!-- Menu Superior -->
+  <div class="menu-superior">
+    <img src="images/logoInicio.svg" alt="Logo da Igreja" />
+    <span class="menu-toggle">☰</span>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="estudos.html">Estudos Bíblicos</a>
+      <a href="boletim.html">Boletim</a>
+      <a href="biblia.html">Bíblia</a>
+      <a href="oracao.html">Pedidos de Oração</a>
+    </nav>
+  </div>
 
-<section class="secao">
-    <h2>📍 Nossa Igreja</h2>
-    <p>A Igreja Presbiteriana do Rio Comprido tem como missão levar a Palavra de Deus a todos. Venha nos conhecer!</p>
-    
-    <h3>⏰ Horários dos Cultos</h3>
-    <ul>
-        <li><strong>Domingo:</strong> 9h e 18h</li>
-        <li><strong>Quarta-feira:</strong> 19h (Culto de Oração)</li>
-    </ul>
+  <main>
+    <section class="secao">
+      <h1 style="text-align: center;">Sobre Nós</h1>
+      <p style="text-align: center; max-width: 800px; margin: 0 auto 20px;">
+        A Igreja Presbiteriana do Rio Comprido é uma comunidade cristã comprometida com a pregação fiel da Palavra de Deus, comunhão entre os irmãos e serviço à sociedade. 
+        Estamos localizados no coração do Rio de Janeiro e temos como missão anunciar o evangelho com fidelidade e amor.
+      </p>
 
-    <h3>📍 Nossa Localização</h3>
-    <iframe 
-        src="<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3674.7468670983812!2d-43.213895524688986!3d-22.92270567924388!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997fad74062df3%3A0x1bce57fd8ca5c885!2sIgreja%20Presbiteriana%20do%20Rio%20Comprido!5e0!3m2!1spt-BR!2sbr!4v1742510203520!5m2!1spt-BR!2sbr" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>"
-        width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-</section>
+      <h2 style="text-align: center;">Nossa Localização</h2>
+      <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3673.9640110521636!2d-43.221014525695676!3d-22.952451039009424!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997e779a94c125%3A0x96c90214e493ea61!2sIgreja%20Presbiteriana%20do%20Rio%20Comprido!5e0!3m2!1spt-BR!2sbr!4v1713301355354!5m2!1spt-BR!2sbr" 
+          width="100%" 
+          height="300" 
+          style="border:0; max-width: 800px;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé -->
+  <footer>
+    <div class="rodape-container">
+      <div class="links-rapidos" style="text-align: center;">
+        <a href="sobre.html">Sobre Nós</a>
+      </div>
+      <div class="redes-sociais" style="margin-top: 10px;">
+        <a href="https://www.facebook.com/share/19gjgruJSd/?mibextid=wwXIfr" target="_blank">
+          <img src="images/facebook.svg" alt="Facebook" width="24" />
+        </a>
+        <a href="https://www.instagram.com/ip.riocomprido?igsh=MXh3N3dsZmYxOWNnYw==" target="_blank">
+          <img src="images/instagram.svg" alt="Instagram" width="24" />
+        </a>
+        <a href="https://youtube.com/@iprc-igrejapresbiterianado3855?si=-RFbYDOxgQ_fgp_4" target="_blank">
+          <img src="images/youtube.svg" alt="YouTube" width="24" />
+        </a>
+      </div>
+    </div>
+    <p style="margin-top: 10px;">&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
+  </footer>
+
+  <!-- Script do Menu Responsivo -->
+  <script>
+    document.querySelector(".menu-toggle").addEventListener("click", function () {
+      document.querySelector(".menu-superior nav").classList.toggle("active");
+    });
+  </script>
 
 </body>
 </html>
