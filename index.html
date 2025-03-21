@@ -23,8 +23,10 @@
 
 <!-- 🔹 Banner -->
 <div class="banner-container">
-    <img src="images/banner1.png" class="banner-slide active">
-    <img src="images/banner2.png" class="banner-slide">
+    <div class="banner">
+        <img src="images/banner1.png" class="banner-slide active">
+        <img src="images/banner2.png" class="banner-slide">
+    </div>
 </div>
 
 <!-- 🔹 Paginador -->
@@ -57,14 +59,15 @@
 
 <!-- 🔹 Rodapé -->
 <footer>
-    <div class="links-rapidos">
-        <a href="sobre.html">Sobre Nós</a>
-        <a href="https://maps.google.com/?q=Igreja+Presbiteriana+Rio+Comprido" target="_blank">Localização</a>
-    </div>
-    <div class="redes-sociais">
-        <a href="#"><img src="images/facebook.svg" alt="Facebook"></a>
-        <a href="#"><img src="images/instagram.svg" alt="Instagram"></a>
-        <a href="#"><img src="images/youtube.svg" alt="YouTube"></a>
+    <div class="footer-container">
+        <div class="links-rapidos">
+            <a href="sobre.html">Sobre Nós</a>
+        </div>
+        <div class="redes-sociais">
+            <a href="#"><img src="images/facebook.svg" alt="Facebook"></a>
+            <a href="#"><img src="images/instagram.svg" alt="Instagram"></a>
+            <a href="#"><img src="images/youtube.svg" alt="YouTube"></a>
+        </div>
     </div>
     <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
 </footer>
@@ -85,13 +88,13 @@
     function mudarSlide(novoIndex) {
         slides.forEach(slide => {
             slide.classList.remove('active');
-            slide.style.left = "100%"; // Todos os banners começam fora da tela
+            slide.style.left = "100%"; 
         });
-        
+
         pontos.forEach(ponto => ponto.classList.remove('active'));
 
         slides[novoIndex].classList.add('active');
-        slides[novoIndex].style.left = "0"; // O banner ativo fica visível
+        slides[novoIndex].style.left = "0";
         pontos[novoIndex].classList.add('active');
 
         index = novoIndex;
@@ -102,13 +105,13 @@
         mudarSlide(novoIndex);
     }
 
-    setInterval(avancarSlide, 5000); // Troca a cada 5 segundos
+    setInterval(avancarSlide, 5000); 
 
     pontos.forEach((ponto, i) => {
         ponto.addEventListener('click', () => mudarSlide(i));
     });
 
-    mudarSlide(0); // Exibe o primeiro banner ao carregar a página
+    mudarSlide(0);
 </script>
 
 </body>
