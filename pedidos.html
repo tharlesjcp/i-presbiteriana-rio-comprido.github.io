@@ -8,108 +8,82 @@
 </head>
 <body>
 
-    <!-- Incluindo o menu superior -->
-    <div id="header-container"></div>
+<!-- 🔹 Importando o Header -->
+<div id="header-container"></div>
 
-    <main>
-        <h1>🙏 Pedidos de Oração</h1>
-        
-        <section class="secao">
-            <h2>✍️ Faça um Pedido</h2>
-            <form id="form-oracao">
-                <label for="nome">Seu Nome:</label>
-                <input type="text" id="nome" required>
+<main>
+    <section class="pedidos">
+        <h1>Pedidos de Oração</h1>
+        <p>Compartilhe seu pedido de oração.</p>
 
-                <label for="pedido">Pedido de Oração:</label>
-                <textarea id="pedido" required></textarea>
+        <h2>Envie seu Pedido</h2>
+        <form id="form-oracao">
+            <label for="nome">Seu Nome (opcional):</label>
+            <input type="text" id="nome" name="nome" placeholder="Digite seu nome...">
 
-                <button type="submit">Enviar Pedido</button>
-            </form>
-        </section>
+            <label for="pedido">Seu Pedido de Oração:</label>
+            <textarea id="pedido" name="pedido" rows="4" placeholder="Digite seu pedido de oração..." required></textarea>
 
-        <section class="secao">
-            <h2>📜 Pedidos Recentes</h2>
-            <ul id="lista-pedidos">
-                <!-- Pedidos aparecerão aqui -->
-            </ul>
-        </section>
-    </main>
+            <button type="submit">Enviar Pedido</button>
+        </form>
+    </section>
+</main>
 
-    <!-- Rodapé -->
-    <footer>
-        <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-        <div class="links-rapidos">
-            <a href="contato.html">📞 Contato</a>
-        </div>
-    </footer>
+<!-- 🔹 Importando o Footer -->
+<div id="footer-container"></div>
 
-    <!-- Carregar o menu fixo -->
-    <script>
-        fetch("includes/header.html")
-            .then(response => response.text())
-            .then(data => document.getElementById("header-container").innerHTML = data);
-    </script>
+<!-- 🔹 Script para carregar o Header e Footer automaticamente -->
+<script>
+    fetch("includes/header.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("header-container").innerHTML = data);
 
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    fetch("includes/footer.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("footer-container").innerHTML = data);
+</script>
 
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_DOMINIO.firebaseapp.com",
-            projectId: "SEU_PROJETO_ID",
-            storageBucket: "SEU_BUCKET",
-            messagingSenderId: "SEU_MESSAGING_ID",
-            appId: "SEU_APP_ID"
-        };
+<!-- 🔹 Script para enviar o pedido de oração ao administrador -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    // 🔹 Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+        authDomain: "iprc-site.firebaseapp.com",
+        projectId: "iprc-site",
+        storageBucket: "iprc-site.appspot.com",
+        messagingSenderId: "361636783794",
+        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
 
-        // Captura o formulário
-        const formOracao = document.getElementById("form-oracao");
+    // 🔹 Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        formOracao.addEventListener("submit", async (e) => {
-            e.preventDefault();
+    // 🔹 Função para enviar um pedido de oração
+    document.getElementById("form-oracao").addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-            const nome = document.getElementById("nome").value;
-            const pedido = document.getElementById("pedido").value;
+        const nome = document.getElementById("nome").value;
+        const texto = document.getElementById("pedido").value;
 
-            try {
-                await addDoc(collection(db, "pedidos"), {
-                    nome,
-                    pedido,
-                    data: new Date()
-                });
-
-                alert("Pedido enviado com sucesso!");
-                formOracao.reset();
-                carregarPedidos(); // Atualiza a lista
-            } catch (error) {
-                console.error("Erro ao enviar pedido:", error);
-            }
-        });
-
-        // Função para carregar pedidos cadastrados
-        async function carregarPedidos() {
-            const listaPedidos = document.getElementById("lista-pedidos");
-            listaPedidos.innerHTML = "";
-
-            const pedidosRef = collection(db, "pedidos");
-            const q = query(pedidosRef, orderBy("data", "desc"));
-            const querySnapshot = await getDocs(q);
-
-            querySnapshot.forEach((doc) => {
-                const pedido = doc.data();
-                const li = document.createElement("li");
-                li.innerHTML = `<strong>${pedido.nome}:</strong> ${pedido.pedido}`;
-                listaPedidos.appendChild(li);
-            });
+        if (texto.trim() === "") {
+            alert("⚠️ Por favor, digite um pedido de oração.");
+            return;
         }
 
-        carregarPedidos();
-    </script>
+        await addDoc(collection(db, "pedidos"), {
+            nome: nome.trim() || "Anônimo",
+            texto: texto.trim(),
+            data: serverTimestamp()
+        });
+
+        alert("✅ Pedido de oração enviado com sucesso!");
+        document.getElementById("form-oracao").reset();
+    });
+</script>
 
 </body>
 </html>
