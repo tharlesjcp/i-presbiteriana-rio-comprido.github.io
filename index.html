@@ -1,167 +1,98 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Igreja Presbiteriana do Rio Comprido</title>
-  <link rel="stylesheet" href="css/styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Igreja Presbiteriana do Rio Comprido</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <!-- Menu Superior -->
-  <div class="menu-superior">
-    <img src="images/logoInicio.svg" alt="Logo da Igreja" />
-    <span class="menu-toggle">☰</span>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="estudos.html">Estudos Bíblicos</a>
-      <a href="boletim.html">Boletim</a>
-      <a href="biblia.html">Bíblia</a>
-      <a href="oracao.html">Pedidos de Oração</a>
-    </nav>
-  </div>
+<!-- 🔹 Importando o Header -->
+<div id="header-container"></div>
 
-  <!-- Banner -->
-  <div class="banner-container">
-    <img src="images/banner1.png" class="banner-slide active" />
-    <img src="images/banner2.png" class="banner-slide" />
-  </div>
+<!-- 🔹 Banner -->
+<div class="banner-container">
+    <img src="images/banner1.png" class="banner-slide active">
+    <img src="images/banner2.png" class="banner-slide">
+</div>
 
-  <!-- Paginador -->
-  <div class="pontos">
+<!-- 🔹 Paginador -->
+<div class="pontos">
     <span data-index="0" class="active"></span>
     <span data-index="1"></span>
-  </div>
+</div>
 
-  <!-- Estudo da Semana -->
-  <section id="estudo-semana">
+<!-- 🔹 Estudo Bíblico da Semana -->
+<section id="estudo-semana">
     <h2>📖 Estudo Bíblico da Semana</h2>
     <div class="estudo">
-      <img id="capa-estudo" src="" alt="Capa do estudo" />
-      <div class="info">
-        <h2 id="titulo-estudo"></h2>
-        <p id="resumo-estudo"></p>
-        <a id="link-estudo" href="#" class="botao">Leia mais</a>
-      </div>
+        <img id="capa-estudo" src="" alt="Capa do estudo">
+        <div class="info">
+            <h2 id="titulo-estudo"></h2>
+            <p id="resumo-estudo"></p>
+            <a id="link-estudo" href="#" class="botao">Leia mais</a>
+        </div>
     </div>
-  </section>
+</section>
 
-  <!-- Boletim Semanal -->
-  <section id="boletim-semana">
+<!-- 🔹 Boletim Semanal -->
+<section id="boletim-semana">
     <h2>📰 Boletim Semanal</h2>
     <div class="boletim">
-      <p id="boletim-titulo">Carregando...</p>
-      <a href="boletim.html" class="botao">Acessar Boletim</a>
+        <p id="boletim-titulo">Carregando...</p>
+        <a href="boletim.html" class="botao">Acessar Boletim</a>
     </div>
-  </section>
+</section>
 
-  <!-- Rodapé -->
-  <footer>
-    <div class="links-rapidos">
-      <a href="sobre.html">Sobre Nós</a>
-    </div>
-    <div class="redes-sociais">
-      <a href="https://www.facebook.com/share/19gjgruJSd/?mibextid=wwXIfr" target="_blank">
-        <img src="images/facebook.svg" alt="Facebook" />
-      </a>
-      <a href="https://www.instagram.com/ip.riocomprido?igsh=MXh3N3dsZmYxOWNnYw==" target="_blank">
-        <img src="images/instagram.svg" alt="Instagram" />
-      </a>
-      <a href="https://youtube.com/@iprc-igrejapresbiterianado3855?si=-RFbYDOxgQ_fgp_4" target="_blank">
-        <img src="images/youtube.svg" alt="YouTube" />
-      </a>
-    </div>
-    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-  </footer>
+<!-- 🔹 Importando o Footer -->
+<div id="footer-container"></div>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+<!-- 🔹 Script para carregar o Header e Footer automaticamente -->
+<script>
+    fetch("includes/header.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("header-container").innerHTML = data);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-      authDomain: "iprc-site.firebaseapp.com",
-      projectId: "iprc-site",
-      storageBucket: "iprc-site.appspot.com",
-      messagingSenderId: "361636783794",
-      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
+    fetch("includes/footer.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("footer-container").innerHTML = data);
+</script>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    async function carregarUltimoEstudo() {
-      try {
-        const estudosRef = collection(db, "estudos");
-        const q = query(estudosRef, orderBy("data", "desc"), limit(1));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          const estudo = doc.data();
-          document.getElementById("capa-estudo").src = estudo.imagem;
-          document.getElementById("titulo-estudo").innerText = estudo.titulo;
-          document.getElementById("resumo-estudo").innerText = estudo.resumo;
-          document.getElementById("link-estudo").href = `estudo-detalhe.html?id=${doc.id}`;
-        }
-      } catch (error) {
-        console.error("Erro ao carregar o estudo da semana:", error);
-      }
-    }
-
-    async function carregarBoletim() {
-      try {
-        const boletinsRef = collection(db, "boletins");
-        const q = query(boletinsRef, orderBy("data", "desc"), limit(1));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          const boletim = doc.data();
-          document.getElementById("boletim-titulo").innerText = boletim.titulo;
-        }
-      } catch (error) {
-        console.error("Erro ao carregar o boletim:", error);
-      }
-    }
-
-    carregarUltimoEstudo();
-    carregarBoletim();
-  </script>
-
-  <!-- Scripts de Interação -->
-  <script>
-    document.querySelector(".menu-toggle").addEventListener("click", function () {
-      document.querySelector(".menu-superior nav").classList.toggle("active");
-    });
-
+<!-- 🔹 Script do Banner -->
+<script>
     let index = 0;
     const slides = document.querySelectorAll('.banner-slide');
     const pontos = document.querySelectorAll('.pontos span');
 
     function mudarSlide(novoIndex) {
-      slides.forEach((slide, i) => {
-        slide.classList.remove('active');
-        slide.style.left = "100%";
-        pontos[i].classList.remove('active');
-      });
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+            slide.style.left = "100%"; 
+        });
+        
+        pontos.forEach(ponto => ponto.classList.remove('active'));
 
-      slides[novoIndex].classList.add('active');
-      slides[novoIndex].style.left = "0";
-      pontos[novoIndex].classList.add('active');
+        slides[novoIndex].classList.add('active');
+        slides[novoIndex].style.left = "0"; 
+        pontos[novoIndex].classList.add('active');
 
-      index = novoIndex;
+        index = novoIndex;
     }
 
     function avancarSlide() {
-      let novoIndex = (index + 1) % slides.length;
-      mudarSlide(novoIndex);
+        let novoIndex = (index + 1) % slides.length;
+        mudarSlide(novoIndex);
     }
 
     setInterval(avancarSlide, 5000);
-    pontos.forEach((ponto, i) => ponto.addEventListener('click', () => mudarSlide(i)));
+
+    pontos.forEach((ponto, i) => {
+        ponto.addEventListener('click', () => mudarSlide(i));
+    });
+
     mudarSlide(0);
-  </script>
+</script>
+
 </body>
 </html>
