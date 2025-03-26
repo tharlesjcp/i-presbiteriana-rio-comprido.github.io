@@ -1,89 +1,96 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos de Oração - Igreja Presbiteriana do Rio Comprido</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pedidos de Oração - Igreja Presbiteriana</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
-<!-- 🔹 Importando o Header -->
-<div id="header-container"></div>
+  <!-- Menu superior -->
+  <div id="header-container"></div>
 
-<main>
-    <section class="pedidos">
-        <h1>Pedidos de Oração</h1>
-        <p>Compartilhe seu pedido de oração.</p>
+  <!-- Banner -->
+  <div class="banner-pagina">
+    <img src="images/imag_oracao.jpg" alt="Banner de Oração">
+    <div class="texto-banner">
+      <h1>Pedidos de Oração</h1>
+      <p>"A oração de um justo é poderosa e eficaz." - Tiago 5:16</p>
+    </div>
+  </div>
 
-        <h2>Envie seu Pedido</h2>
-        <form id="form-oracao">
-            <label for="nome">Seu Nome (opcional):</label>
-            <input type="text" id="nome" name="nome" placeholder="Digite seu nome...">
+  <!-- Formulário -->
+  <main>
+    <section class="secao">
+      <h2>📬 Envie seu Pedido de Oração</h2>
+      <form id="formOracao">
+        <label for="nome">Seu Nome:</label>
+        <input type="text" id="nome" required>
 
-            <label for="pedido">Seu Pedido de Oração:</label>
-            <textarea id="pedido" name="pedido" rows="4" placeholder="Digite seu pedido de oração..." required></textarea>
+        <label for="pedido">Pedido de Oração:</label>
+        <textarea id="pedido" rows="5" required></textarea>
 
-            <button type="submit">Enviar Pedido</button>
-        </form>
+        <button type="submit">Enviar Pedido</button>
+        <p id="mensagem-sucesso" style="color: green; display: none;">Pedido enviado com sucesso!</p>
+      </form>
     </section>
-</main>
+  </main>
 
-<!-- 🔹 Importando o Footer -->
-<div id="footer-container"></div>
+  <!-- Rodapé -->
+  <div id="footer-container"></div>
 
-<!-- 🔹 Script para carregar o Header e Footer automaticamente -->
-<script>
-    fetch("includes/header.html")
-        .then(response => response.text())
-        .then(data => document.getElementById("header-container").innerHTML = data);
-
-    fetch("includes/footer.html")
-        .then(response => response.text())
-        .then(data => document.getElementById("footer-container").innerHTML = data);
-</script>
-
-<!-- 🔹 Script para enviar o pedido de oração ao administrador -->
-<script type="module">
+  <!-- Firebase -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 🔹 Configuração do Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-        authDomain: "iprc-site.firebaseapp.com",
-        projectId: "iprc-site",
-        storageBucket: "iprc-site.appspot.com",
-        messagingSenderId: "361636783794",
-        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
     };
 
-    // 🔹 Inicializa Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔹 Função para enviar um pedido de oração
-    document.getElementById("form-oracao").addEventListener("submit", async (event) => {
-        event.preventDefault();
+    const form = document.getElementById("formOracao");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-        const nome = document.getElementById("nome").value;
-        const texto = document.getElementById("pedido").value;
+      const nome = document.getElementById("nome").value;
+      const pedido = document.getElementById("pedido").value;
 
-        if (texto.trim() === "") {
-            alert("⚠️ Por favor, digite um pedido de oração.");
-            return;
-        }
-
-        await addDoc(collection(db, "pedidos"), {
-            nome: nome.trim() || "Anônimo",
-            texto: texto.trim(),
-            data: serverTimestamp()
+      try {
+        await addDoc(collection(db, "oracoes"), {
+          nome,
+          pedido,
+          data: serverTimestamp(),
+          status: "Pendente"
         });
 
-        alert("✅ Pedido de oração enviado com sucesso!");
-        document.getElementById("form-oracao").reset();
+        form.reset();
+        document.getElementById("mensagem-sucesso").style.display = "block";
+      } catch (error) {
+        console.error("Erro ao enviar pedido:", error);
+        alert("Erro ao enviar. Tente novamente.");
+      }
     });
-</script>
+  </script>
+
+  <!-- Header e Footer -->
+  <script>
+    fetch("includes/header.html").then(res => res.text()).then(data => {
+      document.getElementById("header-container").innerHTML = data;
+    });
+
+    fetch("includes/footer.html").then(res => res.text()).then(data => {
+      document.getElementById("footer-container").innerHTML = data;
+    });
+  </script>
 
 </body>
 </html>
