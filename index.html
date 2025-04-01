@@ -1,155 +1,128 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Igreja Presbiteriana do Rio Comprido</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Igreja Presbiteriana do Rio Comprido</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
-<!-- Menu Superior -->
-<div id="header-container"></div>
+  <!-- Header fixo -->
+  <div id="header-container"></div>
 
-<!-- Banner -->
-<div class="banner-container">
+  <!-- Banner rotativo -->
+  <div class="banner-container">
     <img src="images/banner1.png" class="banner-slide active">
     <img src="images/banner2.png" class="banner-slide">
-</div>
-
-<!-- Paginador -->
-<div class="pontos">
+  </div>
+  <div class="pontos">
     <span data-index="0" class="active"></span>
     <span data-index="1"></span>
-</div>
+  </div>
 
-<main>
-    <!-- Últimos Estudos Bíblicos -->
-    <section id="estudos-semana">
-        <h2>Estudos da Semana</h2>
-        <div id="ultimos-estudos" class="cards-estudos"></div>
-    </section>
+  <!-- Estudos bíblicos recentes -->
+  <section class="estudos-recentes-index">
+    <h2>📖 Estudos Bíblicos Recentes</h2>
+    <div id="estudos-index"></div>
+  </section>
 
-    <!-- Boletim Semanal -->
-    <section id="boletim-semanal">
-        <h2>Boletim Semanal</h2>
-        <div id="boletim-destaque">
-            <p id="boletim-titulo">Carregando boletim...</p>
-            <a href="boletim.html" class="botao">Ver Todos</a>
-        </div>
-    </section>
+  <!-- Boletim Semanal -->
+  <section id="boletim-semana">
+    <h2>📰 Boletim Semanal</h2>
+    <div class="boletim">
+      <p id="boletim-titulo">Carregando...</p>
+      <a href="boletim.html" class="botao">Acessar Boletim</a>
+    </div>
+  </section>
 
-    <!-- Agenda da Igreja -->
-    <section class="agenda-semanal">
-        <h2>Agenda da Igreja</h2>
-        <div class="iframe-container">
-            <iframe src="https://calendar.google.com/calendar/embed?src=ipriocomprido%40gmail.com&ctz=America%2FSao_Paulo" style="border:0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
-        </div>
-    </section>
-</main>
+  <!-- Agenda -->
+  <div id="agenda-container"></div>
 
-<!-- Rodapé -->
-<div id="footer-container"></div>
+  <!-- Footer fixo -->
+  <div id="footer-container"></div>
 
-<!-- Scripts -->
-<script>
+  <!-- Scripts -->
+  <script>
     fetch("includes/header.html")
-        .then(res => res.text())
-        .then(data => document.getElementById("header-container").innerHTML = data);
-
+      .then(res => res.text())
+      .then(data => document.getElementById("header-container").innerHTML = data);
+      
     fetch("includes/footer.html")
-        .then(res => res.text())
-        .then(data => document.getElementById("footer-container").innerHTML = data);
-</script>
+      .then(res => res.text())
+      .then(data => document.getElementById("footer-container").innerHTML = data);
 
-<script type="module">
+    fetch("includes/agenda.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("agenda-container").innerHTML = data);
+  </script>
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-        authDomain: "iprc-site.firebaseapp.com",
-        projectId: "iprc-site",
-        storageBucket: "iprc-site.appspot.com",
-        messagingSenderId: "361636783794",
-        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     async function carregarUltimosEstudos() {
-        const container = document.getElementById("ultimos-estudos");
-        container.innerHTML = "";
+      const container = document.getElementById("estudos-index");
+      container.innerHTML = "";
 
-        const q = query(collection(db, "estudos"), orderBy("data", "desc"), limit(2));
-        const querySnapshot = await getDocs(q);
+      const q = query(collection(db, "estudos"), orderBy("data", "desc"), limit(2));
+      const snapshot = await getDocs(q);
 
-        querySnapshot.forEach(doc => {
-            const estudo = doc.data();
-            const card = document.createElement("div");
-            card.classList.add("card-estudo");
+      snapshot.forEach((doc) => {
+        const estudo = doc.data();
+        const card = document.createElement("div");
+        card.classList.add("estudo");
 
-            card.innerHTML = `
-                <img src="${estudo.imagem}" alt="Imagem do estudo">
-                <div class="info">
-                    <h3>${estudo.titulo}</h3>
-                    <p>${estudo.resumo}</p>
-                    <a href="estudo-detalhe.html?id=${doc.id}" class="botao">Leia mais</a>
-                </div>
-            `;
+        card.innerHTML = `
+          <iframe width="100%" height="315" src="${estudo.video}" frameborder="0" allowfullscreen></iframe>
+          <div class="info">
+            <h3>${estudo.titulo}</h3>
+            <p>${estudo.resumo}</p>
+            <a class="botao" href="estudos.html?id=${doc.id}">Leia mais</a>
+          </div>
+        `;
 
-            container.appendChild(card);
-        });
-    }
-
-    async function carregarBoletimDestaque() {
-        const q = query(collection(db, "boletins"), orderBy("data", "desc"), limit(1));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            const boletim = querySnapshot.docs[0].data();
-            document.getElementById("boletim-titulo").textContent = boletim.nome;
-        }
+        container.appendChild(card);
+      });
     }
 
     carregarUltimosEstudos();
-    carregarBoletimDestaque();
-</script>
+  </script>
 
-<!-- Script do Banner -->
-<script>
+  <script>
+    // Script do banner
     let index = 0;
     const slides = document.querySelectorAll('.banner-slide');
     const pontos = document.querySelectorAll('.pontos span');
 
     function mudarSlide(novoIndex) {
-        slides.forEach(slide => {
-            slide.classList.remove('active');
-            slide.style.left = "100%";
-        });
-        pontos.forEach(ponto => ponto.classList.remove('active'));
+      slides.forEach(slide => {
+        slide.classList.remove('active');
+        slide.style.left = "100%";
+      });
+      pontos.forEach(p => p.classList.remove('active'));
 
-        slides[novoIndex].classList.add('active');
-        slides[novoIndex].style.left = "0";
-        pontos[novoIndex].classList.add('active');
-
-        index = novoIndex;
+      slides[novoIndex].classList.add('active');
+      slides[novoIndex].style.left = "0";
+      pontos[novoIndex].classList.add('active');
+      index = novoIndex;
     }
 
-    function avancarSlide() {
-        let novoIndex = (index + 1) % slides.length;
-        mudarSlide(novoIndex);
-    }
-
-    setInterval(avancarSlide, 5000);
-
-    pontos.forEach((ponto, i) => {
-        ponto.addEventListener('click', () => mudarSlide(i));
-    });
-
+    setInterval(() => mudarSlide((index + 1) % slides.length), 5000);
+    pontos.forEach((p, i) => p.addEventListener('click', () => mudarSlide(i)));
     mudarSlide(0);
-</script>
-
+  </script>
 </body>
 </html>
