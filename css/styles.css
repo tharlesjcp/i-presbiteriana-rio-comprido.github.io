@@ -300,3 +300,22 @@ footer {
   }
 }
 
+.agenda-semanal {
+  background: var(--branco);
+  padding: 30px;
+  border-radius: 10px;
+  margin: 40px auto;
+  max-width: 1000px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.agenda-semanal h2 {
+  color: var(--azul-medio);
+  margin-bottom: 20px;
+}
+
+.iframe-container {
+  overflow-x: auto;
+  border-radius: 10px;
+}
