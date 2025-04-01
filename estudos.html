@@ -1,86 +1,104 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
+  <!-- Menu Superior -->
+  <div id="header-container"></div>
 
-<!-- Menu Superior -->
-<div id="header-container"></div>
-
-<main>
-    <h1 class="titulo-pagina">Estudos Bíblicos</h1>
-
-    <section class="estudos-container" id="lista-estudos">
-        <!-- Estudos serão carregados aqui via Firebase -->
+  <main>
+    <section class="estudos">
+      <h1>Estudos Bíblicos</h1>
+      <div id="lista-estudos" class="estudos-lista"></div>
+      <div id="paginacao" class="paginacao"></div>
     </section>
-</main>
+  </main>
 
-<footer>
-    <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-</footer>
+  <!-- Rodapé -->
+  <div id="footer-container"></div>
 
-<!-- Importando Firebase -->
-<script type="module">
+  <!-- Firebase + Carregamento dos Estudos -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // Configuração do Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-        authDomain: "iprc-site.firebaseapp.com",
-        projectId: "iprc-site",
-        storageBucket: "iprc-site.firebasestorage.app",
-        messagingSenderId: "361636783794",
-        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
     };
 
-    // Inicializa Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Função para carregar todos os estudos
+    const estudosPorPagina = 5;
+    let paginaAtual = 1;
+    let todosEstudos = [];
+
     async function carregarEstudos() {
-        try {
-            const estudosRef = collection(db, "estudos");
-            const q = query(estudosRef, orderBy("data", "desc"));
-            const querySnapshot = await getDocs(q);
-            const listaEstudos = document.getElementById("lista-estudos");
+      const q = query(collection(db, "estudos"), orderBy("data", "desc"));
+      const querySnapshot = await getDocs(q);
+      todosEstudos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      exibirEstudos();
+    }
 
-            querySnapshot.forEach((doc) => {
-                const estudo = doc.data();
+    function exibirEstudos() {
+      const lista = document.getElementById("lista-estudos");
+      const paginacao = document.getElementById("paginacao");
+      lista.innerHTML = "";
+      paginacao.innerHTML = "";
 
-                const divEstudo = document.createElement("div");
-                divEstudo.classList.add("estudo");
+      const inicio = (paginaAtual - 1) * estudosPorPagina;
+      const fim = inicio + estudosPorPagina;
+      const paginaEstudos = todosEstudos.slice(inicio, fim);
 
-                divEstudo.innerHTML = `
-                    <img src="${estudo.imagem}" alt="Imagem do estudo">
-                    <div class="info">
-                        <h2>${estudo.titulo}</h2>
-                        <p>${estudo.resumo}</p>
-                        <a href="estudo-detalhe.html?id=${doc.id}" class="botao">Ler mais</a>
-                    </div>
-                `;
+      paginaEstudos.forEach(estudo => {
+        const card = document.createElement("div");
+        card.classList.add("estudo-card");
+        card.innerHTML = `
+          <img src="${estudo.imagem}" alt="Imagem do estudo" />
+          <div class="info">
+            <h2>${estudo.titulo}</h2>
+            <p>${estudo.resumo}</p>
+            <a href="estudo.html?id=${estudo.id}" class="botao">Leia mais</a>
+          </div>
+        `;
+        lista.appendChild(card);
+      });
 
-                listaEstudos.appendChild(divEstudo);
-            });
-        } catch (error) {
-            console.error("Erro ao carregar os estudos:", error);
-        }
+      const totalPaginas = Math.ceil(todosEstudos.length / estudosPorPagina);
+      for (let i = 1; i <= totalPaginas; i++) {
+        const botao = document.createElement("button");
+        botao.innerText = i;
+        botao.classList.add("botao-pagina");
+        if (i === paginaAtual) botao.classList.add("ativo");
+        botao.addEventListener("click", () => {
+          paginaAtual = i;
+          exibirEstudos();
+        });
+        paginacao.appendChild(botao);
+      }
     }
 
     carregarEstudos();
-</script>
+  </script>
 
-<script>
-    // Carregar o menu superior automaticamente
+  <!-- Import Header/Footer -->
+  <script>
     fetch("includes/header.html")
-        .then(response => response.text())
-        .then(data => document.getElementById("header-container").innerHTML = data);
-</script>
+      .then(res => res.text())
+      .then(data => document.getElementById("header-container").innerHTML = data);
 
+    fetch("includes/footer.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("footer-container").innerHTML = data);
+  </script>
 </body>
 </html>
