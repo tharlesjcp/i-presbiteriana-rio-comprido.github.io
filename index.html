@@ -45,6 +45,10 @@
     </div>
 </section>
 
+<!-- 🔹 Importando a agenda iframe -->
+<div id="agenda-container"></div>
+
+
 <!-- 🔹 Importando o Footer -->
 <div id="footer-container"></div>
 
@@ -93,6 +97,12 @@
 
     mudarSlide(0);
 </script>
+<script>
+  fetch("includes/agenda.html")
+    .then(response => response.text())
+    .then(data => document.getElementById("agenda-container").innerHTML = data);
+</script>
+
 
 </body>
 </html>
