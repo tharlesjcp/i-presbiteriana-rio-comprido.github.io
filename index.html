@@ -8,62 +8,116 @@
 </head>
 <body>
 
-<!-- 🔹 Importando o Header -->
+<!-- Menu Superior -->
 <div id="header-container"></div>
 
-<!-- 🔹 Banner -->
+<!-- Banner -->
 <div class="banner-container">
     <img src="images/banner1.png" class="banner-slide active">
     <img src="images/banner2.png" class="banner-slide">
 </div>
 
-<!-- 🔹 Paginador -->
+<!-- Paginador -->
 <div class="pontos">
     <span data-index="0" class="active"></span>
     <span data-index="1"></span>
 </div>
 
-<!-- 🔹 Estudo Bíblico da Semana -->
-<section id="estudo-semana">
-    <h2>📖 Estudo Bíblico da Semana</h2>
-    <div class="estudo">
-        <img id="capa-estudo" src="" alt="Capa do estudo">
-        <div class="info">
-            <h2 id="titulo-estudo"></h2>
-            <p id="resumo-estudo"></p>
-            <a id="link-estudo" href="#" class="botao">Leia mais</a>
+<main>
+    <!-- Últimos Estudos Bíblicos -->
+    <section id="estudos-semana">
+        <h2>Estudos da Semana</h2>
+        <div id="ultimos-estudos" class="cards-estudos"></div>
+    </section>
+
+    <!-- Boletim Semanal -->
+    <section id="boletim-semanal">
+        <h2>Boletim Semanal</h2>
+        <div id="boletim-destaque">
+            <p id="boletim-titulo">Carregando boletim...</p>
+            <a href="boletim.html" class="botao">Ver Todos</a>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- 🔹 Boletim Semanal -->
-<section id="boletim-semana">
-    <h2>📰 Boletim Semanal</h2>
-    <div class="boletim">
-        <p id="boletim-titulo">Carregando...</p>
-        <a href="boletim.html" class="botao">Acessar Boletim</a>
-    </div>
-</section>
+    <!-- Agenda da Igreja -->
+    <section class="agenda-semanal">
+        <h2>Agenda da Igreja</h2>
+        <div class="iframe-container">
+            <iframe src="https://calendar.google.com/calendar/embed?src=ipriocomprido%40gmail.com&ctz=America%2FSao_Paulo" style="border:0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+        </div>
+    </section>
+</main>
 
-<!-- 🔹 Importando a agenda iframe -->
-<div id="agenda-container"></div>
-
-
-<!-- 🔹 Importando o Footer -->
+<!-- Rodapé -->
 <div id="footer-container"></div>
 
-<!-- 🔹 Script para carregar o Header e Footer automaticamente -->
+<!-- Scripts -->
 <script>
     fetch("includes/header.html")
-        .then(response => response.text())
+        .then(res => res.text())
         .then(data => document.getElementById("header-container").innerHTML = data);
 
     fetch("includes/footer.html")
-        .then(response => response.text())
+        .then(res => res.text())
         .then(data => document.getElementById("footer-container").innerHTML = data);
 </script>
 
-<!-- 🔹 Script do Banner -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+        authDomain: "iprc-site.firebaseapp.com",
+        projectId: "iprc-site",
+        storageBucket: "iprc-site.appspot.com",
+        messagingSenderId: "361636783794",
+        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function carregarUltimosEstudos() {
+        const container = document.getElementById("ultimos-estudos");
+        container.innerHTML = "";
+
+        const q = query(collection(db, "estudos"), orderBy("data", "desc"), limit(2));
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach(doc => {
+            const estudo = doc.data();
+            const card = document.createElement("div");
+            card.classList.add("card-estudo");
+
+            card.innerHTML = `
+                <img src="${estudo.imagem}" alt="Imagem do estudo">
+                <div class="info">
+                    <h3>${estudo.titulo}</h3>
+                    <p>${estudo.resumo}</p>
+                    <a href="estudo-detalhe.html?id=${doc.id}" class="botao">Leia mais</a>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    async function carregarBoletimDestaque() {
+        const q = query(collection(db, "boletins"), orderBy("data", "desc"), limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const boletim = querySnapshot.docs[0].data();
+            document.getElementById("boletim-titulo").textContent = boletim.nome;
+        }
+    }
+
+    carregarUltimosEstudos();
+    carregarBoletimDestaque();
+</script>
+
+<!-- Script do Banner -->
 <script>
     let index = 0;
     const slides = document.querySelectorAll('.banner-slide');
@@ -72,13 +126,12 @@
     function mudarSlide(novoIndex) {
         slides.forEach(slide => {
             slide.classList.remove('active');
-            slide.style.left = "100%"; 
+            slide.style.left = "100%";
         });
-        
         pontos.forEach(ponto => ponto.classList.remove('active'));
 
         slides[novoIndex].classList.add('active');
-        slides[novoIndex].style.left = "0"; 
+        slides[novoIndex].style.left = "0";
         pontos[novoIndex].classList.add('active');
 
         index = novoIndex;
@@ -97,12 +150,6 @@
 
     mudarSlide(0);
 </script>
-<script>
-  fetch("includes/agenda.html")
-    .then(response => response.text())
-    .then(data => document.getElementById("agenda-container").innerHTML = data);
-</script>
-
 
 </body>
 </html>
