@@ -1,9 +1,8 @@
-<!-- header.html -->
-<div class="menu-superior">
+<header class="menu-superior">
   <a href="index.html">
-    <img src="images/logoInicio.svg" alt="Logo da Igreja">
+    <img src="images/logoinicio.svg" alt="Logo da Igreja">
   </a>
-  <span class="menu-toggle">☰</span>
+
   <nav>
     <a href="index.html">Home</a>
     <a href="estudos.html">Estudos Bíblicos</a>
@@ -12,10 +11,15 @@
     <a href="pedidos.html">Pedidos de Oração</a>
     <a href="sobre.html">Quem Somos</a>
   </nav>
-</div>
+
+  <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+</header>
 
 <script>
-  document.querySelector(".menu-toggle").addEventListener("click", function () {
-    document.querySelector(".menu-superior nav").classList.toggle("active");
+  const menuToggle = document.getElementById('menu-toggle');
+  const nav = document.querySelector('.menu-superior nav');
+
+  menuToggle.addEventListener('click', () => {
+    nav.classList.toggle('active');
   });
 </script>
