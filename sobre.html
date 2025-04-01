@@ -29,6 +29,8 @@
         Estamos localizados no coração do Rio de Janeiro e temos como missão anunciar o evangelho com fidelidade e amor.
       </p>
 
+      <div id="agenda-container"></div>
+
       <h2 style="text-align: center;">Nossa Localização</h2>
       <div style="display: flex; justify-content: center; margin-top: 20px;">
         <iframe 
@@ -43,6 +45,12 @@
       </div>
     </section>
   </main>
+  
+<script>
+  fetch("includes/agenda.html")
+    .then(response => response.text())
+    .then(data => document.getElementById("agenda-container").innerHTML = data);
+</script>
 
   <!-- Rodapé -->
   <footer>
