@@ -1,17 +1,21 @@
+<!-- header.html -->
 <div class="menu-superior">
+  <a href="index.html">
     <img src="images/logoInicio.svg" alt="Logo da Igreja">
-    <span class="menu-toggle">☰</span>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="estudos.html">Estudos Bíblicos</a>
-        <a href="boletim.html">Boletim</a>
-        <a href="biblia.html">Bíblia</a>
-        <a href="pedidos.html">Pedidos de Oração</a>
-    </nav>
+  </a>
+  <span class="menu-toggle">☰</span>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="estudos.html">Estudos Bíblicos</a>
+    <a href="boletim.html">Boletim</a>
+    <a href="biblia.html">Bíblia</a>
+    <a href="pedidos.html">Pedidos de Oração</a>
+    <a href="sobre.html">Quem Somos</a>
+  </nav>
 </div>
 
 <script>
-    document.querySelector(".menu-toggle").addEventListener("click", function () {
-        document.querySelector(".menu-superior nav").classList.toggle("active");
-    });
+  document.querySelector(".menu-toggle").addEventListener("click", function () {
+    document.querySelector(".menu-superior nav").classList.toggle("active");
+  });
 </script>
