@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-  <!-- Header fixo -->
+  <!-- 🔹 Header -->
   <div id="header-container"></div>
 
   <main>
@@ -22,10 +21,10 @@
     <section class="estudos-container" id="lista-estudos"></section>
   </main>
 
-  <!-- Footer fixo -->
+  <!-- 🔹 Footer -->
   <div id="footer-container"></div>
 
-  <!-- Firebase + Script de Estudos -->
+  <!-- 🔹 Firebase + Script de Estudos -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
@@ -48,37 +47,33 @@
 
       try {
         const q = query(collection(db, "estudos"), orderBy("data", "desc"));
-        const snapshot = await getDocs(q);
-        let primeiro = true;
+        const querySnapshot = await getDocs(q);
+        let contador = 0;
 
-        snapshot.forEach((doc) => {
+        querySnapshot.forEach((doc) => {
           const estudo = doc.data();
+          const embedURL = estudo.link; // Link do Firestore já no formato embed
 
           const html = `
             <div class="estudo">
               <div class="video-wrapper">
-                <iframe width="100%" height="315" src="${estudo.video}" frameborder="0" allowfullscreen></iframe>
+                <iframe width="100%" height="315" src="${embedURL}" frameborder="0" allowfullscreen></iframe>
               </div>
               <div class="info">
                 <h2>${estudo.titulo}</h2>
-                ${primeiro ? `
-                  <div class="texto-completo">
-                    ${marked.parse(estudo.textoCompleto)}
-                  </div>
-                ` : `
-                  <p>${estudo.resumo}</p>
-                  <a class="botao" href="estudos.html?id=${doc.id}">Leia mais</a>
-                `}
+                <p>${estudo.resumo}</p>
+                <a href="estudo.html?id=${doc.id}" class="botao">Leia mais</a>
               </div>
             </div>
           `;
 
-          if (primeiro) {
+          if (contador === 0) {
             estudoSemanal.innerHTML = html;
-            primeiro = false;
           } else {
             listaEstudos.innerHTML += html;
           }
+
+          contador++;
         });
       } catch (error) {
         console.error("Erro ao carregar os estudos:", error);
@@ -88,7 +83,8 @@
     carregarEstudos();
   </script>
 
-  <!-- Layout reutilizável -->
+  <!-- 🔹 Layout fixo -->
   <script src="includes/layout.js"></script>
+
 </body>
 </html>
