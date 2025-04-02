@@ -165,12 +165,15 @@ footer {
 
 .redes-sociais a {
   margin-left: 10px;
+  text-decoration: none;
 }
 
 .redes-sociais img {
   width: 24px;
   height: auto;
   transition: transform 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .redes-sociais img:hover {
@@ -211,17 +214,12 @@ footer {
   }
 }
 
-
-
-
-
-
-/* 🔹 Banner da Página de Pedidos de Oração */
+/* Banner da Página de Pedidos de Oração */
 .banner-pagina {
   position: relative;
   width: 100%;
   height: 700px;
-  margin-top: 60px; /* espaço pro menu fixo */
+  margin-top: 60px;
   overflow: hidden;
 }
 
@@ -243,7 +241,7 @@ footer {
   font-size: 1.2rem;
 }
 
-/* 🔹 Formulário de Pedido de Oração */
+/* Formulário de Pedido de Oração */
 .pedidos {
   max-width: 600px;
   margin: 40px auto;
@@ -318,4 +316,51 @@ footer {
 .iframe-container {
   overflow-x: auto;
   border-radius: 10px;
+}
+
+/* Vídeos responsivos 16:9 */
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Layout index - estudos lado a lado */
+#estudos-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+#estudos-index .estudo {
+  width: 100%;
+  max-width: 480px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#estudos-index .info h3 {
+  margin: 10px 0 5px;
+}
+
+#estudos-index .botao {
+  display: inline-block;
+  margin-top: 10px;
 }
