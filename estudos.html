@@ -58,8 +58,14 @@
 
     function formatarTexto(texto) {
       return texto
-        .replace(/## (.*?)(\n|$)/g, '<h3>$1</h3>')
-        .replace(/\n/g, '<br>');
+        .split('\\n')
+        .map(linha => {
+          if (linha.trim().startsWith('## ')) {
+            return `<h3>${linha.replace('## ', '').trim()}</h3>`;
+          }
+          return `<p>${linha.trim()}</p>`;
+        })
+        .join('');
     }
 
     async function carregarEstudos() {
