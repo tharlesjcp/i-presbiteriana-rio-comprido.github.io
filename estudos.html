@@ -41,6 +41,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    function formatarTexto(texto) {
+      return texto
+        .replace(/## (.*?)(\\n|$)/g, '<h3>$1</h3>')
+        .replace(/\\n/g, '<br>');
+    }
+
     async function carregarEstudos() {
       const listaEstudos = document.getElementById("lista-estudos");
       const estudoSemanal = document.getElementById("estudo-semanal");
@@ -59,6 +65,8 @@
             year: "numeric"
           });
 
+          const textoFormatado = formatarTexto(estudo.textoCompleto);
+
           const html = `
             <div class="estudo">
               <div class="video-wrapper">
@@ -67,7 +75,7 @@
               <div class="info">
                 <h2>${estudo.titulo}</h2>
                 <p class="data-estudo">${dataBr}</p>
-                <p>${estudo.textoCompleto}</p>
+                <div class="texto-estudo">${textoFormatado}</div>
               </div>
             </div>
           `;
