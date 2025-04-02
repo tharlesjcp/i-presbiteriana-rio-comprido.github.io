@@ -375,3 +375,40 @@ footer {
   display: block;
   width: 100%;
 }
+/* 🔹 Texto formatado dos estudos */
+.texto-estudo {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.texto-estudo h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--azul-medio);
+  margin-top: 30px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.texto-estudo p {
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+@media (max-width: 768px) {
+  .texto-estudo {
+    padding: 0 15px;
+  }
+
+  .texto-estudo h3 {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .texto-estudo p {
+    font-size: 0.95rem;
+  }
+}
+
