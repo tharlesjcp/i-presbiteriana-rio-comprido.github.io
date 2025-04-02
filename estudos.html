@@ -52,8 +52,7 @@
 
         querySnapshot.forEach((doc) => {
           const estudo = doc.data();
-          const videoID = estudo.link?.split("v=")[1] || "";
-          const embedURL = `https://www.youtube.com/embed/${videoID}`;
+          const embedURL = estudo.link; // Link do Firestore já no formato embed
 
           const html = `
             <div class="estudo">
@@ -84,7 +83,7 @@
     carregarEstudos();
   </script>
 
-  <!-- 🔹 Layout reutilizável -->
+  <!-- 🔹 Layout fixo -->
   <script src="js/layout.js"></script>
 
 </body>
