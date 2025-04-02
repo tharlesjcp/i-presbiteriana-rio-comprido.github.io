@@ -5,23 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Header fixo -->
   <div id="header-container"></div>
 
   <main>
     <h1 class="titulo-pagina">Estudo da Semana</h1>
-    <div class="estudo">
-      <div class="video-wrapper">
-        <iframe id="video-detalhe" width="100%" height="315" src="" frameborder="0" allowfullscreen></iframe>
-      </div>
-      <div class="info">
-        <h2 id="titulo-detalhe"></h2>
-        <p id="texto-detalhe"></p>
-      </div>
-    </div>
+    <div id="estudo-semanal"></div>
 
     <hr style="margin: 40px auto; width: 80%;" />
 
@@ -29,13 +22,13 @@
     <section class="estudos-container" id="lista-estudos"></section>
   </main>
 
-  <!-- Footer -->
+  <!-- Footer fixo -->
   <div id="footer-container"></div>
 
-  <!-- Firebase + Script -->
+  <!-- Firebase + Script de Estudos -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
@@ -49,29 +42,50 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function carregarEstudoCompleto() {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get("id");
+    async function carregarEstudos() {
+      const listaEstudos = document.getElementById("lista-estudos");
+      const estudoSemanal = document.getElementById("estudo-semanal");
 
-      if (!id) return;
+      try {
+        const q = query(collection(db, "estudos"), orderBy("data", "desc"));
+        const snapshot = await getDocs(q);
+        let primeiro = true;
 
-      const docRef = doc(db, "estudos", id);
-      const docSnap = await getDoc(docRef);
+        snapshot.forEach((doc) => {
+          const estudo = doc.data();
 
-      if (docSnap.exists()) {
-        const estudo = docSnap.data();
-        document.getElementById("titulo-detalhe").innerText = estudo.titulo;
+          const html = `
+            <div class="estudo">
+              <div class="video-wrapper">
+                <iframe width="100%" height="315" src="${estudo.video}" frameborder="0" allowfullscreen></iframe>
+              </div>
+              <div class="info">
+                <h2>${estudo.titulo}</h2>
+                ${primeiro ? `
+                  <div class="texto-completo">
+                    ${marked.parse(estudo.textoCompleto)}
+                  </div>
+                ` : `
+                  <p>${estudo.resumo}</p>
+                  <a class="botao" href="estudos.html?id=${doc.id}">Leia mais</a>
+                `}
+              </div>
+            </div>
+          `;
 
-        const iframe = document.getElementById("video-detalhe");
-        iframe.src = estudo.link;
-
-        // Corrigir quebras de linha
-        const textoComQuebras = estudo.textoCompleto.replace(/\n/g, "<br>");
-        document.getElementById("texto-detalhe").innerHTML = textoComQuebras;
+          if (primeiro) {
+            estudoSemanal.innerHTML = html;
+            primeiro = false;
+          } else {
+            listaEstudos.innerHTML += html;
+          }
+        });
+      } catch (error) {
+        console.error("Erro ao carregar os estudos:", error);
       }
     }
 
-    carregarEstudoCompleto();
+    carregarEstudos();
   </script>
 
   <!-- Layout reutilizável -->
