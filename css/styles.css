@@ -373,6 +373,7 @@ footer {
  margin: -20px 30px 10px auto;
   text-align: right;
   display: block;
+  max-width: 500px;
 }
 /*  Texto formatado dos estudos */
 .texto-estudo {
