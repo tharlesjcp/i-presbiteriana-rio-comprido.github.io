@@ -320,14 +320,14 @@ footer {
   border-radius: 10px;
 }
 
-/* Vídeos responsivos estilo 21:9 ajustado */
+/* Vídeos responsivos padrão 16:9 ajustado */
 .video-wrapper {
   position: relative;
-  padding-bottom: 42.55%;
+  padding-bottom: 56.25%; /* proporção 16:9 */
   height: 0;
   overflow: hidden;
   margin-bottom: 20px;
-  max-width: 720px;
+  max-width: 640px;
   margin-left: auto;
   margin-right: auto;
   border-radius: 8px;
