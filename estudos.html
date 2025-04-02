@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .texto-estudo h3 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--azul-medio);
+      margin-top: 30px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .texto-estudo p {
+      margin-bottom: 12px;
+      text-align: justify;
+    }
+  </style>
 </head>
 <body>
 
@@ -44,7 +59,9 @@
     function formatarTexto(texto) {
       return texto
         .replace(/## (.*?)(\\n|$)/g, '<h3>$1</h3>')
-        .replace(/\\n/g, '<br>');
+        .replace(/^- /gm, '')
+        .replace(/\\n/g, '<p>')
+        .replace(/<p><\/h3>/g, '</h3>');
     }
 
     async function carregarEstudos() {
