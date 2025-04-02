@@ -1,4 +1,4 @@
- js/layout.js
+// js/layout.js
 
 // Carrega o header
 fetch("includes/header.html")
