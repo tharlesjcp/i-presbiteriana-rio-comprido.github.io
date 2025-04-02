@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .paginacao {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .paginacao button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      background-color: #eee;
+      border: none;
+      cursor: pointer;
+    }
+
+    .paginacao button.ativo {
+      background-color: #ccc;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
@@ -19,6 +54,7 @@
 
     <h2 class="titulo-pagina">📚 Estudos Bíblicos Recentes</h2>
     <section class="estudos-container" id="lista-estudos"></section>
+    <div id="paginacao" class="paginacao"></div>
   </main>
 
   <!-- 🔹 Footer -->
@@ -41,44 +77,95 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    const estudosPorPagina = 4;
+    let estudosAnteriores = [];
+    let paginaAtual = 1;
+
     async function carregarEstudos() {
       const listaEstudos = document.getElementById("lista-estudos");
       const estudoSemanal = document.getElementById("estudo-semanal");
+      const paginacao = document.getElementById("paginacao");
 
       try {
         const q = query(collection(db, "estudos"), orderBy("data", "desc"));
         const querySnapshot = await getDocs(q);
-        let contador = 0;
+        const estudos = [];
 
         querySnapshot.forEach((doc) => {
-          const estudo = doc.data();
-          const embedURL = estudo.link; // Link do Firestore já no formato embed
-
-          const html = `
-            <div class="estudo">
-              <div class="video-wrapper">
-                <iframe width="100%" height="315" src="${embedURL}" frameborder="0" allowfullscreen></iframe>
-              </div>
-              <div class="info">
-                <h2>${estudo.titulo}</h2>
-                <p>${estudo.resumo}</p>
-                <a href="estudo.html?id=${doc.id}" class="botao">Leia mais</a>
-              </div>
-            </div>
-          `;
-
-          if (contador === 0) {
-            estudoSemanal.innerHTML = html;
-          } else {
-            listaEstudos.innerHTML += html;
-          }
-
-          contador++;
+          const data = doc.data();
+          estudos.push({
+            id: doc.id,
+            titulo: data.titulo,
+            resumo: data.resumo,
+            textoCompleto: data.textoCompleto,
+            link: data.link
+          });
         });
+
+        if (estudos.length > 0) {
+          // Estudo da semana (mais recente)
+          const destaque = estudos[0];
+          estudoSemanal.innerHTML = gerarHTMLCompleto(destaque);
+        }
+
+        // Estudos anteriores (completo também)
+        estudosAnteriores = estudos.slice(1);
+        renderizarPagina(1);
+        gerarBotoesPaginacao();
       } catch (error) {
         console.error("Erro ao carregar os estudos:", error);
       }
     }
+
+    function gerarHTMLCompleto(estudo) {
+      return `
+        <div class="estudo">
+          <div class="video-wrapper">
+            <iframe width="100%" height="315" src="${estudo.link}" frameborder="0" allowfullscreen></iframe>
+          </div>
+          <div class="info">
+            <h2>${estudo.titulo}</h2>
+            <p>${estudo.textoCompleto}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderizarPagina(pagina) {
+      const listaEstudos = document.getElementById("lista-estudos");
+      listaEstudos.innerHTML = "";
+
+      const inicio = (pagina - 1) * estudosPorPagina;
+      const fim = inicio + estudosPorPagina;
+      const paginaEstudos = estudosAnteriores.slice(inicio, fim);
+
+      paginaEstudos.forEach(estudo => {
+        listaEstudos.innerHTML += gerarHTMLCompleto(estudo);
+      });
+
+      paginaAtual = pagina;
+      atualizarBotoesPaginacao();
+    }
+
+    function gerarBotoesPaginacao() {
+      const paginacao = document.getElementById("paginacao");
+      const totalPaginas = Math.ceil(estudosAnteriores.length / estudosPorPagina);
+      paginacao.innerHTML = "";
+
+      for (let i = 1; i <= totalPaginas; i++) {
+        paginacao.innerHTML += `<button onclick="irParaPagina(${i})">${i}</button>`;
+      }
+    }
+
+    function atualizarBotoesPaginacao() {
+      const botoes = document.querySelectorAll("#paginacao button");
+      botoes.forEach((btn, index) => {
+        btn.classList.toggle("ativo", index + 1 === paginaAtual);
+      });
+    }
+
+    // Torna a função global
+    window.irParaPagina = renderizarPagina;
 
     carregarEstudos();
   </script>
