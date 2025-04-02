@@ -79,20 +79,19 @@ main {
 
 /* Banner */
 .banner-container {
-  width: 100%;
-  height: 500px;
-  margin-top: 60px;
   position: relative;
+  width: 100%;
+  padding-top: 40%;
   overflow: hidden;
 }
 
 .banner-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 100%;
   opacity: 0;
   transition: opacity 1s ease-in-out, left 1s ease-in-out;
 }
@@ -323,11 +322,11 @@ footer {
 /* Vídeos responsivos ajustado para mais largo e mais baixo */
 .video-wrapper {
   position: relative;
-  padding-bottom: 40%; /* menos altura */
+  padding-bottom: 40%;
   height: 0;
   overflow: hidden;
   margin-bottom: 20px;
-  max-width: 900px; /* mais largo */
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
   border-radius: 8px;
