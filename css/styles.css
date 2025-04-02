@@ -1,146 +1,377 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <style>
-    .texto-estudo {
-      text-align: center;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
+:root {
+  --azul-escuro: #1f3b5f;
+  --azul-medio: #2a80be;
+  --azul-suave: #2b80bd;
+  --marrom-escuro: #1f1210;
+  --branco: #ffffff;
+  --cinza-claro: #f0f0f0;
+  --cinza-medio: #a3a3a3;
+}
 
-    .texto-estudo h3 {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: var(--azul-medio);
-      margin-top: 30px;
-      margin-bottom: 10px;
-      text-align: left;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .texto-estudo p {
-      margin-bottom: 12px;
-      text-align: justify;
-    }
+body {
+  background-color: var(--cinza-claro);
+  color: var(--marrom-escuro);
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  text-align: center;
+}
 
-    @media (max-width: 768px) {
-      .texto-estudo {
-        padding: 0 15px;
-      }
+/* Menu Superior */
+.menu-superior {
+  background-color: var(--azul-medio);
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-      .texto-estudo h3 {
-        font-size: 1.1rem;
-        text-align: center;
-      }
+.menu-superior img {
+  height: 50px;
+  margin-right: 20px;
+}
 
-      .texto-estudo p {
-        font-size: 0.95rem;
-      }
-    }
-  </style>
-</head>
-<body>
+.menu-superior nav {
+  display: flex;
+  gap: 15px;
+}
 
-  <!-- 🔹 Header -->
-  <div id="header-container"></div>
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--branco);
+}
 
-  <main>
-    <h1 class="titulo-pagina">Estudo da Semana</h1>
-    <div id="estudo-semanal"></div>
+.menu-superior nav a {
+  color: var(--branco);
+  text-decoration: none;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+}
 
-    <hr style="margin: 40px auto; width: 80%;" />
+.menu-superior nav a:hover {
+  background-color: var(--azul-escuro);
+}
 
-    <h2 class="titulo-pagina">📚 Estudos Bíblicos Recentes</h2>
-    <section class="estudos-container" id="lista-estudos"></section>
-  </main>
+/* Conteúdo */
+main {
+  flex: 1;
+  padding: 20px;
+  margin-top: 100px;
+}
 
-  <!-- 🔹 Footer -->
-  <div id="footer-container"></div>
+/* Banner */
+.banner-container {
+  position: relative;
+  width: 100%;
+  padding-top: 40%;
+  overflow: hidden;
+}
 
-  <!-- 🔹 Firebase + Script de Estudos -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+.banner-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out, left 1s ease-in-out;
+}
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-      authDomain: "iprc-site.firebaseapp.com",
-      projectId: "iprc-site",
-      storageBucket: "iprc-site.appspot.com",
-      messagingSenderId: "361636783794",
-      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
+.banner-slide.active {
+  left: 0;
+  opacity: 1;
+}
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+.pontos {
+  text-align: center;
+  margin-top: 10px;
+}
 
-    function formatarTexto(texto) {
-      return texto
-        .split('\\n')
-        .map(linha => {
-          if (linha.trim().startsWith('## ')) {
-            return `<h3>${linha.replace('## ', '').trim()}</h3>`;
-          }
-          return `<p>${linha.trim()}</p>`;
-        })
-        .join('');
-    }
+.pontos span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: #bbb;
+  border-radius: 50%;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-    async function carregarEstudos() {
-      const listaEstudos = document.getElementById("lista-estudos");
-      const estudoSemanal = document.getElementById("estudo-semanal");
+.pontos span.active {
+  background-color: #2a80be;
+}
 
-      try {
-        const q = query(collection(db, "estudos"), orderBy("data", "desc"));
-        const querySnapshot = await getDocs(q);
-        let contador = 0;
+/* Botões */
+.botao {
+  display: inline-block;
+  padding: 10px 15px;
+  background: var(--azul-medio);
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: 0.3s;
+  text-align: center;
+}
 
-        querySnapshot.forEach((doc) => {
-          const estudo = doc.data();
-          const embedURL = estudo.link;
-          const dataBr = estudo.data.toDate().toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric"
-          });
+.botao:hover {
+  background-color: var(--azul-escuro);
+}
 
-          const textoFormatado = formatarTexto(estudo.textoCompleto);
+/* Rodapé */
+footer {
+  background-color: var(--azul-medio);
+  color: var(--branco);
+  text-align: center;
+  padding: 30px 10px 40px;
+  margin-top: auto;
+}
 
-          const html = `
-            <div class="estudo">
-              <div class="video-wrapper">
-                <iframe width="100%" src="${embedURL}" frameborder="0" allowfullscreen></iframe>
-              </div>
-              <div class="info">
-                <h2>${estudo.titulo}</h2>
-                <p class="data-estudo">${dataBr}</p>
-                <div class="texto-estudo">${textoFormatado}</div>
-              </div>
-            </div>
-          `;
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
-          if (contador === 0) {
-            estudoSemanal.innerHTML = html;
-          } else {
-            listaEstudos.innerHTML += html;
-          }
+.links-rapidos a {
+  color: var(--branco);
+  text-decoration: none;
+  margin-right: 10px;
+}
 
-          contador++;
-        });
-      } catch (error) {
-        console.error("Erro ao carregar os estudos:", error);
-      }
-    }
+.links-rapidos a:hover {
+  text-decoration: underline;
+}
 
-    carregarEstudos();
-  </script>
+.redes-sociais a {
+  margin-left: 10px;
+  text-decoration: none;
+}
 
-  <!-- 🔹 Layout fixo -->
-  <script src="includes/layout.js"></script>
+.redes-sociais img {
+  width: 24px;
+  height: auto;
+  transition: transform 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
+}
 
-</body>
-</html>
+.redes-sociais img:hover {
+  transform: scale(1.2);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .menu-superior {
+    flex-direction: row;
+    justify-content: space-between;
+    height: auto;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu-superior nav {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: var(--azul-medio);
+    padding: 10px;
+  }
+
+  .menu-superior nav.active {
+    display: flex;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+/* Banner da Página de Pedidos de Oração */
+.banner-pagina {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  margin-top: 60px;
+  overflow: hidden;
+}
+
+.banner-pagina img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-pagina .texto-banner {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+/* Formulário de Pedido de Oração */
+.pedidos {
+  max-width: 600px;
+  margin: 40px auto;
+  background: var(--branco);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.pedidos h1,
+.pedidos h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--azul-medio);
+}
+
+#form-oracao {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#form-oracao label {
+  font-weight: bold;
+}
+
+#form-oracao input,
+#form-oracao textarea {
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid var(--cinza-medio);
+  font-size: 16px;
+  resize: vertical;
+}
+
+#form-oracao button {
+  background-color: var(--azul-medio);
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+#form-oracao button:hover {
+  background-color: var(--azul-escuro);
+}
+
+@media (max-width: 768px) {
+  .banner-pagina {
+    height: 250px;
+  }
+}
+
+.agenda-semanal {
+  background: var(--branco);
+  padding: 30px;
+  border-radius: 10px;
+  margin: 40px auto;
+  max-width: 1000px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.agenda-semanal h2 {
+  color: var(--azul-medio);
+  margin-bottom: 20px;
+}
+
+.iframe-container {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+/* Vídeos responsivos ajustado para mais largura e menos altura vertical */
+.video-wrapper {
+  position: relative;
+  padding-bottom: 33%; /* mais achatado na vertical */
+  height: 0;
+  overflow: hidden;
+  margin: 10px auto 30px;
+  max-width: 1000px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Layout index - estudos lado a lado */
+#estudos-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+#estudos-index .estudo {
+  width: 100%;
+  max-width: 480px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#estudos-index .info h3 {
+  margin: 10px 0 5px;
+}
+
+#estudos-index .botao {
+  display: inline-block;
+  margin-top: 10px;
+}
+.data-estudo {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--cinza-medio);
+  margin-bottom: 10px;
+  text-align: right;
+  display: block;
+  width: 100%;
+}
