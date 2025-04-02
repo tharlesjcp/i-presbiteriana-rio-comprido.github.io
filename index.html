@@ -3,63 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Igreja Presbiteriana do Rio Comprido</title>
+  <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
   <!-- Header fixo -->
   <div id="header-container"></div>
 
-  <!-- Banner rotativo -->
-  <div class="banner-container">
-    <img src="images/banner1.png" class="banner-slide active">
-    <img src="images/banner2.png" class="banner-slide">
-  </div>
-  <div class="pontos">
-    <span data-index="0" class="active"></span>
-    <span data-index="1"></span>
-  </div>
+  <main>
+    <h1 class="titulo-pagina">Estudo da Semana</h1>
+    <div id="estudo-semanal"></div>
 
-  <!-- Estudos bíblicos recentes -->
-  <section class="estudos-recentes-index">
-    <h2>📖 Estudos Bíblicos Recentes</h2>
-    <div id="estudos-index"></div>
-  </section>
+    <hr style="margin: 40px auto; width: 80%;" />
 
-  <!-- Boletim Semanal -->
-  <section id="boletim-semana">
-    <h2>📰 Boletim Semanal</h2>
-    <div class="boletim">
-      <p id="boletim-titulo">Carregando...</p>
-      <a href="boletim.html" class="botao">Acessar Boletim</a>
-    </div>
-  </section>
-
-  <!-- Agenda -->
-  <div id="agenda-container"></div>
+    <h2 class="titulo-pagina">📚 Estudos Bíblicos Recentes</h2>
+    <section class="estudos-container" id="lista-estudos"></section>
+  </main>
 
   <!-- Footer fixo -->
   <div id="footer-container"></div>
 
-  <!-- Scripts -->
-  <script>
-    fetch("includes/header.html")
-      .then(res => res.text())
-      .then(data => document.getElementById("header-container").innerHTML = data);
-      
-    fetch("includes/footer.html")
-      .then(res => res.text())
-      .then(data => document.getElementById("footer-container").innerHTML = data);
-
-    fetch("includes/agenda.html")
-      .then(res => res.text())
-      .then(data => document.getElementById("agenda-container").innerHTML = data);
-  </script>
-
+  <!-- Firebase + Script de Estudos -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
@@ -73,56 +42,53 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function carregarUltimosEstudos() {
-      const container = document.getElementById("estudos-index");
-      container.innerHTML = "";
+    async function carregarEstudos() {
+      const listaEstudos = document.getElementById("lista-estudos");
+      const estudoSemanal = document.getElementById("estudo-semanal");
 
-      const q = query(collection(db, "estudos"), orderBy("data", "desc"), limit(2));
-      const snapshot = await getDocs(q);
+      try {
+        const q = query(collection(db, "estudos"), orderBy("data", "desc"));
+        const snapshot = await getDocs(q);
+        let primeiro = true;
 
-      snapshot.forEach((doc) => {
-        const estudo = doc.data();
-        const card = document.createElement("div");
-        card.classList.add("estudo");
+        snapshot.forEach((doc) => {
+          const estudo = doc.data();
 
-        card.innerHTML = `
-          <iframe width="100%" height="315" src="${estudo.video}" frameborder="0" allowfullscreen></iframe>
-          <div class="info">
-            <h3>${estudo.titulo}</h3>
-            <p>${estudo.resumo}</p>
-            <a class="botao" href="estudos.html?id=${doc.id}">Leia mais</a>
-          </div>
-        `;
+          const html = `
+            <div class="estudo">
+              <div class="video-wrapper">
+                <iframe width="100%" height="315" src="${estudo.video}" frameborder="0" allowfullscreen></iframe>
+              </div>
+              <div class="info">
+                <h2>${estudo.titulo}</h2>
+                ${primeiro ? `
+                  <div class="texto-completo">
+                    ${marked.parse(estudo.textoCompleto)}
+                  </div>
+                ` : `
+                  <p>${estudo.resumo}</p>
+                  <a class="botao" href="estudos.html?id=${doc.id}">Leia mais</a>
+                `}
+              </div>
+            </div>
+          `;
 
-        container.appendChild(card);
-      });
+          if (primeiro) {
+            estudoSemanal.innerHTML = html;
+            primeiro = false;
+          } else {
+            listaEstudos.innerHTML += html;
+          }
+        });
+      } catch (error) {
+        console.error("Erro ao carregar os estudos:", error);
+      }
     }
 
-    carregarUltimosEstudos();
+    carregarEstudos();
   </script>
 
-  <script>
-    // Script do banner
-    let index = 0;
-    const slides = document.querySelectorAll('.banner-slide');
-    const pontos = document.querySelectorAll('.pontos span');
-
-    function mudarSlide(novoIndex) {
-      slides.forEach(slide => {
-        slide.classList.remove('active');
-        slide.style.left = "100%";
-      });
-      pontos.forEach(p => p.classList.remove('active'));
-
-      slides[novoIndex].classList.add('active');
-      slides[novoIndex].style.left = "0";
-      pontos[novoIndex].classList.add('active');
-      index = novoIndex;
-    }
-
-    setInterval(() => mudarSlide((index + 1) % slides.length), 5000);
-    pontos.forEach((p, i) => p.addEventListener('click', () => mudarSlide(i)));
-    mudarSlide(0);
-  </script>
+  <!-- Layout reutilizável -->
+  <script src="includes/layout.js"></script>
 </body>
 </html>
