@@ -366,3 +366,12 @@ footer {
   display: inline-block;
   margin-top: 10px;
 }
+.data-estudo {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--cinza-medio);
+  margin-bottom: 10px;
+  text-align: right;
+  display: block;
+  width: 100%;
+}
