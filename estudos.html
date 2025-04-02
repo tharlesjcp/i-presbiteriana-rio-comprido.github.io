@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
@@ -24,13 +25,7 @@
   <!-- Footer fixo -->
   <div id="footer-container"></div>
 
-  <!-- Script layout (header e footer) -->
-  <script src="js/layout.js"></script>
-
-  <!-- Script do Marked para interpretar markdown -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-  <!-- Firebase + estudos -->
+  <!-- Firebase + Script de Estudos -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
@@ -53,38 +48,37 @@
 
       try {
         const q = query(collection(db, "estudos"), orderBy("data", "desc"));
-        const querySnapshot = await getDocs(q);
-        let contador = 0;
+        const snapshot = await getDocs(q);
+        let primeiro = true;
 
-        querySnapshot.forEach((doc) => {
+        snapshot.forEach((doc) => {
           const estudo = doc.data();
-
-          // Extrai o ID do vídeo do YouTube se for link completo, ou usa embed diretamente
-          let embedURL = estudo.link;
-          if (estudo.link.includes("watch?v=")) {
-            const videoID = estudo.link.split("v=")[1].split("&")[0];
-            embedURL = `https://www.youtube.com/embed/${videoID}`;
-          }
 
           const html = `
             <div class="estudo">
               <div class="video-wrapper">
-                <iframe width="100%" height="315" src="${embedURL}" frameborder="0" allowfullscreen></iframe>
+                <iframe width="100%" height="315" src="${estudo.video}" frameborder="0" allowfullscreen></iframe>
               </div>
               <div class="info">
                 <h2>${estudo.titulo}</h2>
-                <div class="texto-estudo">${marked.parse(estudo.textoCompleto || '')}</div>
+                ${primeiro ? `
+                  <div class="texto-completo">
+                    ${marked.parse(estudo.textoCompleto)}
+                  </div>
+                ` : `
+                  <p>${estudo.resumo}</p>
+                  <a class="botao" href="estudos.html?id=${doc.id}">Leia mais</a>
+                `}
               </div>
             </div>
           `;
 
-          if (contador === 0) {
+          if (primeiro) {
             estudoSemanal.innerHTML = html;
+            primeiro = false;
           } else {
             listaEstudos.innerHTML += html;
           }
-
-          contador++;
         });
       } catch (error) {
         console.error("Erro ao carregar os estudos:", error);
@@ -94,5 +88,7 @@
     carregarEstudos();
   </script>
 
+  <!-- Layout reutilizável -->
+  <script src="includes/layout.js"></script>
 </body>
 </html>
