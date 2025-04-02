@@ -2,47 +2,82 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adicionar Estudo Bíblico</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    .texto-estudo h3 {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: var(--azul-medio);
-      margin-top: 30px;
-      margin-bottom: 10px;
+    .container-admin {
+      max-width: 800px;
+      margin: 100px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .container-admin h1 {
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
       text-align: left;
     }
-
-    .texto-estudo p {
-      margin-bottom: 12px;
-      text-align: justify;
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 12px 20px;
+      background-color: var(--azul-medio);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .mensagem {
+      margin-top: 15px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-
-  <!-- 🔹 Header -->
   <div id="header-container"></div>
 
-  <main>
-    <h1 class="titulo-pagina">Estudo da Semana</h1>
-    <div id="estudo-semanal"></div>
+  <div class="container-admin">
+    <h1>Adicionar Novo Estudo</h1>
+    <form id="form-estudo">
+      <div class="form-group">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" required />
+      </div>
+      <div class="form-group">
+        <label for="link">Link do Vídeo (formato embed)</label>
+        <input type="url" id="link" required />
+      </div>
+      <div class="form-group">
+        <label for="resumo">Resumo</label>
+        <textarea id="resumo" rows="3" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="textoCompleto">Texto Completo</label>
+        <textarea id="textoCompleto" rows="10" required></textarea>
+      </div>
+      <button type="submit">Salvar Estudo</button>
+      <p class="mensagem" id="mensagem"></p>
+    </form>
+  </div>
 
-    <hr style="margin: 40px auto; width: 80%;" />
-
-    <h2 class="titulo-pagina">📚 Estudos Bíblicos Recentes</h2>
-    <section class="estudos-container" id="lista-estudos"></section>
-  </main>
-
-  <!-- 🔹 Footer -->
   <div id="footer-container"></div>
 
-  <!-- 🔹 Firebase + Script de Estudos -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
@@ -56,64 +91,37 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    function formatarTexto(texto) {
-      return texto
-        .replace(/## (.*?)(\n|$)/g, '<h3>$1</h3>')
-        .replace(/\n/g, '<br>')
-        .replace(/\n/g, '<br>'); // Força dupla conversão, caso um \n real tenha virado \n
-    }
+    const form = document.getElementById("form-estudo");
+    const mensagem = document.getElementById("mensagem");
 
-    async function carregarEstudos() {
-      const listaEstudos = document.getElementById("lista-estudos");
-      const estudoSemanal = document.getElementById("estudo-semanal");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const titulo = document.getElementById("titulo").value;
+      const link = document.getElementById("link").value;
+      const resumo = document.getElementById("resumo").value;
+      const textoCompleto = document.getElementById("textoCompleto").value;
 
       try {
-        const q = query(collection(db, "estudos"), orderBy("data", "desc"));
-        const querySnapshot = await getDocs(q);
-        let contador = 0;
-
-        querySnapshot.forEach((doc) => {
-          const estudo = doc.data();
-          const embedURL = estudo.link;
-          const dataBr = estudo.data.toDate().toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric"
-          });
-
-          const textoFormatado = formatarTexto(estudo.textoCompleto);
-
-          const html = `
-            <div class="estudo">
-              <div class="video-wrapper">
-                <iframe width="100%" src="${embedURL}" frameborder="0" allowfullscreen></iframe>
-              </div>
-              <div class="info">
-                <h2>${estudo.titulo}</h2>
-                <p class="data-estudo">${dataBr}</p>
-                <div class="texto-estudo">${textoFormatado}</div>
-              </div>
-            </div>
-          `;
-
-          if (contador === 0) {
-            estudoSemanal.innerHTML = html;
-          } else {
-            listaEstudos.innerHTML += html;
-          }
-
-          contador++;
+        await addDoc(collection(db, "estudos"), {
+          titulo,
+          link,
+          resumo,
+          textoCompleto,
+          data: serverTimestamp()
         });
-      } catch (error) {
-        console.error("Erro ao carregar os estudos:", error);
-      }
-    }
 
-    carregarEstudos();
+        mensagem.textContent = "Estudo adicionado com sucesso!";
+        mensagem.style.color = "green";
+        form.reset();
+      } catch (error) {
+        mensagem.textContent = "Erro ao adicionar estudo.";
+        mensagem.style.color = "red";
+        console.error("Erro ao salvar estudo:", error);
+      }
+    });
   </script>
 
-  <!-- 🔹 Layout fixo -->
   <script src="includes/layout.js"></script>
-
 </body>
 </html>
