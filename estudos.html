@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- 🔹 Header -->
+  <!-- Header fixo -->
   <div id="header-container"></div>
 
   <main>
@@ -21,10 +21,16 @@
     <section class="estudos-container" id="lista-estudos"></section>
   </main>
 
-  <!-- 🔹 Footer -->
+  <!-- Footer fixo -->
   <div id="footer-container"></div>
 
-  <!-- 🔹 Firebase + Script de Estudos -->
+  <!-- Script layout (header e footer) -->
+  <script src="js/layout.js"></script>
+
+  <!-- Script do Marked para interpretar markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Firebase + estudos -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
@@ -52,7 +58,13 @@
 
         querySnapshot.forEach((doc) => {
           const estudo = doc.data();
-          const embedURL = estudo.link; // Link do Firestore já no formato embed
+
+          // Extrai o ID do vídeo do YouTube se for link completo, ou usa embed diretamente
+          let embedURL = estudo.link;
+          if (estudo.link.includes("watch?v=")) {
+            const videoID = estudo.link.split("v=")[1].split("&")[0];
+            embedURL = `https://www.youtube.com/embed/${videoID}`;
+          }
 
           const html = `
             <div class="estudo">
@@ -61,8 +73,7 @@
               </div>
               <div class="info">
                 <h2>${estudo.titulo}</h2>
-                <p>${estudo.resumo}</p>
-                <a href="estudo.html?id=${doc.id}" class="botao">Leia mais</a>
+                <div class="texto-estudo">${marked.parse(estudo.textoCompleto || '')}</div>
               </div>
             </div>
           `;
@@ -82,9 +93,6 @@
 
     carregarEstudos();
   </script>
-
-  <!-- 🔹 Layout fixo -->
-  <script type="module" src="includes/layout.js"></script>
 
 </body>
 </html>
