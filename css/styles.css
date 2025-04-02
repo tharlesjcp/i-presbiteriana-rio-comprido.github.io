@@ -320,16 +320,18 @@ footer {
   border-radius: 10px;
 }
 
-/* Vídeos responsivos estilo 21:9 */
+/* Vídeos responsivos estilo 21:9 ajustado */
 .video-wrapper {
   position: relative;
-  padding-bottom: 42.55%; /* proporção 21:9 */
+  padding-bottom: 42.55%;
   height: 0;
   overflow: hidden;
   margin-bottom: 20px;
-  max-width: 900px;
+  max-width: 720px;
   margin-left: auto;
   margin-right: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
 }
 
 .video-wrapper iframe {
