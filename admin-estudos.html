@@ -1,183 +1,119 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Estudos - Admin</title>
-    <link rel="stylesheet" href="css/admin.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Estudos Bíblicos - Igreja Presbiteriana do Rio Comprido</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .texto-estudo h3 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--azul-medio);
+      margin-top: 30px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .texto-estudo p {
+      margin-bottom: 12px;
+      text-align: justify;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Menu Lateral -->
-    <div class="sidebar">
-        <h2>Administração</h2>
-        <ul>
-            <li><a href="dashboard.html">⬅️ Voltar ao Painel</a></li>
-        </ul>
-    </div>
+  <!-- 🔹 Header -->
+  <div id="header-container"></div>
 
-    <!-- Conteúdo Principal -->
-    <div class="main-content">
-        <h1>📜 Gerenciar Estudos Bíblicos</h1>
+  <main>
+    <h1 class="titulo-pagina">Estudo da Semana</h1>
+    <div id="estudo-semanal"></div>
 
-        <section class="secao">
-            <h2>➕ Adicionar Novo Estudo</h2>
-            <form id="form-estudo">
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" required>
+    <hr style="margin: 40px auto; width: 80%;" />
 
-                <label for="resumo">Resumo:</label>
-                <textarea id="resumo" required></textarea>
+    <h2 class="titulo-pagina">📚 Estudos Bíblicos Recentes</h2>
+    <section class="estudos-container" id="lista-estudos"></section>
+  </main>
 
-                <label for="texto">Texto Completo:</label>
-                <textarea id="texto" required></textarea>
+  <!-- 🔹 Footer -->
+  <div id="footer-container"></div>
 
-                <!-- Novo campo para upload da imagem -->
-                <label for="upload-imagem">Upload da Imagem:</label>
-                <input type="file" id="upload-imagem" accept="image/*">
-                
-                <!-- Pré-visualização -->
-                <img id="preview-imagem" src="https://via.placeholder.com/150" alt="Pré-visualização" style="max-width: 150px; display: none; margin-top: 10px;">
+  <!-- 🔹 Firebase + Script de Estudos -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-                <!-- Input oculto para armazenar a URL da imagem -->
-                <input type="hidden" id="imagem">
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
 
-                <label for="youtube">Link do YouTube:</label>
-                <input type="url" id="youtube" required>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-                <button type="submit">Salvar Estudo</button>
-            </form>
-        </section>
+    function formatarTexto(texto) {
+      return texto
+        .replace(/## (.*?)(\n|$)/g, '<h3>$1</h3>')
+        .replace(/\n/g, '<br>')
+        .replace(/\n/g, '<br>'); // Força dupla conversão, caso um \n real tenha virado \n
+    }
 
-        <section class="secao">
-            <h2>📋 Estudos Cadastrados</h2>
-            <div id="lista-estudos">
-                <!-- Os estudos aparecerão aqui -->
+    async function carregarEstudos() {
+      const listaEstudos = document.getElementById("lista-estudos");
+      const estudoSemanal = document.getElementById("estudo-semanal");
+
+      try {
+        const q = query(collection(db, "estudos"), orderBy("data", "desc"));
+        const querySnapshot = await getDocs(q);
+        let contador = 0;
+
+        querySnapshot.forEach((doc) => {
+          const estudo = doc.data();
+          const embedURL = estudo.link;
+          const dataBr = estudo.data.toDate().toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+          });
+
+          const textoFormatado = formatarTexto(estudo.textoCompleto);
+
+          const html = `
+            <div class="estudo">
+              <div class="video-wrapper">
+                <iframe width="100%" src="${embedURL}" frameborder="0" allowfullscreen></iframe>
+              </div>
+              <div class="info">
+                <h2>${estudo.titulo}</h2>
+                <p class="data-estudo">${dataBr}</p>
+                <div class="texto-estudo">${textoFormatado}</div>
+              </div>
             </div>
-        </section>
-    </div>
+          `;
 
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+          if (contador === 0) {
+            estudoSemanal.innerHTML = html;
+          } else {
+            listaEstudos.innerHTML += html;
+          }
 
-        // Configuração Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-        };
-
-        // Inicializa Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        // Captura os elementos do formulário
-        const formEstudo = document.getElementById("form-estudo");
-        const fileInput = document.getElementById("upload-imagem");
-        const previewImagem = document.getElementById("preview-imagem");
-        const imagemInput = document.getElementById("imagem");
-
-        // Função para processar o upload da imagem no Firebase Storage
-        fileInput.addEventListener("change", async (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const storageRef = ref(storage, `imagens-estudos/${Date.now()}_${file.name}`);
-                
-                // Fazendo o upload da imagem
-                const uploadTask = await uploadBytes(storageRef, file);
-                
-                // Pegando o link da imagem
-                const imageUrl = await getDownloadURL(uploadTask.ref);
-                
-                // Atualiza a pré-visualização da imagem
-                previewImagem.src = imageUrl;
-                previewImagem.style.display = "block";
-                
-                // Guarda o link no input escondido para ser salvo no Firestore
-                imagemInput.value = imageUrl;
-            }
+          contador++;
         });
+      } catch (error) {
+        console.error("Erro ao carregar os estudos:", error);
+      }
+    }
 
-        // Função para salvar um novo estudo
-        formEstudo.addEventListener("submit", async (e) => {
-            e.preventDefault();
+    carregarEstudos();
+  </script>
 
-            const titulo = document.getElementById("titulo").value;
-            const resumo = document.getElementById("resumo").value;
-            const texto = document.getElementById("texto").value;
-            const youtube = document.getElementById("youtube").value;
-            const imagemUrl = imagemInput.value; // Agora pega a imagem salva no Firebase Storage
-
-            if (!imagemUrl) {
-                alert("Por favor, envie uma imagem antes de salvar o estudo.");
-                return;
-            }
-
-            try {
-                await addDoc(collection(db, "estudos"), {
-                    titulo,
-                    resumo,
-                    texto,
-                    imagem: imagemUrl, // Agora a imagem vem do Firebase Storage
-                    link: youtube,
-                    data: new Date()
-                });
-
-                alert("Estudo salvo com sucesso!");
-                formEstudo.reset();
-                previewImagem.style.display = "none"; // Esconde a pré-visualização
-                carregarEstudos(); // Atualiza a lista de estudos
-            } catch (error) {
-                console.error("Erro ao salvar estudo:", error);
-            }
-        });
-
-        // Função para carregar estudos cadastrados
-        async function carregarEstudos() {
-            const listaEstudos = document.getElementById("lista-estudos");
-            listaEstudos.innerHTML = "";
-
-            const querySnapshot = await getDocs(collection(db, "estudos"));
-
-            querySnapshot.forEach((doc) => {
-                const estudo = doc.data();
-
-                const divEstudo = document.createElement("div");
-                divEstudo.classList.add("estudo");
-
-                divEstudo.innerHTML = `
-                    <img src="${estudo.imagem}" alt="Imagem do estudo">
-                    <div class="info">
-                        <h2>${estudo.titulo}</h2>
-                        <p>${estudo.resumo}</p>
-                        <a href="estudo-detalhe.html?id=${doc.id}" class="botao">Ler mais</a>
-                        <button class="excluir" data-id="${doc.id}">Excluir</button>
-                    </div>
-                `;
-
-                listaEstudos.appendChild(divEstudo);
-            });
-
-            // Adiciona evento de exclusão
-            document.querySelectorAll(".excluir").forEach((botao) => {
-                botao.addEventListener("click", async () => {
-                    const id = botao.getAttribute("data-id");
-                    await deleteDoc(doc(db, "estudos", id));
-                    carregarEstudos(); // Atualiza a lista
-                });
-            });
-        }
-
-        // Carregar os estudos assim que a página for aberta
-        carregarEstudos();
-    </script>
+  <!-- 🔹 Layout fixo -->
+  <script src="includes/layout.js"></script>
 
 </body>
 </html>
