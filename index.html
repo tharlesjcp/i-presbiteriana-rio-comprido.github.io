@@ -76,17 +76,19 @@
 
       snapshot.forEach((doc) => {
         const estudo = doc.data();
-        const video = estudo.video?.trim();
+        const video = estudo.link?.trim();
 
         const card = document.createElement("div");
         card.classList.add("estudo");
 
         card.innerHTML = `
-          <iframe width="100%" height="315" src="${video}" frameborder="0" allowfullscreen></iframe>
+          <div class="video-wrapper">
+            <iframe src="${video}" frameborder="0" allowfullscreen></iframe>
+          </div>
           <div class="info">
             <h3>${estudo.titulo}</h3>
             <p>${estudo.resumo}</p>
-            <a class="botao" href="estudos.html?id=${doc.id}">Leia mais</a>
+            <a class="botao" href="estudo.html?id=${doc.id}">Leia mais</a>
           </div>
         `;
 
