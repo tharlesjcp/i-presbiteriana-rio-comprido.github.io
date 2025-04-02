@@ -7,6 +7,16 @@ fetch("includes/header.html")
     const headerContainer = document.getElementById("header-container");
     if (headerContainer) {
       headerContainer.innerHTML = data;
+
+      // Ativa o menu hamburguer após carregar o header
+      const menuToggle = document.querySelector(".menu-toggle");
+      const nav = document.querySelector(".menu-superior nav");
+
+      if (menuToggle && nav) {
+        menuToggle.addEventListener("click", () => {
+          nav.classList.toggle("active");
+        });
+      }
     }
   });
 
