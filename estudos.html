@@ -53,7 +53,7 @@
         querySnapshot.forEach((doc) => {
           const estudo = doc.data();
           const embedURL = estudo.link;
-          const dataBr = new Date(estudo.data).toLocaleDateString("pt-BR", {
+          const dataBr = estudo.data.toDate().toLocaleDateString("pt-BR", {
             day: "2-digit",
             month: "long",
             year: "numeric"
