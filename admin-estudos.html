@@ -3,81 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adicionar Estudo Bíblico</title>
+  <title>Admin - Estudos</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    .container-admin {
-      max-width: 800px;
-      margin: 100px auto;
+    body {
       padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    .container-admin h1 {
-      margin-bottom: 20px;
+    .login-box, .form-box {
+      max-width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .form-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-    label {
+    input, textarea, button {
       display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    input, textarea {
       width: 100%;
+      margin-bottom: 15px;
       padding: 10px;
       border-radius: 5px;
       border: 1px solid #ccc;
     }
     button {
-      padding: 12px 20px;
       background-color: var(--azul-medio);
-      color: white;
+      color: #fff;
+      font-weight: bold;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
     }
-    .mensagem {
-      margin-top: 15px;
-      font-weight: bold;
+    button:hover {
+      background-color: var(--azul-escuro);
     }
   </style>
 </head>
 <body>
-  <div id="header-container"></div>
+  <h1>Painel Administrativo - Estudos</h1>
 
-  <div class="container-admin">
-    <h1>Adicionar Novo Estudo</h1>
-    <form id="form-estudo">
-      <div class="form-group">
-        <label for="titulo">Título</label>
-        <input type="text" id="titulo" required />
-      </div>
-      <div class="form-group">
-        <label for="link">Link do Vídeo (formato embed)</label>
-        <input type="url" id="link" required />
-      </div>
-      <div class="form-group">
-        <label for="resumo">Resumo</label>
-        <textarea id="resumo" rows="3" required></textarea>
-      </div>
-      <div class="form-group">
-        <label for="textoCompleto">Texto Completo</label>
-        <textarea id="textoCompleto" rows="10" required></textarea>
-      </div>
-      <button type="submit">Salvar Estudo</button>
-      <p class="mensagem" id="mensagem"></p>
-    </form>
+  <!-- Login -->
+  <div id="login-box" class="login-box">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="E-mail" />
+    <input type="password" id="senha" placeholder="Senha" />
+    <button onclick="fazerLogin()">Entrar</button>
+    <p id="erro-login" style="color: red;"></p>
   </div>
 
-  <div id="footer-container"></div>
+  <!-- Formulário de Estudo -->
+  <div id="form-box" class="form-box" style="display:none;">
+    <h2>Novo Estudo</h2>
+    <input type="text" id="titulo" placeholder="Título" />
+    <input type="text" id="link" placeholder="Link do YouTube (embed)" />
+    <textarea id="resumo" placeholder="Resumo"></textarea>
+    <textarea id="textoCompleto" placeholder="Texto Completo"></textarea>
+    <button onclick="salvarEstudo()">Salvar Estudo</button>
+    <p id="mensagem"></p>
+  </div>
 
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
@@ -90,17 +77,32 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth();
 
-    const form = document.getElementById("form-estudo");
-    const mensagem = document.getElementById("mensagem");
+    window.fazerLogin = async function () {
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+      const erroBox = document.getElementById("erro-login");
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+      } catch (error) {
+        erroBox.textContent = "Login inválido: " + error.message;
+      }
+    };
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("login-box").style.display = "none";
+        document.getElementById("form-box").style.display = "block";
+      }
+    });
 
+    window.salvarEstudo = async function () {
       const titulo = document.getElementById("titulo").value;
       const link = document.getElementById("link").value;
       const resumo = document.getElementById("resumo").value;
       const textoCompleto = document.getElementById("textoCompleto").value;
+      const mensagem = document.getElementById("mensagem");
 
       try {
         await addDoc(collection(db, "estudos"), {
@@ -110,18 +112,13 @@
           textoCompleto,
           data: serverTimestamp()
         });
-
-        mensagem.textContent = "Estudo adicionado com sucesso!";
+        mensagem.textContent = "✅ Estudo salvo com sucesso!";
         mensagem.style.color = "green";
-        form.reset();
-      } catch (error) {
-        mensagem.textContent = "Erro ao adicionar estudo.";
+      } catch (e) {
+        mensagem.textContent = "Erro ao salvar estudo: " + e.message;
         mensagem.style.color = "red";
-        console.error("Erro ao salvar estudo:", error);
       }
-    });
+    };
   </script>
-
-  <script src="includes/layout.js"></script>
 </body>
 </html>
