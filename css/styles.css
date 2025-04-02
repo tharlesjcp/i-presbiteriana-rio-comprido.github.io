@@ -320,14 +320,14 @@ footer {
   border-radius: 10px;
 }
 
-/* Vídeos responsivos ajustado para formato mais alto e mais estreito */
+/* Vídeos responsivos ajustado para mais largo e mais baixo */
 .video-wrapper {
   position: relative;
-  padding-bottom: 75%; /* mais alto que 16:9 */
+  padding-bottom: 40%; /* menos altura */
   height: 0;
   overflow: hidden;
   margin-bottom: 20px;
-  max-width: 480px; /* mais estreito */
+  max-width: 900px; /* mais largo */
   margin-left: auto;
   margin-right: auto;
   border-radius: 8px;
