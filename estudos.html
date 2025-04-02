@@ -58,10 +58,8 @@
 
     function formatarTexto(texto) {
       return texto
-        .replace(/## (.*?)(\\n|$)/g, '<h3>$1</h3>')
-        .replace(/^- /gm, '')
-        .replace(/\\n/g, '<p>')
-        .replace(/<p><\/h3>/g, '</h3>');
+        .replace(/## (.*?)(\n|$)/g, '<h3>$1</h3>')
+        .replace(/\n/g, '<br>');
     }
 
     async function carregarEstudos() {
