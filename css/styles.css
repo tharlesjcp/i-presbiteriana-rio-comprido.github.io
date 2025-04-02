@@ -377,6 +377,15 @@ footer {
   width: 100%;
   padding-right: 30px;
 }
+@media (max-width: 768px) {
+  .data-estudo {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    padding-right: 0;
+  }
+}
+
 /*  Texto formatado dos estudos */
 .texto-estudo {
   text-align: center;
