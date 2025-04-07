@@ -54,7 +54,7 @@
     const btnAnterior = document.getElementById('anterior-capitulo');
     const capituloIndicador = document.getElementById('capitulo-indicador');
 
-    async function carregarVersao(arquivo) {
+    async function carregarVersao(arquivo, manterSelecao = true) {
       const res = await fetch(`dados/biblia/${arquivo}`);
       const json = await res.json();
       dados = json.verses || [];
@@ -62,13 +62,23 @@
       const livros = [...new Set(dados.map(v => v.book_name))];
       livrosDisponiveis = livros;
       livroSelect.innerHTML = livros.map(livro => `<option value="${livro}">${livro}</option>`).join('');
-      carregarCapitulos();
+
+      if (manterSelecao) {
+        const livroSalvo = localStorage.getItem("livro");
+        if (livroSalvo && livros.includes(livroSalvo)) livroSelect.value = livroSalvo;
+      }
+      carregarCapitulos(manterSelecao);
     }
 
-    function carregarCapitulos() {
+    function carregarCapitulos(manterSelecao = true) {
       const livroSelecionado = livroSelect.value;
       const capitulos = [...new Set(dados.filter(v => v.book_name === livroSelecionado).map(v => v.chapter))];
       capituloSelect.innerHTML = capitulos.map(c => `<option value="${c}">${c}</option>`).join('');
+
+      if (manterSelecao) {
+        const capituloSalvo = localStorage.getItem("capitulo");
+        if (capituloSalvo && capitulos.includes(parseInt(capituloSalvo))) capituloSelect.value = capituloSalvo;
+      }
       mostrarVersiculos();
     }
 
@@ -96,11 +106,15 @@
         }
       }).join('');
 
+      localStorage.setItem("versao", versaoSelect.value);
+      localStorage.setItem("livro", livro);
+      localStorage.setItem("capitulo", capitulo);
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    versaoSelect.addEventListener('change', () => carregarVersao(versaoSelect.value));
-    livroSelect.addEventListener('change', carregarCapitulos);
+    versaoSelect.addEventListener('change', () => carregarVersao(versaoSelect.value, false));
+    livroSelect.addEventListener('change', () => carregarCapitulos(false));
     capituloSelect.addEventListener('change', mostrarVersiculos);
 
     btnProximo.addEventListener('click', () => {
@@ -108,6 +122,12 @@
       if (index < capituloSelect.options.length - 1) {
         capituloSelect.selectedIndex = index + 1;
         mostrarVersiculos();
+      } else {
+        const livroIndex = livroSelect.selectedIndex;
+        if (livroIndex < livroSelect.options.length - 1) {
+          livroSelect.selectedIndex = livroIndex + 1;
+          carregarCapitulos(false);
+        }
       }
     });
 
@@ -116,6 +136,14 @@
       if (index > 0) {
         capituloSelect.selectedIndex = index - 1;
         mostrarVersiculos();
+      } else {
+        const livroIndex = livroSelect.selectedIndex;
+        if (livroIndex > 0) {
+          livroSelect.selectedIndex = livroIndex - 1;
+          carregarCapitulos(false);
+          capituloSelect.selectedIndex = capituloSelect.options.length - 1;
+          mostrarVersiculos();
+        }
       }
     });
 
@@ -124,7 +152,9 @@
       if (e.key === 'ArrowLeft') btnAnterior.click();
     });
 
-    carregarVersao(versaoSelect.value);
+    const versaoSalva = localStorage.getItem("versao") || versaoSelect.value;
+    versaoSelect.value = versaoSalva;
+    carregarVersao(versaoSalva);
   </script>
 </body>
 </html>
