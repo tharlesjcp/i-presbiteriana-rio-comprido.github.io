@@ -42,9 +42,17 @@
   <!-- Scripts -->
   <script src="includes/layout.js"></script>
   <script>
+    // Carregar agenda
     fetch("includes/agenda.html")
       .then(response => response.text())
       .then(data => document.getElementById("agenda-container").innerHTML = data);
+
+    // Ativar menu responsivo se necessário (caso esteja no layout.js, pode remover)
+    document.addEventListener("click", function (e) {
+      if (e.target.classList.contains("menu-toggle")) {
+        document.querySelector(".menu-superior nav").classList.toggle("active");
+      }
+    });
   </script>
 
 </body>
