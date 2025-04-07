@@ -1,1 +1,123 @@
 <!-- Pedidos de Oração HTML -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Pedidos de Oração</title>
+  <style>
+    body {
+      padding: 20px;
+      font-family: sans-serif;
+    }
+    .pedido {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #f9f9f9;
+    }
+    .pedido p {
+      margin: 5px 0;
+    }
+    .pedido button {
+      margin-right: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-orado {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-excluir {
+      background-color: #dc3545;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin - Pedidos de Oração</h1>
+  <div id="lista-pedidos"></div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs, updateDoc,
+      deleteDoc, doc, query, orderBy
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      carregarPedidos();
+    });
+
+    function formatarData(timestamp) {
+      const data = timestamp?.toDate?.();
+      return data ? data.toLocaleString("pt-BR") : "Sem data";
+    }
+
+    async function carregarPedidos() {
+      const lista = document.getElementById("lista-pedidos");
+      lista.innerHTML = "";
+
+      const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
+      const snapshot = await getDocs(q);
+
+      snapshot.forEach(docItem => {
+        const pedido = docItem.data();
+        const id = docItem.id;
+
+        const div = document.createElement("div");
+        div.className = "pedido";
+        div.innerHTML = `
+          <p><strong>Nome:</strong> ${pedido.nome}</p>
+          <p><strong>Email:</strong> ${pedido.email}</p>
+          <p><strong>Pedido:</strong> ${pedido.pedido}</p>
+          <p><strong>Data:</strong> ${formatarData(pedido.data)}</p>
+          <p><strong>Status:</strong> ${pedido.status}</p>
+          <button class="btn-orado" onclick="marcarOrado('${id}')">✅ Marcar como Orado</button>
+          <button class="btn-excluir" onclick="excluirPedido('${id}')">🗑️ Excluir</button>
+        `;
+        lista.appendChild(div);
+      });
+    }
+
+    window.marcarOrado = async function (id) {
+      const pedidoRef = doc(db, "pedidos", id);
+      await updateDoc(pedidoRef, { status: "Orado" });
+      carregarPedidos();
+    }
+
+    window.excluirPedido = async function (id) {
+      if (confirm("Tem certeza que deseja excluir esse pedido?")) {
+        const pedidoRef = doc(db, "pedidos", id);
+        await deleteDoc(pedidoRef);
+        carregarPedidos();
+      }
+    }
+  </script>
+
+  <script type="module" src="layout.js"></script>
+  <script type="module" src="adm.js"></script>
+</body>
+</html>
