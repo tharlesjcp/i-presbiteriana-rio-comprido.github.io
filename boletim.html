@@ -17,14 +17,14 @@
     <section id="boletim-recente">
       <h2>📌 Último Boletim</h2>
       <div id="ultimo-boletim">
-        <!-- O último boletim será carregado aqui -->
+        <!-- Último boletim com visualização -->
       </div>
     </section>
 
     <section id="boletins-anteriores">
       <h2>📋 Boletins Anteriores</h2>
       <div id="lista-boletins">
-        <!-- Lista de boletins carregada dinamicamente -->
+        <!-- Lista de boletins anteriores -->
       </div>
     </section>
   </main>
@@ -50,19 +50,34 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    function formatarData(timestamp) {
+      const data = timestamp.toDate();
+      return data.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
     async function carregarBoletins() {
       const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
 
       let primeiro = true;
       querySnapshot.forEach((doc) => {
         const boletim = doc.data();
-        const html = `<p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>`;
+        const dataFormatada = formatarData(boletim.data);
 
         if (primeiro) {
-          document.getElementById("ultimo-boletim").innerHTML = html;
+          document.getElementById("ultimo-boletim").innerHTML = `
+            <p><strong>${dataFormatada}</strong></p>
+            <iframe src="${boletim.urlPdf}" width="100%" height="600px"></iframe>
+            <p><a href="${boletim.urlPdf}" target="_blank">📄 Baixar PDF</a></p>
+          `;
           primeiro = false;
         } else {
-          document.getElementById("lista-boletins").innerHTML += html;
+          document.getElementById("lista-boletins").innerHTML += `
+            <p>📎 <strong>${dataFormatada}</strong> - <a href="${boletim.urlPdf}" target="_blank">Visualizar</a></p>
+          `;
         }
       });
     }
