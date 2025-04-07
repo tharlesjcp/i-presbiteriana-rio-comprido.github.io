@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bíblia Interlinear</title>
   <link rel="stylesheet" href="css/biblia.css" />
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
 </head>
 <body>
   <div id="header-container"></div>
@@ -27,6 +32,8 @@
     </div>
 
     <div class="navegacao-lateral">
+      <button id="anterior-capitulo">&#8249;</button>
+      <span id="capitulo-indicador"></span>
       <button id="proximo-capitulo">&#8250;</button>
     </div>
   </main>
@@ -44,6 +51,8 @@
     const versiculosDiv = document.getElementById('versiculos');
     const tituloCapitulo = document.getElementById('titulo-capitulo');
     const btnProximo = document.getElementById('proximo-capitulo');
+    const btnAnterior = document.getElementById('anterior-capitulo');
+    const capituloIndicador = document.getElementById('capitulo-indicador');
 
     async function carregarVersao(arquivo) {
       const res = await fetch(`dados/biblia/${arquivo}`);
@@ -69,6 +78,7 @@
       const versiculos = dados.filter(v => v.book_name === livro && v.chapter === capitulo);
 
       tituloCapitulo.textContent = `${livro} ${capitulo}`;
+      capituloIndicador.textContent = `Capítulo ${capitulo} de ${capituloSelect.options.length}`;
 
       versiculosDiv.innerHTML = versiculos.map(v => {
         if (v.text.includes('G') || v.text.includes('N-')) {
@@ -85,18 +95,33 @@
           return `<p class="versiculo"><sup>${v.verse}</sup> ${v.text}</p>`;
         }
       }).join('');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     versaoSelect.addEventListener('change', () => carregarVersao(versaoSelect.value));
     livroSelect.addEventListener('change', carregarCapitulos);
     capituloSelect.addEventListener('change', mostrarVersiculos);
+
     btnProximo.addEventListener('click', () => {
-      const opcoes = [...capituloSelect.options];
       const index = capituloSelect.selectedIndex;
-      if (index < opcoes.length - 1) {
+      if (index < capituloSelect.options.length - 1) {
         capituloSelect.selectedIndex = index + 1;
         mostrarVersiculos();
       }
+    });
+
+    btnAnterior.addEventListener('click', () => {
+      const index = capituloSelect.selectedIndex;
+      if (index > 0) {
+        capituloSelect.selectedIndex = index - 1;
+        mostrarVersiculos();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') btnProximo.click();
+      if (e.key === 'ArrowLeft') btnAnterior.click();
     });
 
     carregarVersao(versaoSelect.value);
