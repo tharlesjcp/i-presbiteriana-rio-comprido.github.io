@@ -54,3 +54,49 @@ button:hover {
   padding: 10px 0;
   border-bottom: 1px solid #ddd;
 }
+
+.sidebar {
+  background: #f8f9fa;
+  padding: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.sidebar h2 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 20px;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #1e3a8a;
+  font-weight: 500;
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 10px;
+  font-weight: bold;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background: #1e40af;
+}
