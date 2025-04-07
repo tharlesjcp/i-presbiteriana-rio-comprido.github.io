@@ -1,0 +1,17 @@
+[
+  {
+    "id": "ara",
+    "nome": "Almeida RA",
+    "arquivo": "almeida_ra.json"
+  },
+  {
+    "id": "tr",
+    "nome": "Grego Interlinear",
+    "arquivo": "trparsed.json"
+  },
+  {
+    "id": "wlc",
+    "nome": "Hebraico (WLC)",
+    "arquivo": "wlc.json"
+  }
+]
