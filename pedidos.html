@@ -28,6 +28,9 @@
         <label for="nome">Seu Nome (opcional):</label>
         <input type="text" id="nome" name="nome" placeholder="Digite seu nome...">
 
+        <label for="email">Seu E-mail (obrigatório):</label>
+        <input type="email" id="email" name="email" placeholder="exemplo@dominio.com" required>
+
         <label for="pedido">Seu Pedido de Oração:</label>
         <textarea id="pedido" name="pedido" rows="4" placeholder="Digite seu pedido de oração..." required></textarea>
 
@@ -75,16 +78,18 @@
       e.preventDefault();
 
       const nome = document.getElementById("nome").value.trim() || "Anônimo";
+      const email = document.getElementById("email").value.trim();
       const pedido = document.getElementById("pedido").value.trim();
 
-      if (!pedido) {
-        alert("⚠️ Por favor, digite seu pedido.");
+      if (!email || !pedido) {
+        alert("⚠️ Por favor, preencha o e-mail e o pedido.");
         return;
       }
 
       try {
-        await addDoc(collection(db, "oracoes"), {
+        await addDoc(collection(db, "pedidos"), {
           nome,
+          email,
           pedido,
           data: serverTimestamp(),
           status: "Pendente"
