@@ -1,72 +1,74 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletins - Igreja Presbiteriana</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boletins - Igreja Presbiteriana do Rio Comprido</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <div id="header-container"></div>
+  <!-- Header dinâmico -->
+  <div id="header-container"></div>
 
-    <main>
-        <h1>📰 Boletins Semanais</h1>
+  <main class="pagina-conteudo">
+    <h1>📰 Boletins Semanais</h1>
 
-        <section id="boletim-recente">
-            <h2>📌 Último Boletim</h2>
-            <div id="ultimo-boletim">
-                <!-- O último boletim será carregado aqui -->
-            </div>
-        </section>
+    <section id="boletim-recente">
+      <h2>📌 Último Boletim</h2>
+      <div id="ultimo-boletim">
+        <!-- O último boletim será carregado aqui -->
+      </div>
+    </section>
 
-        <section id="boletins-anteriores">
-            <h2>📋 Boletins Anteriores</h2>
-            <div id="lista-boletins">
-                <!-- Lista de boletins carregada dinamicamente -->
-            </div>
-        </section>
-    </main>
+    <section id="boletins-anteriores">
+      <h2>📋 Boletins Anteriores</h2>
+      <div id="lista-boletins">
+        <!-- Lista de boletins carregada dinamicamente -->
+      </div>
+    </section>
+  </main>
 
-    <footer>
-        <p>&copy; 2025 Igreja Presbiteriana do Rio Comprido - Todos os direitos reservados</p>
-    </footer>
+  <!-- Footer dinâmico -->
+  <div id="footer-container"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+  <!-- Scripts -->
+  <script src="includes/layout.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-            authDomain: "iprc-site.firebaseapp.com",
-            projectId: "iprc-site",
-            storageBucket: "iprc-site.appspot.com",
-            messagingSenderId: "361636783794",
-            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-        };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        async function carregarBoletins() {
-            const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
+    async function carregarBoletins() {
+      const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
 
-            let primeiro = true;
-            querySnapshot.forEach((doc) => {
-                const boletim = doc.data();
-                const html = `<p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>`;
+      let primeiro = true;
+      querySnapshot.forEach((doc) => {
+        const boletim = doc.data();
+        const html = `<p><strong>${boletim.nome}</strong> - <a href="${boletim.url}" target="_blank">📄 Visualizar</a></p>`;
 
-                if (primeiro) {
-                    document.getElementById("ultimo-boletim").innerHTML = html;
-                    primeiro = false;
-                } else {
-                    document.getElementById("lista-boletins").innerHTML += html;
-                }
-            });
+        if (primeiro) {
+          document.getElementById("ultimo-boletim").innerHTML = html;
+          primeiro = false;
+        } else {
+          document.getElementById("lista-boletins").innerHTML += html;
         }
+      });
+    }
 
-        carregarBoletins();
-    </script>
+    carregarBoletins();
+  </script>
 
 </body>
 </html>
