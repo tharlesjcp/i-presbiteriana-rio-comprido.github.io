@@ -1,7 +1,13 @@
 
 const firebaseConfig = {
-  // SUA CONFIG FIREBASE AQUI
+  apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+  authDomain: "iprc-site.firebaseapp.com",
+  projectId: "iprc-site",
+  storageBucket: "iprc-site.appspot.com",
+  messagingSenderId: "361636783794",
+  appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
 };
+
 
 firebase.initializeApp(firebaseConfig);
 
