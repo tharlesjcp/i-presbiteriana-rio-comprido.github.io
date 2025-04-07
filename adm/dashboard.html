@@ -1,16 +1,154 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Painel Admin</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Admin</title>
+  <style>
+    body {
+      padding: 20px;
+      font-family: sans-serif;
+    }
+    .dashboard-card {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+  </style>
 </head>
 <body>
-  <div id="menu"></div>
-  <h2>Visão Geral</h2>
-  <div id="resumo"></div>
+  <h1>📊 Painel Administrativo</h1>
 
-  <script src="/adm/includes/header.html"></script>
-  <script src="/adm/adm.js"></script>
+  <div class="dashboard-card" id="estudos"></div>
+  <div class="dashboard-card" id="boletins"></div>
+  <div class="dashboard-card" id="pedidos"></div>
+  <div class="dashboard-card" id="aniversariantes"></div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      await carregarEstudos();
+      await carregarBoletins();
+      await carregarPedidos();
+      await carregarAniversariantes();
+    });
+
+    async function carregarEstudos() {
+      const snapshot = await getDocs(collection(db, "estudos"));
+      document.getElementById("estudos").innerHTML =
+        `📖 <strong>Total de Estudos:</strong> ${snapshot.size}`;
+    }
+
+    async function carregarBoletins() {
+      const snapshot = await getDocs(collection(db, "boletins"));
+      document.getElementById("boletins").innerHTML =
+        `📰 <strong>Total de Boletins:</strong> ${snapshot.size}`;
+    }
+
+    async function carregarPedidos() {
+      const snapshot = await getDocs(collection(db, "pedidos"));
+      const total = snapshot.size;
+      let pendentes = 0;
+
+      snapshot.forEach(doc => {
+        if (doc.data().status === "Pendente") pendentes++;
+      });
+
+      document.getElementById("pedidos").innerHTML =
+        `🙏 <strong>Total de Pedidos:</strong> ${total} &nbsp;&nbsp; ⏳ Pendentes: ${pendentes}`;
+    }
+
+    function ehMesmoDia(d1, d2) {
+      return d1.getDate() === d2.getDate() &&
+             d1.getMonth() === d2.getMonth();
+    }
+
+    function estaNaSemana(data) {
+      const hoje = new Date();
+      const diaHoje = hoje.getDay();
+      const inicioSemana = new Date(hoje);
+      inicioSemana.setDate(hoje.getDate() - diaHoje);
+      const fimSemana = new Date(inicioSemana);
+      fimSemana.setDate(inicioSemana.getDate() + 6);
+
+      data.setFullYear(hoje.getFullYear());
+      return data >= inicioSemana && data <= fimSemana;
+    }
+
+    function estaNoMes(data) {
+      const hoje = new Date();
+      return data.getMonth() === hoje.getMonth();
+    }
+
+    async function carregarAniversariantes() {
+      const snapshot = await getDocs(collection(db, "cadastro"));
+      const hoje = new Date();
+
+      const doDia = [];
+      const daSemana = [];
+      const doMes = [];
+
+      snapshot.forEach(doc => {
+        const membro = doc.data();
+        const nascimento = new Date(membro.dataNascimento);
+
+        if (ehMesmoDia(nascimento, hoje)) {
+          doDia.push(membro.nome);
+        }
+        if (estaNaSemana(new Date(nascimento))) {
+          daSemana.push(membro.nome);
+        }
+        if (estaNoMes(new Date(nascimento))) {
+          doMes.push(membro.nome);
+        }
+      });
+
+      const card = document.getElementById("aniversariantes");
+      card.innerHTML = `
+        🎂 <strong>Aniversariantes</strong>
+        <ul>
+          <li><strong>Hoje:</strong> ${doDia.length > 0 ? doDia.join(", ") : "Nenhum"}</li>
+          <li><strong>Essa semana:</strong> ${daSemana.length > 0 ? daSemana.join(", ") : "Nenhum"}</li>
+          <li><strong>Esse mês:</strong> ${doMes.length > 0 ? doMes.join(", ") : "Nenhum"}</li>
+        </ul>
+      `;
+    }
+  </script>
+
+  <script type="module" src="layout.js"></script>
+  <script type="module" src="adm.js"></script>
 </body>
 </html>
