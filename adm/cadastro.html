@@ -1,1 +1,138 @@
 <!-- Gerenciar Cadastro HTML -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Membros</title>
+  <style>
+    body {
+      padding: 20px;
+      font-family: sans-serif;
+      background: #f9f9f9;
+    }
+    .form-box, .lista-box {
+      background: #fff;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    input, button {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>👥 Cadastro de Membros</h1>
+
+  <div class="form-box">
+    <h2>➕ Novo Membro</h2>
+    <input type="text" id="nome" placeholder="Nome completo" required />
+    <input type="date" id="dataNascimento" required />
+    <button onclick="salvarCadastro()">Salvar</button>
+    <p id="mensagem" style="color: green;"></p>
+  </div>
+
+  <div class="lista-box">
+    <h2>📋 Lista de Membros</h2>
+    <ul id="lista-membros"></ul>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, getDocs, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import {
+      getAuth, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        carregarMembros();
+      }
+    });
+
+    async function salvarCadastro() {
+      const nome = document.getElementById("nome").value.trim();
+      const dataNascimento = document.getElementById("dataNascimento").value;
+      const mensagem = document.getElementById("mensagem");
+
+      if (!nome || !dataNascimento) {
+        alert("⚠️ Preencha todos os campos.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "cadastro"), {
+          nome,
+          dataNascimento,
+          criadoEm: serverTimestamp()
+        });
+        mensagem.textContent = "✅ Membro cadastrado com sucesso!";
+        document.getElementById("nome").value = "";
+        document.getElementById("dataNascimento").value = "";
+        carregarMembros();
+      } catch (error) {
+        alert("❌ Erro ao salvar: " + error.message);
+      }
+    }
+
+    async function carregarMembros() {
+      const lista = document.getElementById("lista-membros");
+      lista.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "cadastro"));
+      snapshot.forEach(doc => {
+        const membro = doc.data();
+        lista.innerHTML += `<li><strong>${membro.nome}</strong> - ${membro.dataNascimento}</li>`;
+      });
+    }
+  </script>
+
+  <script type="module" src="layout.js"></script>
+  <script type="module" src="adm.js"></script>
+</body>
+</html>
