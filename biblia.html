@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bíblia Interlinear</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <main class="biblia-container">
+    <h2>📖 Bíblia Interlinear</h2>
+
+    <div class="controles">
+      <label for="versao">Versão:</label>
+      <select id="versao">
+        <option value="almeida_ra.json">Almeida RA (PT)</option>
+        <option value="trparsed.json" selected>Grego Interlinear</option>
+        <option value="wlc.json">Hebraico (WLC)</option>
+      </select>
+
+      <label for="livro">Livro:</label>
+      <select id="livro"></select>
+
+      <label for="capitulo">Capítulo:</label>
+      <select id="capitulo"></select>
+    </div>
+
+    <div id="versiculos" class="versiculos-lista">
+      <p>Selecione uma versão, livro e capítulo para visualizar os versículos.</p>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="includes/layout.js"></script>
+  <script type="module">
+    let dados = [];
+    let livrosDisponiveis = [];
+
+    const versaoSelect = document.getElementById('versao');
+    const livroSelect = document.getElementById('livro');
+    const capituloSelect = document.getElementById('capitulo');
+    const versiculosDiv = document.getElementById('versiculos');
+
+    async function carregarVersao(arquivo) {
+      const res = await fetch(`dados/biblia/${arquivo}`);
+      const json = await res.json();
+      dados = json.verses || [];
+
+      // Obter livros únicos
+      const livros = [...new Set(dados.map(v => v.book_name))];
+      livrosDisponiveis = livros;
+      livroSelect.innerHTML = livros.map(livro => `<option value="${livro}">${livro}</option>`).join('');
+      carregarCapitulos();
+    }
+
+    function carregarCapitulos() {
+      const livroSelecionado = livroSelect.value;
+      const capitulos = [...new Set(dados.filter(v => v.book_name === livroSelecionado).map(v => v.chapter))];
+      capituloSelect.innerHTML = capitulos.map(c => `<option value="${c}">${c}</option>`).join('');
+      mostrarVersiculos();
+    }
+
+    function mostrarVersiculos() {
+      const livro = livroSelect.value;
+      const capitulo = parseInt(capituloSelect.value);
+      const versiculos = dados.filter(v => v.book_name === livro && v.chapter === capitulo);
+
+      versiculosDiv.innerHTML = versiculos.map(v => {
+        if (v.text.includes('G') || v.text.includes('N-')) {
+          // Formatar texto interlinear
+          const partes = v.text.split(' ');
+          const tokens = [];
+          for (let i = 0; i < partes.length; i += 3) {
+            const palavra = partes[i] || '';
+            const strong = partes[i + 1] || '';
+            const gramatica = partes[i + 2] || '';
+            tokens.push(`<span class="token"><strong>${palavra}</strong> <em>${strong}</em> <small>${gramatica}</small></span>`);
+          }
+          return `<div class="versiculo"><span class="ref">${v.verse}</span> ${tokens.join(' ')}</div>`;
+        } else {
+          return `<div class="versiculo"><span class="ref">${v.verse}</span> ${v.text}</div>`;
+        }
+      }).join('');
+    }
+
+    versaoSelect.addEventListener('change', () => carregarVersao(versaoSelect.value));
+    livroSelect.addEventListener('change', carregarCapitulos);
+    capituloSelect.addEventListener('change', mostrarVersiculos);
+
+    carregarVersao(versaoSelect.value);
+  </script>
+</body>
+</html>
