@@ -6,58 +6,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Boletins</title>
   <link rel="stylesheet" href="includes/adm.css">
-  <style>
-    body {
-      padding: 20px;
-      font-family: sans-serif;
-    }
-    .form-box {
-      max-width: 600px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: var(--azul-medio, #007BFF);
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: var(--azul-escuro, #0056b3);
-    }
-  </style>
 </head>
 <body>
-  <h1>Painel Administrativo - Boletins</h1>
+  <!-- Header Admin -->
+  <div id="header-container"></div>
 
-  <div class="form-box">
-    <h2>Novo Boletim</h2>
-    <label for="data">Data do Boletim</label>
-    <input type="date" id="data" />
-    
-    <label for="pdf">Upload do PDF</label>
-    <input type="file" id="pdf" accept="application/pdf" />
+  <main class="container">
+    <h1>Painel Administrativo - Boletins</h1>
 
-    <button onclick="salvarBoletim()">Salvar Boletim</button>
-    <p id="mensagem"></p>
-  </div>
+    <div class="card">
+      <h2>Novo Boletim</h2>
+
+      <label for="data">Data do Boletim</label>
+      <input type="date" id="data" />
+
+      <label for="pdf">Upload do PDF</label>
+      <input type="file" id="pdf" accept="application/pdf" />
+
+      <button onclick="salvarBoletim()">Salvar Boletim</button>
+      <p id="mensagem"></p>
+    </div>
+  </main>
 
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
