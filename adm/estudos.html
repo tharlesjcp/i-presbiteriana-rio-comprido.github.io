@@ -1,4 +1,3 @@
-<!-- Gerenciar Estudos HTML -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -16,18 +15,16 @@
 
     <div class="card">
       <h2>Novo Estudo</h2>
-
       <input type="text" id="titulo" placeholder="Título do Estudo" />
       <input type="text" id="link" placeholder="Link do YouTube (embed)" />
       <textarea id="resumo" placeholder="Resumo do Estudo"></textarea>
       <textarea id="textoCompleto" placeholder="Texto Completo"></textarea>
-
       <button onclick="salvarEstudo()">Salvar Estudo</button>
       <p id="mensagem"></p>
     </div>
   </main>
 
-  <!-- Script -->
+  <!-- Firebase -->
   <script type="module">
     import { getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
@@ -70,7 +67,7 @@
     };
   </script>
 
-  <!-- Layout e segurança -->
+  <!-- Layout e proteção -->
   <script type="module" src="layout.js"></script>
   <script type="module" src="adm.js"></script>
 </body>
