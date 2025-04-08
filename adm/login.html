@@ -13,6 +13,7 @@
       height: 100vh;
       background: #f0f0f0;
     }
+
     .login-box {
       background-color: white;
       padding: 30px;
@@ -21,9 +22,13 @@
       width: 100%;
       max-width: 400px;
     }
+
     .login-box h2 {
       margin-bottom: 20px;
+      text-align: center;
+      color: #1e3a8a;
     }
+
     input, button {
       width: 100%;
       padding: 12px;
@@ -32,21 +37,25 @@
       border-radius: 6px;
       font-size: 1em;
     }
+
     button {
-      background-color: #007BFF;
+      background-color: #2563eb;
       color: white;
-      border: none;
       font-weight: bold;
+      border: none;
       cursor: pointer;
     }
+
     button:hover {
-      background-color: #0056b3;
+      background-color: #1e40af;
     }
+
     #erro {
       color: red;
       font-size: 0.9em;
       margin-top: -10px;
       margin-bottom: 10px;
+      text-align: center;
     }
   </style>
 </head>
@@ -60,22 +69,26 @@
     <p id="erro"></p>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase com reaproveitamento -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getApp, initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-      authDomain: "iprc-site.firebaseapp.com",
-      projectId: "iprc-site",
-      storageBucket: "iprc-site.appspot.com",
-      messagingSenderId: "361636783794",
-      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
+    let app;
+    try {
+      app = getApp();
+    } catch (e) {
+      app = initializeApp({
+        apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+        authDomain: "iprc-site.firebaseapp.com",
+        projectId: "iprc-site",
+        storageBucket: "iprc-site.appspot.com",
+        messagingSenderId: "361636783794",
+        appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+      });
+    }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
+    const auth = getAuth(app);
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -96,6 +109,5 @@
       }
     };
   </script>
-
 </body>
 </html>
