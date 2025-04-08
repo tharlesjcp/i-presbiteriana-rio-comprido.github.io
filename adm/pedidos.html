@@ -5,11 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Pedidos de Oração</title>
+  <link rel="stylesheet" href="includes/adm.css" />
   <style>
-    body {
-      padding: 20px;
-      font-family: sans-serif;
-    }
     .pedido {
       border: 1px solid #ccc;
       border-radius: 10px;
@@ -17,20 +14,24 @@
       margin-bottom: 15px;
       background: #f9f9f9;
     }
+
     .pedido p {
       margin: 5px 0;
     }
+
     .pedido button {
       margin-right: 10px;
-      padding: 5px 10px;
+      padding: 8px 12px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
+
     .btn-orado {
       background-color: #28a745;
       color: white;
     }
+
     .btn-excluir {
       background-color: #dc3545;
       color: white;
@@ -38,32 +39,25 @@
   </style>
 </head>
 <body>
-  <h1>Admin - Pedidos de Oração</h1>
-  <div id="lista-pedidos"></div>
+  <!-- Menu lateral -->
+  <div id="header-container"></div>
+
+  <main class="container">
+    <h1>🙏 Pedidos de Oração</h1>
+    <div id="lista-pedidos"></div>
+  </main>
 
   <!-- Firebase -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import {
       getFirestore, collection, getDocs, updateDoc,
       deleteDoc, doc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-      authDomain: "iprc-site.firebaseapp.com",
-      projectId: "iprc-site",
-      storageBucket: "iprc-site.appspot.com",
-      messagingSenderId: "361636783794",
-      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
+    const db = getFirestore(getApp());
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, async (user) => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
         window.location.href = "login.html";
         return;
@@ -117,6 +111,7 @@
     }
   </script>
 
+  <!-- Scripts globais -->
   <script type="module" src="layout.js"></script>
   <script type="module" src="adm.js"></script>
 </body>
