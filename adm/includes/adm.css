@@ -8,7 +8,7 @@ body {
 .container {
   padding: 20px;
   max-width: 900px;
-  margin: auto;
+  margin: 20px auto 40px auto;
 }
 
 h1, h2 {
@@ -55,15 +55,18 @@ button:hover {
   border-bottom: 1px solid #ddd;
 }
 
+/* Sidebar - menu lateral */
 .sidebar {
   background: #f8f9fa;
   padding: 20px;
   border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
 }
 
 .sidebar h2 {
   font-size: 1.2rem;
   margin-bottom: 15px;
+  color: #1e3a8a;
 }
 
 .sidebar ul {
@@ -80,6 +83,8 @@ button:hover {
   text-decoration: none;
   color: #1e3a8a;
   font-weight: 500;
+  display: block;
+  padding: 6px 0;
 }
 
 .sidebar a:hover {
@@ -89,14 +94,15 @@ button:hover {
 .sidebar button {
   width: 100%;
   padding: 10px;
+  margin-top: 15px;
   font-weight: bold;
   color: #fff;
-  background: #2563eb;
+  background: #dc3545;
   border: none;
   border-radius: 6px;
   cursor: pointer;
 }
 
 .sidebar button:hover {
-  background: #1e40af;
+  background: #bb2d3b;
 }
