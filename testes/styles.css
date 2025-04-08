@@ -1,0 +1,86 @@
+.biblia-container {
+  max-width: 800px;
+  margin: 100px auto;
+  padding: 2rem;
+  font-family: 'Georgia', serif;
+  text-align: left;
+}
+
+.versiculo {
+  margin-bottom: 2rem;
+  line-height: 2;
+}
+
+.token {
+  position: relative;
+  display: inline-block;
+  padding: 0.4rem 0.6rem;
+  margin: 0.3rem;
+  background: #f0f0f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.token:hover {
+  background: #e0e0e0;
+}
+
+.token strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.token em {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: normal;
+}
+
+.token small {
+  display: block;
+  font-size: 0.7rem;
+  color: #999;
+}
+
+.token .traducao {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: #2a80be;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px 14px;
+  width: 220px;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.token:focus .tooltip,
+.token:hover .tooltip {
+  display: block;
+}
+
+.tooltip .acao {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  background: #2a80be;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
