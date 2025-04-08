@@ -1,100 +1,42 @@
-<!-- Gerenciar Cadastro HTML -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cadastro de Membros</title>
-  <style>
-    body {
-      padding: 20px;
-      font-family: sans-serif;
-      background: #f9f9f9;
-    }
-    .form-box, .lista-box {
-      background: #fff;
-      padding: 25px;
-      margin-bottom: 25px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    h2 {
-      margin-top: 0;
-    }
-    input, button {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-    }
-    button {
-      background-color: #007BFF;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    li {
-      margin-bottom: 8px;
-    }
-  </style>
+  <title>Admin - Cadastro de Membros</title>
+  <link rel="stylesheet" href="includes/adm.css">
 </head>
 <body>
-  <h1>👥 Cadastro de Membros</h1>
+  <!-- Menu lateral -->
+  <div id="header-container"></div>
 
-  <div class="form-box">
-    <h2>➕ Novo Membro</h2>
-    <input type="text" id="nome" placeholder="Nome completo" required />
-    <input type="date" id="dataNascimento" required />
-    <button onclick="salvarCadastro()">Salvar</button>
-    <p id="mensagem" style="color: green;"></p>
-  </div>
+  <!-- Conteúdo principal -->
+  <main class="container">
+    <h1>👥 Cadastro de Membros</h1>
 
-  <div class="lista-box">
-    <h2>📋 Lista de Membros</h2>
-    <ul id="lista-membros"></ul>
-  </div>
+    <div class="card">
+      <h2>➕ Novo Membro</h2>
+      <input type="text" id="nome" placeholder="Nome completo" required />
+      <input type="date" id="dataNascimento" required />
+      <button onclick="salvarCadastro()">Salvar</button>
+      <p id="mensagem" style="color: green;"></p>
+    </div>
 
-  <!-- Firebase -->
+    <div class="card">
+      <h2>📋 Lista de Membros</h2>
+      <ul id="lista-membros" class="lista-dados"></ul>
+    </div>
+  </main>
+
+  <!-- Script local -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import {
       getFirestore, collection, addDoc, getDocs, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-    import {
-      getAuth, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-      authDomain: "iprc-site.firebaseapp.com",
-      projectId: "iprc-site",
-      storageBucket: "iprc-site.appspot.com",
-      messagingSenderId: "361636783794",
-      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
-
-    const app = initializeApp(firebaseConfig);
+    const app = getApp();
     const db = getFirestore(app);
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        carregarMembros();
-      }
-    });
 
     async function salvarCadastro() {
       const nome = document.getElementById("nome").value.trim();
@@ -130,8 +72,18 @@
         lista.innerHTML += `<li><strong>${membro.nome}</strong> - ${membro.dataNascimento}</li>`;
       });
     }
+
+    // Carrega após login via adm.js
+    window.addEventListener("load", () => {
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) carregarMembros();
+      });
+    });
+
+    window.salvarCadastro = salvarCadastro;
   </script>
 
+  <!-- Scripts globais -->
   <script type="module" src="layout.js"></script>
   <script type="module" src="adm.js"></script>
 </body>
