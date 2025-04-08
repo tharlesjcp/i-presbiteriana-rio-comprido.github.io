@@ -1,21 +1,21 @@
-<!-- Gerenciar Boletins HTML -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Boletins</title>
-  <link rel="stylesheet" href="includes/adm.css">
+  <title>Painel Admin - Boletins</title>
+  <link rel="stylesheet" href="includes/adm.css" />
 </head>
 <body>
-  <!-- Header Admin -->
+  <!-- Menu lateral dinâmico -->
   <div id="header-container"></div>
 
+  <!-- Conteúdo principal -->
   <main class="container">
     <h1>Painel Administrativo - Boletins</h1>
 
     <div class="card">
-      <h2>Novo Boletim</h2>
+      <h2>📄 Novo Boletim</h2>
 
       <label for="data">Data do Boletim</label>
       <input type="date" id="data" />
@@ -28,32 +28,15 @@
     </div>
   </main>
 
-  <!-- Firebase -->
+  <!-- Script de ação local -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-      authDomain: "iprc-site.firebaseapp.com",
-      projectId: "iprc-site",
-      storageBucket: "iprc-site.appspot.com",
-      messagingSenderId: "361636783794",
-      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
-
-    const app = initializeApp(firebaseConfig);
+    const app = getApp();
     const db = getFirestore(app);
     const storage = getStorage(app);
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      }
-    });
 
     window.salvarBoletim = async function () {
       const dataInput = document.getElementById("data").value;
@@ -61,7 +44,7 @@
       const mensagem = document.getElementById("mensagem");
 
       if (!dataInput || !pdfFile) {
-        mensagem.textContent = "Preencha a data e selecione o PDF.";
+        mensagem.textContent = "⚠️ Preencha a data e selecione o PDF.";
         mensagem.style.color = "red";
         return;
       }
@@ -79,12 +62,13 @@
         mensagem.textContent = "✅ Boletim salvo com sucesso!";
         mensagem.style.color = "green";
       } catch (error) {
-        mensagem.textContent = "Erro ao salvar: " + error.message;
+        mensagem.textContent = "❌ Erro ao salvar: " + error.message;
         mensagem.style.color = "red";
       }
     };
   </script>
 
+  <!-- Scripts globais -->
   <script type="module" src="layout.js"></script>
   <script type="module" src="adm.js"></script>
 </body>
