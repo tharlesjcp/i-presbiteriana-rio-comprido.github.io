@@ -14,11 +14,9 @@
       margin-bottom: 15px;
       background: #f9f9f9;
     }
-
     .pedido p {
       margin: 5px 0;
     }
-
     .pedido button {
       margin-right: 10px;
       padding: 8px 12px;
@@ -26,12 +24,10 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .btn-orado {
       background-color: #28a745;
       color: white;
     }
-
     .btn-excluir {
       background-color: #dc3545;
       color: white;
@@ -54,10 +50,13 @@
       getFirestore, collection, getDocs, updateDoc,
       deleteDoc, doc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-    const db = getFirestore(getApp());
+    const app = getApp();
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    firebase.auth().onAuthStateChanged(async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
         return;
