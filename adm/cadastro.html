@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin - Cadastro de Membros</title>
+  <title>Cadastro de Membros</title>
   <link rel="stylesheet" href="includes/adm.css">
 </head>
 <body>
-  <!-- Menu lateral -->
+  <!-- Header (menu lateral) -->
   <div id="header-container"></div>
 
-  <!-- Conteúdo principal -->
   <main class="container">
-    <h1>👥 Cadastro de Membros</h1>
+    <h1>🎂 Cadastro de Membros</h1>
 
     <div class="card">
       <h2>➕ Novo Membro</h2>
@@ -28,15 +27,27 @@
     </div>
   </main>
 
-  <!-- Script local -->
+  <!-- Firebase -->
   <script type="module">
     import { getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import {
       getFirestore, collection, addDoc, getDocs, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import {
+      getAuth, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
     const app = getApp();
     const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        carregarMembros();
+      }
+    });
 
     async function salvarCadastro() {
       const nome = document.getElementById("nome").value.trim();
@@ -72,15 +83,6 @@
         lista.innerHTML += `<li><strong>${membro.nome}</strong> - ${membro.dataNascimento}</li>`;
       });
     }
-
-    // Carrega após login via adm.js
-    window.addEventListener("load", () => {
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) carregarMembros();
-      });
-    });
-
-    window.salvarCadastro = salvarCadastro;
   </script>
 
   <!-- Scripts globais -->
