@@ -5,6 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boletins - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    iframe {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    #ultimo-boletim, #lista-boletins p {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+      margin-bottom: 15px;
+    }
+
+    #lista-boletins a {
+      font-weight: bold;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    #lista-boletins a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
@@ -76,7 +102,7 @@
           primeiro = false;
         } else {
           document.getElementById("lista-boletins").innerHTML += `
-            <p>📎 <strong>${dataFormatada}</strong> - <a href="${boletim.urlPdf}" target="_blank">Visualizar</a></p>
+            <p>📎 <strong>${dataFormatada}</strong> - <a href="${boletim.urlPdf}" target="_blank">Visualizar PDF</a></p>
           `;
         }
       });
