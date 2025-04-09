@@ -5,32 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boletins - Igreja Presbiteriana do Rio Comprido</title>
   <link rel="stylesheet" href="css/styles.css">
-  <style>
-    iframe {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-    }
-
-    #ultimo-boletim, #lista-boletins p {
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.05);
-      margin-bottom: 15px;
-    }
-
-    #lista-boletins a {
-      font-weight: bold;
-      color: #2563eb;
-      text-decoration: none;
-    }
-
-    #lista-boletins a:hover {
-      text-decoration: underline;
-    }
-  </style>
 </head>
 <body>
 
@@ -85,6 +59,14 @@
       });
     }
 
+    function converterLinkDriveParaPreview(url) {
+      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
+      if (match && match[1]) {
+        return `https://drive.google.com/file/d/${match[1]}/preview`;
+      }
+      return url; // caso não seja um link do Drive
+    }
+
     async function carregarBoletins() {
       const querySnapshot = await getDocs(query(collection(db, "boletins"), orderBy("data", "desc")));
 
@@ -92,17 +74,18 @@
       querySnapshot.forEach((doc) => {
         const boletim = doc.data();
         const dataFormatada = formatarData(boletim.data);
+        const urlPreview = converterLinkDriveParaPreview(boletim.urlPdf);
 
         if (primeiro) {
           document.getElementById("ultimo-boletim").innerHTML = `
             <p><strong>${dataFormatada}</strong></p>
-            <iframe src="${boletim.urlPdf}" width="100%" height="600px"></iframe>
-            <p><a href="${boletim.urlPdf}" target="_blank">📄 Baixar PDF</a></p>
+            <iframe src="${urlPreview}" width="100%" height="600px" allow="autoplay"></iframe>
+            <p><a href="${urlPreview}" target="_blank">📄 Baixar PDF</a></p>
           `;
           primeiro = false;
         } else {
           document.getElementById("lista-boletins").innerHTML += `
-            <p>📎 <strong>${dataFormatada}</strong> - <a href="${boletim.urlPdf}" target="_blank">Visualizar PDF</a></p>
+            <p>📎 <strong>${dataFormatada}</strong> - <a href="${urlPreview}" target="_blank">Visualizar</a></p>
           `;
         }
       });
