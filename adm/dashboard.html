@@ -3,63 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo - IPRC</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; display: flex; height: 100vh; }
-
-    .sidebar {
-      width: 250px;
-      background-color: #2a80be;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: width 0.3s;
-    }
-
-    .sidebar.collapsed { width: 60px; }
-
-    .sidebar h2 { padding: 20px; font-size: 1.2rem; }
-
-    .sidebar ul { list-style: none; }
-
-    .sidebar li { padding: 15px 20px; cursor: pointer; }
-
-    .sidebar li a { color: white; text-decoration: none; display: block; }
-
-    .sidebar li:hover { background-color: #1f3b5f; }
-
-    .logout { margin: 20px; background: #f44336; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
-
-    .toggle-btn { background: #1f3b5f; color: white; border: none; padding: 10px; width: 100%; cursor: pointer; }
-
-    .content { flex-grow: 1; padding: 20px; overflow-y: auto; }
-  </style>
+  <title>Painel Administrativo</title>
+  <link rel="stylesheet" href="adm.css">
 </head>
 <body>
+  <!-- Header Sidebar Dinâmico -->
+  <div id="header-container"></div>
 
-  <div class="sidebar" id="sidebar">
-    <button class="toggle-btn" onclick="toggleSidebar()">☰ Menu</button>
-    <div>
-      <h2>Admin</h2>
-      <ul>
-        <li><a href="admin-estudos.html">📜 Estudos</a></li>
-        <li><a href="admin-boletim.html">📰 Boletins</a></li>
-        <li><a href="index.html" target="_blank">🌍 Ver Site</a></li>
-      </ul>
-    </div>
-    <button class="logout" onclick="logout()">🚪 Sair</button>
-  </div>
-
-  <div class="content">
+  <!-- Conteúdo Principal -->
+  <div class="main-content">
     <h1>📊 Painel Administrativo</h1>
-    <p>Visão geral das informações da igreja aparecerão aqui.</p>
+
+    <section class="secao">
+      <h2>🔎 Visão Geral</h2>
+      <p>Usuários cadastrados: <span id="total-usuarios">0</span></p>
+      <p>Estudos publicados: <span id="total-estudos">0</span></p>
+      <p>Boletins publicados: <span id="total-boletins">0</span></p>
+    </section>
+
+    <section class="secao">
+      <h2>🎉 Aniversariantes</h2>
+      <p>Hoje: <span id="aniversariantes-dia">Nenhum</span></p>
+      <p>Semana: <span id="aniversariantes-semana">Nenhum</span></p>
+      <p>Mês: <span id="aniversariantes-mes">Nenhum</span></p>
+    </section>
   </div>
 
+  <!-- Firebase + Layout Loader -->
+  <script type="module" src="layout.js"></script>
+
+  <!-- Firebase App Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
@@ -72,23 +49,33 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        window.location.href = "admin-login.html";
+        window.location.href = "login.html";
+      } else {
+        await carregarDados();
       }
     });
 
+    async function carregarDados() {
+      const usuariosSnap = await getDocs(collection(db, "users"));
+      const estudosSnap = await getDocs(collection(db, "estudos"));
+      const boletinsSnap = await getDocs(collection(db, "boletins"));
+
+      document.getElementById("total-usuarios").textContent = usuariosSnap.size;
+      document.getElementById("total-estudos").textContent = estudosSnap.size;
+      document.getElementById("total-boletins").textContent = boletinsSnap.size;
+
+      // Aniversariantes seria implementado aqui
+    }
+
     window.logout = async function() {
       await signOut(auth);
-      window.location.href = "admin-login.html";
+      window.location.href = "login.html";
     }
-  </script>
 
-  <script>
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-    }
   </script>
 
 </body>
