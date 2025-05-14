@@ -1,82 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo</title>
-  <link rel="stylesheet" href="adm.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="includes/adm.css">
+    <script type="module" src="includes/layout.js"></script>
 </head>
 <body>
-  <!-- Header Sidebar Dinâmico -->
-  <div id="header-container"></div>
 
-  <!-- Conteúdo Principal -->
-  <div class="main-content">
-    <h1>📊 Painel Administrativo</h1>
+    <div id="header-container"></div>
 
-    <section class="secao">
-      <h2>🔎 Visão Geral</h2>
-      <p>Usuários cadastrados: <span id="total-usuarios">0</span></p>
-      <p>Estudos publicados: <span id="total-estudos">0</span></p>
-      <p>Boletins publicados: <span id="total-boletins">0</span></p>
-    </section>
+    <main>
+        <h1>📊 Painel Administrativo</h1>
 
-    <section class="secao">
-      <h2>🎉 Aniversariantes</h2>
-      <p>Hoje: <span id="aniversariantes-dia">Nenhum</span></p>
-      <p>Semana: <span id="aniversariantes-semana">Nenhum</span></p>
-      <p>Mês: <span id="aniversariantes-mes">Nenhum</span></p>
-    </section>
-  </div>
+        <section class="secao">
+            <h2>🔎 Visão Geral</h2>
+            <p>Usuários cadastrados: <span id="total-usuarios">0</span></p>
+            <p>Estudos publicados: <span id="total-estudos">0</span></p>
+            <p>Boletins publicados: <span id="total-boletins">0</span></p>
+        </section>
 
-  <!-- Firebase + Layout Loader -->
-  <script type="module" src="layout.js"></script>
+        <section class="secao">
+            <h2>🎉 Aniversariantes</h2>
+            <p>Hoje: <span id="aniversariantes-dia">Nenhum</span></p>
+            <p>Semana: <span id="aniversariantes-semana">Nenhum</span></p>
+            <p>Mês: <span id="aniversariantes-mes">Nenhum</span></p>
+        </section>
+    </main>
 
-  <!-- Firebase App Logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
-      authDomain: "iprc-site.firebaseapp.com",
-      projectId: "iprc-site",
-      storageBucket: "iprc-site.appspot.com",
-      messagingSenderId: "361636783794",
-      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+            authDomain: "iprc-site.firebaseapp.com",
+            projectId: "iprc-site",
+            storageBucket: "iprc-site.appspot.com",
+            messagingSenderId: "361636783794",
+            appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        await carregarDados();
-      }
-    });
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log("✅ Usuário autenticado:", user.email);
+                await carregarDados();
+            } else {
+                console.log("❌ Nenhum usuário autenticado. Redirecionando...");
+                window.location.href = "login.html";
+            }
+        });
 
-    async function carregarDados() {
-      const usuariosSnap = await getDocs(collection(db, "users"));
-      const estudosSnap = await getDocs(collection(db, "estudos"));
-      const boletinsSnap = await getDocs(collection(db, "boletins"));
+        async function carregarDados() {
+            document.getElementById("total-usuarios").textContent = (await getDocs(collection(db, "users"))).size;
+            document.getElementById("total-estudos").textContent = (await getDocs(collection(db, "estudos"))).size;
+            document.getElementById("total-boletins").textContent = (await getDocs(collection(db, "boletins"))).size;
+        }
 
-      document.getElementById("total-usuarios").textContent = usuariosSnap.size;
-      document.getElementById("total-estudos").textContent = estudosSnap.size;
-      document.getElementById("total-boletins").textContent = boletinsSnap.size;
-
-      // Aniversariantes seria implementado aqui
-    }
-
-    window.logout = async function() {
-      await signOut(auth);
-      window.location.href = "login.html";
-    }
-
-  </script>
+        window.logout = async function() {
+            await signOut(auth);
+            window.location.href = "login.html";
+        }
+    </script>
 
 </body>
 </html>
