@@ -1,68 +1,120 @@
-/* Sidebar Padrão */
-.sidebar {
-  background-color: #2a80be;
-  padding: 10px;
-  min-height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 250px;
-  color: #fff;
-  transition: transform 0.3s ease;
-}
-
-.sidebar .menu {
-  margin-top: 20px;
-}
-
-.sidebar .menu ul {
-  list-style: none;
+/* Reset */
+* {
+  margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
-.sidebar .menu ul li {
-  margin: 10px 0;
+body {
+  display: flex;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
 }
 
-.sidebar .menu ul li a,
-.sidebar .logout-btn {
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background-color: #1f3b5f;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transition: transform 0.3s ease;
+  transform: translateX(0);
+  z-index: 1000;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar nav ul li a {
   color: #fff;
   text-decoration: none;
   display: block;
-  padding: 8px;
+  padding: 5px 10px;
   border-radius: 4px;
-  transition: background 0.3s;
+  transition: background-color 0.3s;
 }
 
-.sidebar .menu ul li a:hover,
-.sidebar .logout-btn:hover {
-  background: #1f3b5f;
+.sidebar nav ul li a:hover {
+  background-color: #2a80be;
 }
 
+.sidebar button {
+  margin-top: auto;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff4d4d;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sidebar button:hover {
+  background-color: #e60000;
+}
+
+/* Toggle Button */
 .menu-toggle {
   display: none;
-  background: none;
-  border: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: #1f3b5f;
   color: #fff;
-  font-size: 24px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-/* Responsivo */
+/* Main Content */
+.main-content {
+  flex: 1;
+  margin-left: 240px;
+  padding: 20px;
+}
+
+/* Sections */
+.secao {
+  margin-bottom: 40px;
+}
+
+.secao h2 {
+  margin-bottom: 10px;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
   }
 
-  .sidebar .menu.active {
+  .sidebar.active {
     transform: translateX(0);
   }
 
   .menu-toggle {
     display: block;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1001;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding-top: 60px;
   }
 }
