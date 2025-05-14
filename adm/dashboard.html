@@ -1,121 +1,95 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - Admin</title>
-  <link rel="stylesheet" href="includes/adm.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo - IPRC</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; display: flex; height: 100vh; }
+
+    .sidebar {
+      width: 250px;
+      background-color: #2a80be;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: width 0.3s;
+    }
+
+    .sidebar.collapsed { width: 60px; }
+
+    .sidebar h2 { padding: 20px; font-size: 1.2rem; }
+
+    .sidebar ul { list-style: none; }
+
+    .sidebar li { padding: 15px 20px; cursor: pointer; }
+
+    .sidebar li a { color: white; text-decoration: none; display: block; }
+
+    .sidebar li:hover { background-color: #1f3b5f; }
+
+    .logout { margin: 20px; background: #f44336; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+
+    .toggle-btn { background: #1f3b5f; color: white; border: none; padding: 10px; width: 100%; cursor: pointer; }
+
+    .content { flex-grow: 1; padding: 20px; overflow-y: auto; }
+  </style>
 </head>
 <body>
-  <!-- Header (menu lateral) -->
-  <div id="header-container"></div>
 
-  <main class="container">
+  <div class="sidebar" id="sidebar">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰ Menu</button>
+    <div>
+      <h2>Admin</h2>
+      <ul>
+        <li><a href="admin-estudos.html">📜 Estudos</a></li>
+        <li><a href="admin-boletim.html">📰 Boletins</a></li>
+        <li><a href="index.html" target="_blank">🌍 Ver Site</a></li>
+      </ul>
+    </div>
+    <button class="logout" onclick="logout()">🚪 Sair</button>
+  </div>
+
+  <div class="content">
     <h1>📊 Painel Administrativo</h1>
+    <p>Visão geral das informações da igreja aparecerão aqui.</p>
+  </div>
 
-    <div class="card" id="estudos"></div>
-    <div class="card" id="boletins"></div>
-    <div class="card" id="pedidos"></div>
-    <div class="card" id="aniversariantes"></div>
-  </main>
-
-  <!-- Script -->
   <script type="module">
-    import { getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-    const db = getFirestore(getApp());
-    const auth = getAuth(getApp());
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBGSkPI0ewwsTTyEjjPyhpC_G_F3bHQME",
+      authDomain: "iprc-site.firebaseapp.com",
+      projectId: "iprc-site",
+      storageBucket: "iprc-site.appspot.com",
+      messagingSenderId: "361636783794",
+      appId: "1:361636783794:web:5cd92ca9ef04449fdd4bab"
+    };
 
-    onAuthStateChanged(auth, async (user) => {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location.href = "login.html";
-        return;
+        window.location.href = "admin-login.html";
       }
-
-      await carregarEstudos();
-      await carregarBoletins();
-      await carregarPedidos();
-      await carregarAniversariantes();
     });
 
-    async function carregarEstudos() {
-      const snapshot = await getDocs(collection(db, "estudos"));
-      document.getElementById("estudos").innerHTML =
-        `📖 <strong>Total de Estudos:</strong> ${snapshot.size}`;
-    }
-
-    async function carregarBoletins() {
-      const snapshot = await getDocs(collection(db, "boletins"));
-      document.getElementById("boletins").innerHTML =
-        `📰 <strong>Total de Boletins:</strong> ${snapshot.size}`;
-    }
-
-    async function carregarPedidos() {
-      const snapshot = await getDocs(collection(db, "pedidos"));
-      const total = snapshot.size;
-      let pendentes = 0;
-
-      snapshot.forEach(doc => {
-        if (doc.data().status === "Pendente") pendentes++;
-      });
-
-      document.getElementById("pedidos").innerHTML =
-        `🙏 <strong>Total de Pedidos:</strong> ${total} &nbsp;&nbsp; ⏳ Pendentes: ${pendentes}`;
-    }
-
-    function ehMesmoDia(d1, d2) {
-      return d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth();
-    }
-
-    function estaNaSemana(data) {
-      const hoje = new Date();
-      const diaHoje = hoje.getDay();
-      const inicioSemana = new Date(hoje);
-      inicioSemana.setDate(hoje.getDate() - diaHoje);
-      const fimSemana = new Date(inicioSemana);
-      fimSemana.setDate(inicioSemana.getDate() + 6);
-      data.setFullYear(hoje.getFullYear());
-      return data >= inicioSemana && data <= fimSemana;
-    }
-
-    function estaNoMes(data) {
-      const hoje = new Date();
-      return data.getMonth() === hoje.getMonth();
-    }
-
-    async function carregarAniversariantes() {
-      const snapshot = await getDocs(collection(db, "cadastro"));
-      const hoje = new Date();
-
-      const doDia = [];
-      const daSemana = [];
-      const doMes = [];
-
-      snapshot.forEach(doc => {
-        const membro = doc.data();
-        const nascimento = new Date(membro.dataNascimento);
-
-        if (ehMesmoDia(nascimento, hoje)) doDia.push(membro.nome);
-        if (estaNaSemana(new Date(nascimento))) daSemana.push(membro.nome);
-        if (estaNoMes(new Date(nascimento))) doMes.push(membro.nome);
-      });
-
-      const card = document.getElementById("aniversariantes");
-      card.innerHTML = `
-        🎂 <strong>Aniversariantes</strong>
-        <ul>
-          <li><strong>Hoje:</strong> ${doDia.length ? doDia.join(", ") : "Nenhum"}</li>
-          <li><strong>Essa semana:</strong> ${daSemana.length ? daSemana.join(", ") : "Nenhum"}</li>
-          <li><strong>Esse mês:</strong> ${doMes.length ? doMes.join(", ") : "Nenhum"}</li>
-        </ul>
-      `;
+    window.logout = async function() {
+      await signOut(auth);
+      window.location.href = "admin-login.html";
     }
   </script>
 
-  <!-- Scripts globais -->
-  <script type="module" src="layout.js"></script>
-  <script type="module" src="adm.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+  </script>
+
 </body>
 </html>
