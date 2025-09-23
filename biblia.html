@@ -15,7 +15,8 @@
       <select id="capitulo"></select>
       <select id="versao">
         <option value="almeida_ra.json">Almeida RA (PT)</option>
-        <option value="trparsed.json" selected>Grego Interlinear</option>
+        <option value="pt_acf.json">Almeida Corrigida e Revisada Fiel (ACF)</option>
+        <option value="trparsed.json">Grego Interlinear</option>
         <option value="wlc.json">Hebraico (WLC)</option>
       </select>
     </div>
@@ -52,7 +53,24 @@
     async function carregarVersao(arquivo, manterSelecao = true) {
       const res = await fetch(`dados/biblia/${arquivo}`);
       const json = await res.json();
-      dados = json.verses || [];
+
+      if (arquivo === "pt_acf.json") {
+        dados = [];
+        json.forEach(livro => {
+          livro.chapters.forEach((capitulo, capIndex) => {
+            capitulo.forEach((texto, versIndex) => {
+              dados.push({
+                book_name: livro.name,
+                chapter: capIndex + 1,
+                verse: versIndex + 1,
+                text: texto
+              });
+            });
+          });
+        });
+      } else {
+        dados = json.verses || [];
+      }
 
       const livros = [...new Set(dados.map(v => v.book_name))];
       livrosDisponiveis = livros;
@@ -62,6 +80,7 @@
         const livroSalvo = localStorage.getItem("livro");
         if (livroSalvo && livros.includes(livroSalvo)) livroSelect.value = livroSalvo;
       }
+
       carregarCapitulos(manterSelecao);
     }
 
@@ -74,6 +93,7 @@
         const capituloSalvo = localStorage.getItem("capitulo");
         if (capituloSalvo && capitulos.includes(parseInt(capituloSalvo))) capituloSelect.value = capituloSalvo;
       }
+
       mostrarVersiculos();
     }
 
