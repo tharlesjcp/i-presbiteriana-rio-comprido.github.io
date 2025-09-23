@@ -15,9 +15,9 @@
       <select id="capitulo"></select>
       <select id="versao">
         <option value="almeida_ra.json">Almeida RA (PT)</option>
-        <option value="pt_acf.json">Almeida Corrigida e Revisada Fiel (ACF)</option>
         <option value="trparsed.json">Grego Interlinear</option>
         <option value="wlc.json">Hebraico (WLC)</option>
+        <option value="pt_acf.json">Almeida Corrigida e Revisada Fiel (PT ACF)</option>
       </select>
     </div>
 
@@ -80,7 +80,6 @@
         const livroSalvo = localStorage.getItem("livro");
         if (livroSalvo && livros.includes(livroSalvo)) livroSelect.value = livroSalvo;
       }
-
       carregarCapitulos(manterSelecao);
     }
 
@@ -93,7 +92,6 @@
         const capituloSalvo = localStorage.getItem("capitulo");
         if (capituloSalvo && capitulos.includes(parseInt(capituloSalvo))) capituloSelect.value = capituloSalvo;
       }
-
       mostrarVersiculos();
     }
 
@@ -117,7 +115,7 @@
           }
           return `<p class="versiculo"><sup>${v.verse}</sup> ${tokens.join(' ')}</p>`;
         } else {
-          return `<p class="versiculo"><sup>${v.verse}</sup> ${v.text}</p>`;
+          return `<p class="versiculo"><sup>${v.verse}</sup> ${v.text.trim()}</p>`;
         }
       }).join('');
 
