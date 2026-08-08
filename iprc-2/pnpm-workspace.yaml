@@ -1,9 +1,6 @@
-allowBuilds:
-  esbuild: set this to true or false
-  sharp: set this to true or false
 packages:
   - .
 
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
+allowBuilds:
+  esbuild: true
+  sharp: true
