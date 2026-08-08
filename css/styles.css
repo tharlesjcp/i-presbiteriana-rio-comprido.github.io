@@ -1,3 +1,479 @@
+:root {
+  --azul-escuro: #1f3b5f;
+  --azul-medio: #2a80be;
+  --azul-suave: #2b80bd;
+  --marrom-escuro: #1f1210;
+  --branco: #ffffff;
+  --cinza-claro: #f0f0f0;
+  --cinza-medio: #a3a3a3;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--cinza-claro);
+  color: var(--marrom-escuro);
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  text-align: center;
+}
+
+/* Menu Superior */
+.menu-superior {
+  background-color: var(--azul-medio);
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-superior img {
+  height: 50px;
+  margin-right: 20px;
+}
+
+.menu-superior nav {
+  display: flex;
+  gap: 15px;
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--branco);
+}
+
+.menu-superior nav a {
+  color: var(--branco);
+  text-decoration: none;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.menu-superior nav a:hover {
+  background-color: var(--azul-escuro);
+}
+
+/* Conteúdo */
+main {
+  flex: 1;
+  padding: 20px;
+  margin-top: 100px;
+}
+
+/* Banner */
+.banner-container {
+  position: relative;
+  width: 100%;
+  padding-top: 40%;
+  overflow: hidden;
+}
+
+.banner-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out, left 1s ease-in-out;
+}
+
+.banner-slide.active {
+  left: 0;
+  opacity: 1;
+}
+
+.pontos {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.pontos span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: #bbb;
+  border-radius: 50%;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pontos span.active {
+  background-color: #2a80be;
+}
+
+/* Botões */
+.botao {
+  display: inline-block;
+  padding: 10px 15px;
+  background: var(--azul-medio);
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.botao:hover {
+  background-color: var(--azul-escuro);
+}
+
+/* Rodapé */
+footer {
+  background-color: var(--azul-medio);
+  color: var(--branco);
+  text-align: center;
+  padding: 30px 10px 40px;
+  margin-top: auto;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.links-rapidos a {
+  color: var(--branco);
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.links-rapidos a:hover {
+  text-decoration: underline;
+}
+
+.redes-sociais a {
+  margin-left: 10px;
+  text-decoration: none;
+}
+
+.redes-sociais img {
+  width: 24px;
+  height: auto;
+  transition: transform 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.redes-sociais img:hover {
+  transform: scale(1.2);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .menu-superior {
+    flex-direction: row;
+    justify-content: space-between;
+    height: auto;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu-superior nav {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: var(--azul-medio);
+    padding: 10px;
+  }
+
+  .menu-superior nav.active {
+    display: flex;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+/* Banner da Página de Pedidos de Oração */
+.banner-pagina {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  margin-top: 60px;
+  overflow: hidden;
+}
+
+.banner-pagina img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-pagina .texto-banner {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+/* Formulário de Pedido de Oração */
+.pedidos {
+  max-width: 600px;
+  margin: 40px auto;
+  background: var(--branco);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.pedidos h1,
+.pedidos h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--azul-medio);
+}
+
+#form-oracao {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#form-oracao label {
+  font-weight: bold;
+}
+
+#form-oracao input,
+#form-oracao textarea {
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid var(--cinza-medio);
+  font-size: 16px;
+  resize: vertical;
+}
+
+#form-oracao button {
+  background-color: var(--azul-medio);
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+#form-oracao button:hover {
+  background-color: var(--azul-escuro);
+}
+
+@media (max-width: 768px) {
+  .banner-pagina {
+    height: 250px;
+  }
+}
+
+.agenda-semanal {
+  background: var(--branco);
+  padding: 30px;
+  border-radius: 10px;
+  margin: 40px auto;
+  max-width: 1000px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.agenda-semanal h2 {
+  color: var(--azul-medio);
+  margin-bottom: 20px;
+}
+
+.iframe-container {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+/* Vídeos responsivos ajustado para mais largura e menos altura vertical */
+.video-wrapper {
+  position: relative;
+  padding-bottom: 33%; /* mais achatado na vertical */
+  height: 0;
+  overflow: hidden;
+  margin: 10px auto 30px;
+  max-width: 1000px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Layout index - estudos lado a lado */
+#estudos-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+#estudos-index .estudo {
+  width: 100%;
+  max-width: 480px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#estudos-index .info h3 {
+  margin: 10px 0 5px;
+}
+
+#estudos-index .botao {
+  display: inline-block;
+  margin-top: 10px;
+}
+.data-estudo {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--cinza-medio);
+ margin: -20px 30px 10px auto;
+  text-align: right;
+  display: block;
+  max-width: 700px;
+  width: 100%;
+  padding-right: 30px;
+}
+@media (max-width: 768px) {
+  .data-estudo {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    padding-right: 0;
+  }
+}
+
+/*  Texto formatado dos estudos */
+.texto-estudo {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.texto-estudo h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--azul-medio);
+  margin-top: 30px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.texto-estudo p {
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+@media (max-width: 768px) {
+  .texto-estudo {
+    padding: 0 15px;
+  }
+
+  .texto-estudo h3 {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .texto-estudo p {
+    font-size: 0.95rem;
+  }
+}
+
+
+/* css biblia */
+/* Espaçamento adequado para página da Bíblia */
+.biblia-container {
+  margin-top: 100px;
+  padding: 2rem 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Georgia", serif;
+}
+
+@media (max-width: 768px) {
+  .biblia-container {
+    margin-top: 120px; /* um pouco mais para telas pequenas */
+    padding: 1rem;
+  }
+  .navegacao-topo {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .navegacao-topo select {
+    width: 100%;
+    max-width: 280px;
+  }
+  .navegacao-lateral {
+    flex-direction: row;
+    gap: 20px;
+  }
+  #titulo-capitulo {
+    font-size: 1.4rem;
+  }
+  .versiculo {
+  text-indent: 1.2rem;
+  font-size: 1rem;
+  white-space: pre-wrap; /* Adicionado para preservar espaços */
+}
+  .token strong {
+    font-size: 1em;
+  }
+  .token em {
+    font-size: 0.75em;
+  }
+  .token small {
+    font-size: 0.65em;
+  }
+}
+
+
+/* Accessibility, responsive and design-system overrides */
 :root{--azul-900:#12344d;--azul-700:#1d5f88;--azul-600:#2477a9;--azul-100:#eaf4fa;--texto:#17212b;--muted:#596773;--fundo:#f5f7f8;--branco:#fff;--borda:#cad4db;--erro:#a12828;--sombra:0 10px 30px rgba(18,52,77,.1);--raio:12px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--fundo);color:var(--texto);font:1rem/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;min-height:100vh;flex-direction:column}img{max-width:100%;height:auto}a{color:var(--azul-700)}a:hover{color:var(--azul-900)}button,select,input,textarea{font:inherit}button,a,select,input,textarea{-webkit-tap-highlight-color:transparent}:focus-visible{outline:3px solid #f2ad3b;outline-offset:3px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.skip-link{position:fixed;z-index:2000;top:8px;left:8px;transform:translateY(-150%);background:var(--branco);color:var(--azul-900);padding:.75rem 1rem;border-radius:8px}.skip-link:focus{transform:none}
 .site-header{position:fixed;inset:0 0 auto;z-index:1000;background:rgba(29,95,136,.98);box-shadow:0 2px 12px rgba(0,0,0,.18)}.header-inner{min-height:72px;max-width:1200px;margin:auto;padding:.5rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}.brand{display:flex}.brand img{display:block;height:52px;width:auto}.menu-principal{display:flex;align-items:center;gap:.2rem}.menu-principal a{color:var(--branco);text-decoration:none;padding:.65rem .7rem;border-radius:8px;font-weight:600}.menu-principal a:hover,.menu-principal a[aria-current=page]{background:var(--azul-900)}.menu-toggle{display:none;min-width:48px;min-height:48px;border:1px solid rgba(255,255,255,.6);border-radius:8px;background:transparent;color:var(--branco);font-size:1.6rem;cursor:pointer}
