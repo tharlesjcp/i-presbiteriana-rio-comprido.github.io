@@ -1,0 +1,8 @@
+---
+interface Props { title: string; date: string; summary: string; youtubeId: string; index: number; }
+const { title, date, summary, youtubeId, index } = Astro.props;
+---
+<article class="study-card reveal">
+  <div class="study-thumb" data-youtube-id={youtubeId}><span class="study-number">0{index + 1}</span><span class="play" aria-hidden="true">▶</span><span class="sr-only">Espaço para thumbnail do YouTube</span></div>
+  <div class="study-body"><p class="meta">{date}</p><h3>{title}</h3><p>{summary}</p><a href="#estudos">Ver estudo <span aria-hidden="true">→</span></a></div>
+</article>

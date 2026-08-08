@@ -1,0 +1,28 @@
+---
+import { navigation, LEGACY_BASE } from '../data/site';
+---
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="IPRC — página inicial">
+      <span class="brand-mark" aria-hidden="true">IP</span>
+      <span><strong>IPRC</strong><small>Rio Comprido</small></span>
+    </a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-navigation" data-menu-button>
+      <span class="sr-only" data-menu-label>Abrir menu</span>
+      <span class="menu-icon" aria-hidden="true"></span>
+    </button>
+    <nav id="main-navigation" class="main-nav" aria-label="Navegação principal" data-menu>
+      {navigation.map(item => <a href={item.href}>{item.label}</a>)}
+      <a class="nav-cta" href={`${LEGACY_BASE}/pedidos.html`}>Pedido de oração</a>
+    </nav>
+  </div>
+</header>
+<script>
+  const button = document.querySelector('[data-menu-button]');
+  const menu = document.querySelector('[data-menu]');
+  const label = document.querySelector('[data-menu-label]');
+  const close = () => { button?.setAttribute('aria-expanded', 'false'); menu?.removeAttribute('data-open'); if (label) label.textContent = 'Abrir menu'; };
+  button?.addEventListener('click', () => { const open = button.getAttribute('aria-expanded') === 'true'; button.setAttribute('aria-expanded', String(!open)); menu?.toggleAttribute('data-open', !open); if (label) label.textContent = open ? 'Abrir menu' : 'Fechar menu'; });
+  menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') { close(); (button instanceof HTMLElement) && button.focus(); } });
+</script>
