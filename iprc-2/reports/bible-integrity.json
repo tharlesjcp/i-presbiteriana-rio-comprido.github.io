@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T18:49:45.588Z",
+  "generatedAt": "2026-08-13T19:59:55.866Z",
   "sources": {
     "ara-legacy": {
       "chapters": 1189,
@@ -9,12 +9,12 @@
     "greek-tr": {
       "chapters": 260,
       "verses": 7958,
-      "maxChapterBytes": 172814
+      "maxChapterBytes": 159257
     },
     "hebrew-wlc": {
       "chapters": 929,
       "verses": 23213,
-      "maxChapterBytes": 96632
+      "maxChapterBytes": 118735
     },
     "blivre": {
       "chapters": 1189,
@@ -22,15 +22,23 @@
       "maxChapterBytes": 17503
     },
     "crossrefs": {
-      "relations": 344799,
-      "chapters": 749
+      "relationsRead": 344799,
+      "relationsImported": 251822,
+      "relationsIgnored": 92977,
+      "ignoredReasons": {
+        "limite de 12 referências por versículo": 92977
+      },
+      "aliasesMapped": 66,
+      "chapters": 1189
     }
   },
   "errors": [],
-  "warnings": [],
+  "warnings": [
+    "Referências cruzadas ignoradas (limite de 12 referências por versículo): 92977"
+  ],
   "artifacts": {
-    "files": 4317,
-    "bytes": 60703055
+    "files": 4757,
+    "bytes": 88562165
   },
   "rules": [
     "JSON válido",
@@ -39,6 +47,7 @@
     "lacunas suspeitas",
     "Unicode",
     "correspondência canônica",
+    "aliases de referências cruzadas",
     "tamanho dos artefatos"
   ],
   "status": "passed"

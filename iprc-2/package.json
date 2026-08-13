@@ -8,12 +8,13 @@
     "dev": "astro dev",
     "bible:build": "node scripts/build-bible-data.mjs",
     "bible:audit": "node scripts/build-bible-data.mjs --audit-only",
+    "bible:test": "node scripts/test-bible-data.mjs",
     "predev": "pnpm bible:build",
     "prebuild": "pnpm bible:build",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "validate": "pnpm bible:audit && pnpm check && pnpm build"
+    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm check && pnpm build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
