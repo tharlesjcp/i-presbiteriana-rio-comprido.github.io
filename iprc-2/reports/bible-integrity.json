@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T22:55:32.842Z",
+  "generatedAt": "2026-08-13T22:58:07.530Z",
   "sources": {
     "ara-legacy": {
       "chapters": 1189,
@@ -9,7 +9,7 @@
     "greek-tr": {
       "chapters": 260,
       "verses": 7958,
-      "maxChapterBytes": 406068
+      "maxChapterBytes": 406074
     },
     "hebrew-wlc": {
       "chapters": 929,
@@ -63,9 +63,9 @@
       "presentationPt": {
         "distinctLexicalIds": 15022,
         "withOriginalGloss": 13036,
-        "withPtTranslation": 2470,
-        "withoutPtTranslation": 12552,
-        "coveragePercent": 16.44,
+        "withPtTranslation": 2473,
+        "withoutPtTranslation": 12549,
+        "coveragePercent": 16.46,
         "priority": "Strong/identificador lexical; fallback por gloss original normalizado",
         "mostFrequentWithoutTranslation": [
           {
@@ -388,7 +388,7 @@
   ],
   "artifacts": {
     "files": 4757,
-    "bytes": 184998271
+    "bytes": 185006867
   },
   "rules": [
     "JSON válido",

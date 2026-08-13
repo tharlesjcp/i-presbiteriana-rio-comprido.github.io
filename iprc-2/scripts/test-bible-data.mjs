@@ -62,6 +62,11 @@ const lazarusChapter = await readJson('public/bible-data/greek-tr/JHN/11.json');
 const lazarus = lazarusChapter.verses.flatMap((verse) => verse.words ?? []).find((word) => word.strong === 'G2976H');
 assert.equal(lazarus?.glossPt, 'Lázaro', 'nome próprio inequívoco deve usar a forma bíblica portuguesa por Strong');
 assert.match(lazarus?.glossOriginal ?? '', /Lazarus/i, 'o gloss inglês de Lázaro deve permanecer preservado');
+for (const [strong,expected] of [['G0963','Betânia'],['G3137J','Maria'],['G3136','Marta']]) {
+  const properName=lazarusChapter.verses.flatMap((verse) => verse.words ?? []).find((word) => word.strong === strong);
+  assert.equal(properName?.glossPt, expected, `${strong} deve usar o nome bíblico português consagrado`);
+  assert(properName?.glossOriginal, `${strong} deve preservar o nome original inglês`);
+}
 const presentation = await readJson('../dados/biblia/lexical-presentation-pt.json');
 assert.equal(presentation.strong.G3056, 'palavra / discurso / mensagem');
 assert.equal(presentation.gloss.word, 'palavra / discurso / mensagem');
