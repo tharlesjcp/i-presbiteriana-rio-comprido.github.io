@@ -21,7 +21,7 @@ const parseLexicon = (text, language) => {
     const fields = line.split('\t');
     if (!new RegExp(`^${language === 'greek' ? 'G' : 'H'}\\d`).test(fields[0] || '') || fields.length < 7) continue;
     const id = fields[2]?.trim() || fields[0].trim();
-    const entry = { id, lemma:fields[3]?.trim() || null, transliteration:fields[4]?.trim() || null, partOfSpeech:fields[5]?.trim() || null, gloss:fields[6]?.trim() || null };
+    const entry = { id, lemma:fields[3]?.trim() || null, transliteration:fields[4]?.trim() || null, partOfSpeech:fields[5]?.trim() || null, glossOriginal:fields[6]?.trim() || null };
     rows.set(id, entry);
     if (!rows.has(fields[0].trim())) rows.set(fields[0].trim(), entry);
   }
@@ -53,7 +53,7 @@ for (const filename of [
       language:'grc', languageLabel:'Grego koiné',
       lemma:(lemmaGloss[0] || lexical?.lemma || '').trim() || null,
       transliteration:(formMatch?.[2] || lexical?.transliteration || '').trim() || null,
-      strong, gloss:(fields[2] || lemmaGloss[1] || lexical?.gloss || '').trim() || null,
+      strong, glossOriginal:(fields[2] || lemmaGloss[1] || lexical?.glossOriginal || '').trim() || null,
       morphology:strongMorph.slice(1).join('=').trim() || null,
       partOfSpeech:lexical?.partOfSpeech || null,
       source:'STEPBible TAGNT/TBESG', alignment:'TAGNT: token explicitamente marcado como pertencente à edição TR',
@@ -96,7 +96,7 @@ for (const name of oshbBooks) {
       words.push({
         id:sourceId, form, language, languageLabel:language === 'arc' ? 'Aramaico bíblico' : 'Hebraico bíblico',
         lemma:lexical?.lemma || null, transliteration:lexical?.transliteration || null,
-        strong:primary, lexicalIdentifiers:ids, gloss:lexical?.gloss || null,
+        strong:primary, lexicalIdentifiers:ids, glossOriginal:lexical?.glossOriginal || null,
         morphology, partOfSpeech:lexical?.partOfSpeech || null,
         source:'Open Scriptures Hebrew Bible + STEPBible TBESH', alignment:'OSHB token id + lemma/Strong explícito; TBESH ligado pelo identificador exato',
       });

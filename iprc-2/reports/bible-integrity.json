@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T21:05:59.054Z",
+  "generatedAt": "2026-08-13T21:36:42.726Z",
   "sources": {
     "ara-legacy": {
       "chapters": 1189,
@@ -9,12 +9,12 @@
     "greek-tr": {
       "chapters": 260,
       "verses": 7958,
-      "maxChapterBytes": 368225
+      "maxChapterBytes": 397138
     },
     "hebrew-wlc": {
       "chapters": 929,
       "verses": 23213,
-      "maxChapterBytes": 343595
+      "maxChapterBytes": 370626
     },
     "blivre": {
       "chapters": 1189,
@@ -78,7 +78,7 @@
   ],
   "artifacts": {
     "files": 4757,
-    "bytes": 170608231
+    "bytes": 181266454
   },
   "rules": [
     "JSON válido",
