@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-08-13T18:49:45.588Z",
+  "sources": {
+    "ara-legacy": {
+      "chapters": 1189,
+      "verses": 31102,
+      "maxChapterBytes": 17677
+    },
+    "greek-tr": {
+      "chapters": 260,
+      "verses": 7958,
+      "maxChapterBytes": 172814
+    },
+    "hebrew-wlc": {
+      "chapters": 929,
+      "verses": 23213,
+      "maxChapterBytes": 96632
+    },
+    "blivre": {
+      "chapters": 1189,
+      "verses": 31102,
+      "maxChapterBytes": 17503
+    },
+    "crossrefs": {
+      "relations": 344799,
+      "chapters": 749
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "artifacts": {
+    "files": 4317,
+    "bytes": 60703055
+  },
+  "rules": [
+    "JSON válido",
+    "ordem e duplicidade",
+    "capítulos vazios",
+    "lacunas suspeitas",
+    "Unicode",
+    "correspondência canônica",
+    "tamanho dos artefatos"
+  ],
+  "status": "passed"
+}

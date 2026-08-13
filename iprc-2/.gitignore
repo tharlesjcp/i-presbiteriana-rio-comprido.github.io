@@ -1,5 +1,6 @@
 node_modules/
 dist/
+public/bible-data/
 .astro/
 .wrangler/
 .DS_Store

@@ -1,4 +1,4 @@
-# IPRC 2.0 — Fases 0 e 1
+# IPRC 2.0 — Fases 0, 1 e 2
 
 Nova base do frontend da Igreja Presbiteriana do Rio Comprido, conforme a issue #5. Este diretório é isolado do site Legacy na raiz do repositório: nada aqui substitui a produção atual.
 
@@ -39,3 +39,11 @@ npm run validate
 - includes e agenda atual;
 - painel `adm/` apenas como referência para reconstrução futura;
 - conteúdo e dados existentes no Firebase, sem nova dependência nesta Home.
+
+## Fase 2 — Bíblia
+
+`pnpm bible:build` lê as fontes preservadas em `../dados/biblia`, valida sua integridade e gera artefatos pequenos em `public/bible-data/<versão>/<livro>/<capítulo>.json`. A pasta gerada não é versionada e é reconstruída antes de desenvolvimento e build.
+
+Fontes habilitadas: Bíblia Livre (CC BY 4.0), ARA herdada marcada obrigatoriamente como não verificada, Textus Receptus Parsed e WLC. A ACF permanece bloqueada no manifesto. O parser grego aceita um ou mais códigos Strong por token e não presume grupos fixos de três itens.
+
+O leitor oferece URLs compartilháveis, última leitura local, comparação por versículo, paralelo português/original, hebraico RTL, estudo dos campos disponíveis, referências OpenBible.info, setas, teclado, Escape e swipe horizontal com limiar que preserva o scroll vertical. O relatório auditável fica em `reports/bible-integrity.json`.
