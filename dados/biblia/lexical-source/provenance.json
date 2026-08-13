@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-08-13T21:32:54.226Z",
+  "sources": [
+    {
+      "id": "STEPBible-Data",
+      "commit": "079db44a434e7f2bf5e33f95058e43d7437be92b",
+      "datasets": [
+        "TAGNT",
+        "TBESG",
+        "TEGMC",
+        "TBESH",
+        "TEHMC"
+      ],
+      "license": "CC BY 4.0",
+      "attribution": "STEP Bible — www.STEPBible.org"
+    },
+    {
+      "id": "OSHB",
+      "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+      "release": "2.2 lineage",
+      "datasets": [
+        "WLC text",
+        "lemma",
+        "morphology",
+        "token language"
+      ],
+      "license": "WLC public domain; lemma/morphology CC BY 4.0",
+      "attribution": "Open Scriptures Hebrew Bible Project"
+    }
+  ],
+  "alignment": {
+    "greek": "TAGNT tokens whose edition-membership field explicitly includes TR",
+    "hebrew": "OSHB token IDs and lemma attributes; full KJV verse mappings only",
+    "unsafeVersificationSegments": 6
+  }
+}

@@ -6,14 +6,22 @@
   "packageManager": "pnpm@11.16.0",
   "scripts": {
     "dev": "astro dev",
+    "bible:build": "node scripts/build-bible-data.mjs",
+    "bible:audit": "node scripts/build-bible-data.mjs --audit-only",
+    "bible:test": "node scripts/test-bible-data.mjs",
+    "predev": "pnpm bible:build",
+    "prebuild": "pnpm bible:build",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "validate": "npm run check && npm run build"
+    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm check && pnpm build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "astro": "^5.13.5",
     "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0"
   }
 }

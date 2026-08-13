@@ -1,0 +1,481 @@
+{
+  "generatedAt": "2026-08-13T23:16:46.611Z",
+  "sources": {
+    "ara-legacy": {
+      "chapters": 1189,
+      "verses": 31102,
+      "maxChapterBytes": 17677
+    },
+    "greek-tr": {
+      "chapters": 260,
+      "verses": 7958,
+      "maxChapterBytes": 406074
+    },
+    "hebrew-wlc": {
+      "chapters": 929,
+      "verses": 23213,
+      "maxChapterBytes": 384501
+    },
+    "blivre": {
+      "chapters": 1189,
+      "verses": 31102,
+      "maxChapterBytes": 17503
+    },
+    "lexical": {
+      "greek": {
+        "alignedVerses": 6626,
+        "source": "STEPBible TAGNT + TBESG"
+      },
+      "semitic": {
+        "alignedVerses": 23004,
+        "aramaicTokens": 9377,
+        "source": "OSHB + STEPBible TBESH"
+      },
+      "provenance": [
+        {
+          "id": "STEPBible-Data",
+          "commit": "079db44a434e7f2bf5e33f95058e43d7437be92b",
+          "datasets": [
+            "TAGNT",
+            "TBESG",
+            "TEGMC",
+            "TBESH",
+            "TEHMC"
+          ],
+          "license": "CC BY 4.0",
+          "attribution": "STEP Bible — www.STEPBible.org"
+        },
+        {
+          "id": "OSHB",
+          "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+          "release": "2.2 lineage",
+          "datasets": [
+            "WLC text",
+            "lemma",
+            "morphology",
+            "token language"
+          ],
+          "license": "WLC public domain; lemma/morphology CC BY 4.0",
+          "attribution": "Open Scriptures Hebrew Bible Project"
+        }
+      ],
+      "unsafeVersificationSegments": 6,
+      "presentationPt": {
+        "distinctLexicalIds": 15022,
+        "withOriginalGloss": 13036,
+        "distinctWithPt": 2473,
+        "distinctCoveragePercent": 16.46,
+        "totalOccurrences": 433872,
+        "occurrencesWithPt": 313867,
+        "occurrenceCoveragePercent": 72.34,
+        "withPtTranslation": 2473,
+        "withoutPtTranslation": 12549,
+        "coveragePercent": 16.46,
+        "priority": "Strong/identificador lexical; fallback por gloss original normalizado",
+        "byLanguage": {
+          "greek": {
+            "distinctLexicalIds": 5855,
+            "withOriginalGloss": 4902,
+            "distinctWithPt": 879,
+            "distinctCoveragePercent": 15.01,
+            "totalOccurrences": 136540,
+            "occurrencesWithPt": 107807,
+            "occurrenceCoveragePercent": 78.96
+          },
+          "hebrewAramaic": {
+            "distinctLexicalIds": 9167,
+            "withOriginalGloss": 8134,
+            "distinctWithPt": 1594,
+            "distinctCoveragePercent": 17.39,
+            "totalOccurrences": 297332,
+            "occurrencesWithPt": 206060,
+            "occurrenceCoveragePercent": 69.3
+          }
+        },
+        "mostFrequentWithoutTranslation": [
+          {
+            "strong": "G846",
+            "languageGroup": "greek",
+            "occurrences": 394,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H341",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 281,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H7126",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 280,
+            "glossOriginal": "to present: come",
+            "glossPt": null
+          },
+          {
+            "strong": "H639",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 274,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H68",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 272,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H6629",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 272,
+            "glossOriginal": "flock",
+            "glossPt": null
+          },
+          {
+            "strong": "H6547",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 263,
+            "glossOriginal": "Pharaoh",
+            "glossPt": null
+          },
+          {
+            "strong": "H894",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 262,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H7563",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 261,
+            "glossOriginal": "wicked",
+            "glossPt": null
+          },
+          {
+            "strong": "G3754",
+            "languageGroup": "greek",
+            "occurrences": 253,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H4390",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 248,
+            "glossOriginal": "to fill",
+            "glossPt": null
+          },
+          {
+            "strong": "H520a",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 246,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H2617a",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 244,
+            "glossOriginal": "kindness",
+            "glossPt": null
+          },
+          {
+            "strong": "H4294",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 244,
+            "glossOriginal": "tribe: rod",
+            "glossPt": null
+          },
+          {
+            "strong": "H410",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 243,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H7451a",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 242,
+            "glossOriginal": "bad: harmful",
+            "glossPt": null
+          },
+          {
+            "strong": "H2416a",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 241,
+            "glossOriginal": "alive",
+            "glossPt": null
+          },
+          {
+            "strong": "H1366",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 238,
+            "glossOriginal": "border: boundary",
+            "glossPt": null
+          },
+          {
+            "strong": "H2398",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 237,
+            "glossOriginal": "to sin",
+            "glossPt": null
+          },
+          {
+            "strong": "H4639",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 235,
+            "glossOriginal": "deed: work",
+            "glossPt": null
+          },
+          {
+            "strong": "H2428",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 234,
+            "glossOriginal": "Helech",
+            "glossPt": null
+          },
+          {
+            "strong": "H3423",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 231,
+            "glossOriginal": "to possess: possess",
+            "glossPt": null
+          },
+          {
+            "strong": "H5771",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 230,
+            "glossOriginal": "iniquity: crime",
+            "glossPt": null
+          },
+          {
+            "strong": "H7130",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 227,
+            "glossOriginal": "entrails: among",
+            "glossPt": null
+          },
+          {
+            "strong": "H7235a",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 226,
+            "glossOriginal": "to multiply",
+            "glossPt": null
+          },
+          {
+            "strong": "H127",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 225,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "G235",
+            "languageGroup": "greek",
+            "occurrences": 224,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H5159",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 222,
+            "glossOriginal": "inheritance",
+            "glossPt": null
+          },
+          {
+            "strong": "H517",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 220,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H4150",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 218,
+            "glossOriginal": "meeting: time appointed",
+            "glossPt": null
+          },
+          {
+            "strong": "H3091",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 218,
+            "glossOriginal": "Joshua",
+            "glossPt": null
+          },
+          {
+            "strong": "H8451",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 216,
+            "glossOriginal": "instruction",
+            "glossPt": null
+          },
+          {
+            "strong": "H3559a",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 216,
+            "glossOriginal": "to establish: prepare",
+            "glossPt": null
+          },
+          {
+            "strong": "H4264",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 215,
+            "glossOriginal": "camp",
+            "glossPt": null
+          },
+          {
+            "strong": "H8337",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 214,
+            "glossOriginal": "six",
+            "glossPt": null
+          },
+          {
+            "strong": "H1242",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 213,
+            "glossOriginal": "morning",
+            "glossPt": null
+          },
+          {
+            "strong": "H5800a",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 213,
+            "glossOriginal": "to leave: forsake",
+            "glossPt": null
+          },
+          {
+            "strong": "H5186",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 213,
+            "glossOriginal": "to stretch",
+            "glossPt": null
+          },
+          {
+            "strong": "H899b",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 213,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H4397",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 212,
+            "glossOriginal": "messenger",
+            "glossPt": null
+          },
+          {
+            "strong": "H7901",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 212,
+            "glossOriginal": "to lie down: lay down",
+            "glossPt": null
+          },
+          {
+            "strong": "H5337",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 212,
+            "glossOriginal": "to rescue",
+            "glossPt": null
+          },
+          {
+            "strong": "H157",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 209,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "G2076",
+            "languageGroup": "greek",
+            "occurrences": 206,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H3254",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 206,
+            "glossOriginal": "to add: again",
+            "glossPt": null
+          },
+          {
+            "strong": "H6662",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 206,
+            "glossOriginal": "righteous",
+            "glossPt": null
+          },
+          {
+            "strong": "H3615",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 204,
+            "glossOriginal": "to end: finish",
+            "glossPt": null
+          },
+          {
+            "strong": "G1410",
+            "languageGroup": "greek",
+            "occurrences": 202,
+            "glossOriginal": "able is",
+            "glossPt": null
+          },
+          {
+            "strong": "H727",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 202,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H622",
+            "languageGroup": "hebrewAramaic",
+            "occurrences": 201,
+            "glossOriginal": null,
+            "glossPt": null
+          }
+        ]
+      }
+    },
+    "crossrefs": {
+      "relationsRead": 344799,
+      "relationsImported": 251822,
+      "relationsIgnored": 92977,
+      "ignoredReasons": {
+        "limite de 12 referências por versículo": 92977
+      },
+      "aliasesMapped": 66,
+      "chapters": 1189
+    }
+  },
+  "errors": [],
+  "informationalWarnings": [
+    "Referências cruzadas ignoradas (limite de 12 referências por versículo): 92977"
+  ],
+  "artifacts": {
+    "files": 4757,
+    "bytes": 185006867
+  },
+  "rules": [
+    "JSON válido",
+    "ordem e duplicidade",
+    "capítulos vazios",
+    "lacunas suspeitas",
+    "Unicode",
+    "correspondência canônica",
+    "alinhamento lexical explícito",
+    "idioma por token",
+    "aliases de referências cruzadas",
+    "tamanho dos artefatos"
+  ],
+  "status": "passed"
+}

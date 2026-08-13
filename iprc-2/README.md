@@ -1,4 +1,4 @@
-# IPRC 2.0 — Fases 0 e 1
+# IPRC 2.0 — Fases 0, 1 e 2
 
 Nova base do frontend da Igreja Presbiteriana do Rio Comprido, conforme a issue #5. Este diretório é isolado do site Legacy na raiz do repositório: nada aqui substitui a produção atual.
 
@@ -39,3 +39,19 @@ npm run validate
 - includes e agenda atual;
 - painel `adm/` apenas como referência para reconstrução futura;
 - conteúdo e dados existentes no Firebase, sem nova dependência nesta Home.
+
+## Fase 2 — Bíblia
+
+`pnpm bible:build` lê as fontes preservadas em `../dados/biblia`, valida sua integridade e gera artefatos pequenos em `public/bible-data/<versão>/<livro>/<capítulo>.json`. A pasta gerada não é versionada e é reconstruída antes de desenvolvimento e build.
+
+Fontes habilitadas: Bíblia Livre (CC BY 4.0), ARA herdada marcada obrigatoriamente como não verificada, Textus Receptus e WLC. A ACF permanece bloqueada. A camada lexical integra STEPBible TAGNT/TBESG para tokens explicitamente pertencentes ao TR e OSHB/TBESH para tokens do WLC identificados por ID e Strong. Não há matching por aparência: trechos sem correspondência verificável mantêm “Não disponível nesta fonte”. O OSHB identifica hebraico e aramaico por token, inclusive a transição em Daniel 2:4.
+
+Os glosses dos arquivos STEPBible são preservados literalmente em `glossOriginal`. Uma camada editorial separada, `../dados/biblia/lexical-presentation-pt.json`, fornece `glossPt` somente quando existe uma equivalência curta segura; Strong/ID lexical tem precedência e o gloss normalizado funciona como fallback. Ela pode apresentar vários sentidos legítimos separados por `/`. Quando essa curadoria não cobre a entrada, a interface conserva o inglês e informa que a tradução portuguesa está indisponível. A camada PT-BR nunca é gravada nos artefatos-fonte comprimidos. O relatório de integridade mede separadamente cobertura por IDs distintos e cobertura ponderada pelas ocorrências dos tokens, no total e para grego e hebraico/aramaico, além de registrar as lacunas mais frequentes.
+
+O leitor oferece URLs compartilháveis, última leitura local, comparação conjunta entre ARA, Bíblia Livre e o texto original apropriado, paralelo alinhado por versículo, hebraico/aramaico RTL, estudo lexical em dois níveis e previews navegáveis — inclusive intervalos — das referências OpenBible.info. Os IDs OpenBible originais permanecem nos dados e em `data-source` para rastreabilidade, enquanto todos os rótulos visíveis usam os nomes canônicos em português brasileiro. O aviso completo da ARA aparece uma vez por navegador; `ARA · legado` permanece consultável.
+
+O relatório auditável fica em `reports/bible-integrity.json`. Atualmente registra 344.799 relações lidas, 251.822 importadas e 92.977 ignoradas pelo limite documentado de 12 referências por versículo, com 66 livros e 1.189 capítulos mapeados. `errors` são bloqueantes; o limite produz um `warning` informativo e não falha a build.
+
+As fontes lexicais normalizadas e comprimidas ficam em `../dados/biblia/lexical-source`. O importador reprodutível é `scripts/import-bible-lexical-data.mjs`; a proveniência fixa os commits usados. O índice de ocorrências foi preparado conceitualmente por `strong`/identificador em cada token, mas sua geração foi adiada para evitar milhares de artefatos adicionais nesta rodada.
+
+Continuação lexical planejada: investigar IDs frequentes sem `glossOriginal`; aproveitar relações de Extended Strong somente quando forem explicitamente fornecidas pelo STEPBible, sem correspondência inferida; e ampliar progressivamente o arquivo estático e revisável `lexical-presentation-pt.json`.
