@@ -22,7 +22,20 @@ const ptCoverage = report.sources.lexical.presentationPt;
 assert(ptCoverage.distinctLexicalIds > 10000, 'o relatório deve auditar todos os identificadores lexicais usados');
 assert(ptCoverage.withOriginalGloss > 10000, 'o relatório deve contar entradas com gloss original');
 assert(ptCoverage.withPtTranslation > 0 && ptCoverage.coveragePercent > 0, 'o relatório deve informar cobertura PT positiva');
+assert.equal(ptCoverage.distinctWithPt, ptCoverage.withPtTranslation, 'a métrica explícita por IDs deve preservar a contagem anterior');
+assert.equal(ptCoverage.distinctCoveragePercent, ptCoverage.coveragePercent, 'a cobertura por IDs distintos deve preservar a métrica anterior');
 assert.equal(ptCoverage.withPtTranslation + ptCoverage.withoutPtTranslation, ptCoverage.distinctLexicalIds, 'toda entrada deve estar classificada quanto à tradução PT');
+assert(ptCoverage.totalOccurrences > ptCoverage.distinctLexicalIds, 'o total ponderado deve contar ocorrências de tokens, não apenas IDs');
+assert(ptCoverage.occurrencesWithPt > 0 && ptCoverage.occurrencesWithPt <= ptCoverage.totalOccurrences, 'ocorrências com PT devem possuir contagem válida');
+assert.equal(ptCoverage.occurrenceCoveragePercent, Number((ptCoverage.occurrencesWithPt / ptCoverage.totalOccurrences * 100).toFixed(2)), 'a cobertura ponderada deve ser reproduzível pelas contagens');
+for (const group of ['greek','hebrewAramaic']) {
+  const metrics=ptCoverage.byLanguage[group];
+  assert(metrics.distinctLexicalIds > 0 && metrics.totalOccurrences > 0, `${group} deve possuir métricas próprias`);
+  assert.equal(metrics.distinctCoveragePercent, Number((metrics.distinctWithPt / metrics.distinctLexicalIds * 100).toFixed(2)));
+  assert.equal(metrics.occurrenceCoveragePercent, Number((metrics.occurrencesWithPt / metrics.totalOccurrences * 100).toFixed(2)));
+}
+assert.equal(ptCoverage.byLanguage.greek.distinctLexicalIds + ptCoverage.byLanguage.hebrewAramaic.distinctLexicalIds, ptCoverage.distinctLexicalIds, 'a separação linguística deve recompor o total de IDs');
+assert.equal(ptCoverage.byLanguage.greek.totalOccurrences + ptCoverage.byLanguage.hebrewAramaic.totalOccurrences, ptCoverage.totalOccurrences, 'a separação linguística deve recompor o total de ocorrências');
 assert(ptCoverage.mostFrequentWithoutTranslation.length > 0, 'o relatório deve listar lacunas priorizadas por frequência');
 assert.equal(
   Object.keys(report.sources.crossrefs.ignoredReasons).some((reason) => reason.includes('alias desconhecido')),

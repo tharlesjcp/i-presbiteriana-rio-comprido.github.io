@@ -20,7 +20,7 @@ const presentationGloss = (strong,value) => lexicalPresentationPt.strong[strong]
 const lexicalUsage = new Map();
 const recordLexicalUsage = word => {
   if(!word.strong)return word;
-  const usage=lexicalUsage.get(word.strong)||{strong:word.strong,occurrences:0,glossOriginal:word.glossOriginal||null,glossPt:word.glossPt||null};
+  const usage=lexicalUsage.get(word.strong)||{strong:word.strong,languageGroup:word.language==='grc'?'greek':'hebrewAramaic',occurrences:0,glossOriginal:word.glossOriginal||null,glossPt:word.glossPt||null};
   usage.occurrences++;if(!usage.glossOriginal&&word.glossOriginal)usage.glossOriginal=word.glossOriginal;if(!usage.glossPt&&word.glossPt)usage.glossPt=word.glossPt;
   lexicalUsage.set(word.strong,usage);return word;
 };
@@ -94,8 +94,14 @@ for(const [id,chapters] of datasets){
   }
   report.sources[id]={chapters:chapters.size,verses,maxChapterBytes};
 }
-const lexicalEntries=[...lexicalUsage.values()],lexicalWithGloss=lexicalEntries.filter(entry=>entry.glossOriginal),lexicalWithPt=lexicalEntries.filter(entry=>entry.glossPt),lexicalWithoutPt=lexicalEntries.filter(entry=>!entry.glossPt).sort((a,b)=>b.occurrences-a.occurrences);
-report.sources.lexical={greek:{alignedVerses:greekLexicalVerses,source:'STEPBible TAGNT + TBESG'},semitic:{alignedVerses:hebrewLexicalVerses,aramaicTokens,source:'OSHB + STEPBible TBESH'},provenance:lexicalProvenance.sources,unsafeVersificationSegments:lexicalProvenance.alignment.unsafeVersificationSegments,presentationPt:{distinctLexicalIds:lexicalEntries.length,withOriginalGloss:lexicalWithGloss.length,withPtTranslation:lexicalWithPt.length,withoutPtTranslation:lexicalEntries.length-lexicalWithPt.length,coveragePercent:Number((lexicalWithPt.length/lexicalEntries.length*100).toFixed(2)),priority:'Strong/identificador lexical; fallback por gloss original normalizado',mostFrequentWithoutTranslation:lexicalWithoutPt.slice(0,50)}};
+const lexicalEntries=[...lexicalUsage.values()],lexicalWithoutPt=lexicalEntries.filter(entry=>!entry.glossPt).sort((a,b)=>b.occurrences-a.occurrences);
+const coverageMetrics=entries=>{
+  const withOriginalGloss=entries.filter(entry=>entry.glossOriginal).length,distinctWithPt=entries.filter(entry=>entry.glossPt).length;
+  const totalOccurrences=entries.reduce((sum,entry)=>sum+entry.occurrences,0),occurrencesWithPt=entries.filter(entry=>entry.glossPt).reduce((sum,entry)=>sum+entry.occurrences,0);
+  return{distinctLexicalIds:entries.length,withOriginalGloss,distinctWithPt,distinctCoveragePercent:Number((distinctWithPt/entries.length*100).toFixed(2)),totalOccurrences,occurrencesWithPt,occurrenceCoveragePercent:Number((occurrencesWithPt/totalOccurrences*100).toFixed(2))};
+};
+const totalCoverage=coverageMetrics(lexicalEntries);
+report.sources.lexical={greek:{alignedVerses:greekLexicalVerses,source:'STEPBible TAGNT + TBESG'},semitic:{alignedVerses:hebrewLexicalVerses,aramaicTokens,source:'OSHB + STEPBible TBESH'},provenance:lexicalProvenance.sources,unsafeVersificationSegments:lexicalProvenance.alignment.unsafeVersificationSegments,presentationPt:{...totalCoverage,withPtTranslation:totalCoverage.distinctWithPt,withoutPtTranslation:totalCoverage.distinctLexicalIds-totalCoverage.distinctWithPt,coveragePercent:totalCoverage.distinctCoveragePercent,priority:'Strong/identificador lexical; fallback por gloss original normalizado',byLanguage:{greek:coverageMetrics(lexicalEntries.filter(entry=>entry.languageGroup==='greek')),hebrewAramaic:coverageMetrics(lexicalEntries.filter(entry=>entry.languageGroup==='hebrewAramaic'))},mostFrequentWithoutTranslation:lexicalWithoutPt.slice(0,50)}};
 const books=codes.map((code,index)=>({code,name:ptNames[index],slug:slugs[index],testament:index<39?'AT':'NT',chapters:Math.max(0,...datasets.flatMap(([,map])=>[...map.keys()].filter(key=>key.startsWith(`${code}/`)).map(key=>Number(key.split('/')[1]))))}));
 const manifest={generatedAt:report.generatedAt,default:{version:'blivre',book:'JHN',chapter:11},books,versions:[
  {id:'blivre',name:'Bíblia Livre',abbreviation:'BLIVRE',language:'pt-BR',direction:'ltr',testaments:['AT','NT'],source:'Projeto Bíblia Livre',sourceDate:'arquivo JSON obtido em 2026-08-13',license:'CC BY 4.0',attribution:'Projeto Bíblia Livre — sites.google.com/site/biblialivre',status:'verified',enabled:true,features:['parallel']},
