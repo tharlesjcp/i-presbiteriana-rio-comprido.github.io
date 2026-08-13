@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T19:59:55.866Z",
+  "generatedAt": "2026-08-13T21:05:59.054Z",
   "sources": {
     "ara-legacy": {
       "chapters": 1189,
@@ -9,17 +9,57 @@
     "greek-tr": {
       "chapters": 260,
       "verses": 7958,
-      "maxChapterBytes": 159257
+      "maxChapterBytes": 368225
     },
     "hebrew-wlc": {
       "chapters": 929,
       "verses": 23213,
-      "maxChapterBytes": 118735
+      "maxChapterBytes": 343595
     },
     "blivre": {
       "chapters": 1189,
       "verses": 31102,
       "maxChapterBytes": 17503
+    },
+    "lexical": {
+      "greek": {
+        "alignedVerses": 6626,
+        "source": "STEPBible TAGNT + TBESG"
+      },
+      "semitic": {
+        "alignedVerses": 23004,
+        "aramaicTokens": 9377,
+        "source": "OSHB + STEPBible TBESH"
+      },
+      "provenance": [
+        {
+          "id": "STEPBible-Data",
+          "commit": "079db44a434e7f2bf5e33f95058e43d7437be92b",
+          "datasets": [
+            "TAGNT",
+            "TBESG",
+            "TEGMC",
+            "TBESH",
+            "TEHMC"
+          ],
+          "license": "CC BY 4.0",
+          "attribution": "STEP Bible — www.STEPBible.org"
+        },
+        {
+          "id": "OSHB",
+          "commit": "3d15126fb1ef74867fc1434be1942e837932691f",
+          "release": "2.2 lineage",
+          "datasets": [
+            "WLC text",
+            "lemma",
+            "morphology",
+            "token language"
+          ],
+          "license": "WLC public domain; lemma/morphology CC BY 4.0",
+          "attribution": "Open Scriptures Hebrew Bible Project"
+        }
+      ],
+      "unsafeVersificationSegments": 6
     },
     "crossrefs": {
       "relationsRead": 344799,
@@ -33,12 +73,12 @@
     }
   },
   "errors": [],
-  "warnings": [
+  "informationalWarnings": [
     "Referências cruzadas ignoradas (limite de 12 referências por versículo): 92977"
   ],
   "artifacts": {
     "files": 4757,
-    "bytes": 88562165
+    "bytes": 170608231
   },
   "rules": [
     "JSON válido",
@@ -47,6 +87,8 @@
     "lacunas suspeitas",
     "Unicode",
     "correspondência canônica",
+    "alinhamento lexical explícito",
+    "idioma por token",
     "aliases de referências cruzadas",
     "tamanho dos artefatos"
   ],
