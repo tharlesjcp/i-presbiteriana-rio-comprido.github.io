@@ -1,0 +1,13 @@
+# Production remains the untouched Legacy site at the repository root.
+[build]
+publish = "."
+
+# Pull requests build only the isolated Astro reconstruction.
+[context.deploy-preview]
+command = "cd iprc-2 && pnpm install --no-frozen-lockfile && pnpm run build"
+publish = "iprc-2/dist"
+
+[context.deploy-preview.environment]
+NODE_VERSION = "22"
+PNPM_VERSION = "11.16.0"
+ASTRO_TELEMETRY_DISABLED = "1"

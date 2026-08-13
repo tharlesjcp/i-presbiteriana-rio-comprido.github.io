@@ -1,0 +1,5 @@
+---
+interface Props { title: string; description: string; href: string; icon: string; }
+const { title, description, href, icon } = Astro.props;
+---
+<a class="quick-card reveal" href={href}><span class="quick-icon" aria-hidden="true">{icon}</span><span><strong>{title}</strong><small>{description}</small></span><span class="quick-arrow" aria-hidden="true">→</span></a>
