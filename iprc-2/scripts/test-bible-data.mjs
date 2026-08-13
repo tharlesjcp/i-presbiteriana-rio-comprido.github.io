@@ -18,6 +18,12 @@ assert.equal(
   report.sources.crossrefs.relationsImported + report.sources.crossrefs.relationsIgnored,
   'toda relação lida deve ser importada ou explicitamente ignorada',
 );
+const ptCoverage = report.sources.lexical.presentationPt;
+assert(ptCoverage.distinctLexicalIds > 10000, 'o relatório deve auditar todos os identificadores lexicais usados');
+assert(ptCoverage.withOriginalGloss > 10000, 'o relatório deve contar entradas com gloss original');
+assert(ptCoverage.withPtTranslation > 0 && ptCoverage.coveragePercent > 0, 'o relatório deve informar cobertura PT positiva');
+assert.equal(ptCoverage.withPtTranslation + ptCoverage.withoutPtTranslation, ptCoverage.distinctLexicalIds, 'toda entrada deve estar classificada quanto à tradução PT');
+assert(ptCoverage.mostFrequentWithoutTranslation.length > 0, 'o relatório deve listar lacunas priorizadas por frequência');
 assert.equal(
   Object.keys(report.sources.crossrefs.ignoredReasons).some((reason) => reason.includes('alias desconhecido')),
   false,
@@ -50,7 +56,18 @@ assert.equal('gloss' in localizedGreekWord, false, 'o campo genérico antigo nã
 assert.notEqual(localizedGreekWord.glossPt, localizedGreekWord.glossOriginal, 'a apresentação PT-BR deve permanecer separada do original');
 const matthew = await readJson('public/bible-data/greek-tr/MAT/2.json');
 const was = matthew.verses.flatMap((verse) => verse.words ?? []).find((word) => word.glossOriginal === 'was');
-assert.equal(was?.glossPt, 'era / estava / existia', 'sentidos curtos legítimos devem aparecer juntos, sem apagar o gloss “was”');
+assert.equal(was?.glossPt, 'ser / estar / existir', 'a curadoria por Strong deve preceder o fallback textual “was”');
+assert.equal(was?.glossOriginal, 'was', 'a precedência do Strong não pode alterar o gloss flexionado original');
+const lazarusChapter = await readJson('public/bible-data/greek-tr/JHN/11.json');
+const lazarus = lazarusChapter.verses.flatMap((verse) => verse.words ?? []).find((word) => word.strong === 'G2976H');
+assert.equal(lazarus?.glossPt, 'Lázaro', 'nome próprio inequívoco deve usar a forma bíblica portuguesa por Strong');
+assert.match(lazarus?.glossOriginal ?? '', /Lazarus/i, 'o gloss inglês de Lázaro deve permanecer preservado');
+const presentation = await readJson('../dados/biblia/lexical-presentation-pt.json');
+assert.equal(presentation.strong.G3056, 'palavra / discurso / mensagem');
+assert.equal(presentation.gloss.word, 'palavra / discurso / mensagem');
+assert.match(await readFile(resolve(root, 'scripts/build-bible-data.mjs'), 'utf8'), /lexicalPresentationPt\.strong\[strong\] \|\| glossPtByOriginal/, 'Strong deve preceder o fallback textual');
+const untranslated = Object.values(greekSource).flat().find((word) => word.glossOriginal && !presentation.strong[word.strong] && !presentation.gloss[word.glossOriginal.trim().toLowerCase().replace(/[.,:;!?]+$/g, '')]);
+assert(untranslated, 'deve existir uma entrada lexical sem tradução segura para validar o fallback honesto');
 
 const genesis = await readJson('public/bible-data/hebrew-wlc/GEN/1.json');
 assert(genesis.verses[0].words.some((word) => word.language === 'hbo' && word.alignment === 'verified'));

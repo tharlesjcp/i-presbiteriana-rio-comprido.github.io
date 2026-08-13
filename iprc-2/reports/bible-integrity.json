@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T21:36:42.726Z",
+  "generatedAt": "2026-08-13T22:55:32.842Z",
   "sources": {
     "ara-legacy": {
       "chapters": 1189,
@@ -9,12 +9,12 @@
     "greek-tr": {
       "chapters": 260,
       "verses": 7958,
-      "maxChapterBytes": 397138
+      "maxChapterBytes": 406068
     },
     "hebrew-wlc": {
       "chapters": 929,
       "verses": 23213,
-      "maxChapterBytes": 370626
+      "maxChapterBytes": 384501
     },
     "blivre": {
       "chapters": 1189,
@@ -59,7 +59,317 @@
           "attribution": "Open Scriptures Hebrew Bible Project"
         }
       ],
-      "unsafeVersificationSegments": 6
+      "unsafeVersificationSegments": 6,
+      "presentationPt": {
+        "distinctLexicalIds": 15022,
+        "withOriginalGloss": 13036,
+        "withPtTranslation": 2470,
+        "withoutPtTranslation": 12552,
+        "coveragePercent": 16.44,
+        "priority": "Strong/identificador lexical; fallback por gloss original normalizado",
+        "mostFrequentWithoutTranslation": [
+          {
+            "strong": "G846",
+            "occurrences": 394,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H341",
+            "occurrences": 281,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H7126",
+            "occurrences": 280,
+            "glossOriginal": "to present: come",
+            "glossPt": null
+          },
+          {
+            "strong": "H639",
+            "occurrences": 274,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H68",
+            "occurrences": 272,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H6629",
+            "occurrences": 272,
+            "glossOriginal": "flock",
+            "glossPt": null
+          },
+          {
+            "strong": "H6547",
+            "occurrences": 263,
+            "glossOriginal": "Pharaoh",
+            "glossPt": null
+          },
+          {
+            "strong": "H894",
+            "occurrences": 262,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H7563",
+            "occurrences": 261,
+            "glossOriginal": "wicked",
+            "glossPt": null
+          },
+          {
+            "strong": "G3754",
+            "occurrences": 253,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H4390",
+            "occurrences": 248,
+            "glossOriginal": "to fill",
+            "glossPt": null
+          },
+          {
+            "strong": "H520a",
+            "occurrences": 246,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H2617a",
+            "occurrences": 244,
+            "glossOriginal": "kindness",
+            "glossPt": null
+          },
+          {
+            "strong": "H4294",
+            "occurrences": 244,
+            "glossOriginal": "tribe: rod",
+            "glossPt": null
+          },
+          {
+            "strong": "H410",
+            "occurrences": 243,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H7451a",
+            "occurrences": 242,
+            "glossOriginal": "bad: harmful",
+            "glossPt": null
+          },
+          {
+            "strong": "H2416a",
+            "occurrences": 241,
+            "glossOriginal": "alive",
+            "glossPt": null
+          },
+          {
+            "strong": "H1366",
+            "occurrences": 238,
+            "glossOriginal": "border: boundary",
+            "glossPt": null
+          },
+          {
+            "strong": "H2398",
+            "occurrences": 237,
+            "glossOriginal": "to sin",
+            "glossPt": null
+          },
+          {
+            "strong": "H4639",
+            "occurrences": 235,
+            "glossOriginal": "deed: work",
+            "glossPt": null
+          },
+          {
+            "strong": "H2428",
+            "occurrences": 234,
+            "glossOriginal": "Helech",
+            "glossPt": null
+          },
+          {
+            "strong": "H3423",
+            "occurrences": 231,
+            "glossOriginal": "to possess: possess",
+            "glossPt": null
+          },
+          {
+            "strong": "H5771",
+            "occurrences": 230,
+            "glossOriginal": "iniquity: crime",
+            "glossPt": null
+          },
+          {
+            "strong": "H7130",
+            "occurrences": 227,
+            "glossOriginal": "entrails: among",
+            "glossPt": null
+          },
+          {
+            "strong": "H7235a",
+            "occurrences": 226,
+            "glossOriginal": "to multiply",
+            "glossPt": null
+          },
+          {
+            "strong": "H127",
+            "occurrences": 225,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "G235",
+            "occurrences": 224,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H5159",
+            "occurrences": 222,
+            "glossOriginal": "inheritance",
+            "glossPt": null
+          },
+          {
+            "strong": "H517",
+            "occurrences": 220,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H4150",
+            "occurrences": 218,
+            "glossOriginal": "meeting: time appointed",
+            "glossPt": null
+          },
+          {
+            "strong": "H3091",
+            "occurrences": 218,
+            "glossOriginal": "Joshua",
+            "glossPt": null
+          },
+          {
+            "strong": "H8451",
+            "occurrences": 216,
+            "glossOriginal": "instruction",
+            "glossPt": null
+          },
+          {
+            "strong": "H3559a",
+            "occurrences": 216,
+            "glossOriginal": "to establish: prepare",
+            "glossPt": null
+          },
+          {
+            "strong": "H4264",
+            "occurrences": 215,
+            "glossOriginal": "camp",
+            "glossPt": null
+          },
+          {
+            "strong": "H8337",
+            "occurrences": 214,
+            "glossOriginal": "six",
+            "glossPt": null
+          },
+          {
+            "strong": "H1242",
+            "occurrences": 213,
+            "glossOriginal": "morning",
+            "glossPt": null
+          },
+          {
+            "strong": "H5800a",
+            "occurrences": 213,
+            "glossOriginal": "to leave: forsake",
+            "glossPt": null
+          },
+          {
+            "strong": "H5186",
+            "occurrences": 213,
+            "glossOriginal": "to stretch",
+            "glossPt": null
+          },
+          {
+            "strong": "H899b",
+            "occurrences": 213,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H4397",
+            "occurrences": 212,
+            "glossOriginal": "messenger",
+            "glossPt": null
+          },
+          {
+            "strong": "H7901",
+            "occurrences": 212,
+            "glossOriginal": "to lie down: lay down",
+            "glossPt": null
+          },
+          {
+            "strong": "H5337",
+            "occurrences": 212,
+            "glossOriginal": "to rescue",
+            "glossPt": null
+          },
+          {
+            "strong": "H157",
+            "occurrences": 209,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "G2076",
+            "occurrences": 206,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H3254",
+            "occurrences": 206,
+            "glossOriginal": "to add: again",
+            "glossPt": null
+          },
+          {
+            "strong": "H6662",
+            "occurrences": 206,
+            "glossOriginal": "righteous",
+            "glossPt": null
+          },
+          {
+            "strong": "H3615",
+            "occurrences": 204,
+            "glossOriginal": "to end: finish",
+            "glossPt": null
+          },
+          {
+            "strong": "G1410",
+            "occurrences": 202,
+            "glossOriginal": "able is",
+            "glossPt": null
+          },
+          {
+            "strong": "H727",
+            "occurrences": 202,
+            "glossOriginal": null,
+            "glossPt": null
+          },
+          {
+            "strong": "H622",
+            "occurrences": 201,
+            "glossOriginal": null,
+            "glossPt": null
+          }
+        ]
+      }
     },
     "crossrefs": {
       "relationsRead": 344799,
@@ -78,7 +388,7 @@
   ],
   "artifacts": {
     "files": 4757,
-    "bytes": 181266454
+    "bytes": 184998271
   },
   "rules": [
     "JSON válido",
