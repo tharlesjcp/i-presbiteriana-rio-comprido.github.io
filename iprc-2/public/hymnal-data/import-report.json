@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2025-09-05T08:30:50-03:00",
+  "source": {
+    "repository": "https://github.com/savioa/cifras-novo-cantico",
+    "commit": "065041f7c817e535ecb629e76cf024c45f2cd5fd",
+    "technicalLicense": "MIT",
+    "underlyingRights": "unverified"
+  },
+  "txtFiles": 71,
+  "abcFiles": 71,
+  "pairs": 71,
+  "txtOnly": 0,
+  "abcOnly": 0,
+  "parseFailures": [],
+  "duplicateNumbers": [],
+  "missingTitles": [],
+  "keys": {
+    "A": 12,
+    "C": 7,
+    "Eb": 3,
+    "D": 20,
+    "G": 20,
+    "E": 7,
+    "Cm": 1,
+    "Fm": 1
+  },
+  "rightsStatus": {
+    "public-domain": 0,
+    "authorized": 0,
+    "verified-open": 0,
+    "unverified": 71,
+    "external-only": 0
+  },
+  "hymns": 71
+}
