@@ -8,5 +8,5 @@ const { study, featured = false } = Astro.props;
     <img src={`https://i.ytimg.com/vi/${study.youtubeId}/hqdefault.jpg`} alt="" loading={featured ? 'eager' : 'lazy'} width="480" height="360" />
     <span class="play" aria-hidden="true">▶</span>
   </a>
-  <div class="study-body"><p class="meta"><time datetime={study.publishedAt}>{formatStudyDate(study.publishedAt)}</time></p><h3>{study.title}</h3><p>{study.summary}</p><a href={`/estudos/${study.slug}`}>Ver estudo <span aria-hidden="true">→</span></a></div>
+  <div class="study-body"><p class="meta"><time datetime={study.publishedAt}>{formatStudyDate(study.publishedAt)}</time></p><h3>{study.title}</h3>{study.summary && <p>{study.summary}</p>}<a href={`/estudos/${study.slug}`}>Ver estudo <span aria-hidden="true">→</span></a></div>
 </article>

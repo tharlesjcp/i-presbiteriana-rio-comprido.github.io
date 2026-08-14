@@ -1,6 +1,7 @@
 export type StudyStatus = 'draft' | 'published';
 export type BibleReference = { book: string; chapter: number; verseStart: number; verseEnd?: number };
-export type Study = { id: string; slug: string; title: string; publishedAt: string; summary: string; youtubeUrl: string; youtubeId: string; transcript: string; references: BibleReference[]; status: StudyStatus };
+export type StudyInput = { id?: string; slug?: string; title: string; publishedAt: string; summary?: string; youtubeUrl: string; transcript: string; references: BibleReference[]; status: StudyStatus };
+export type Study = Omit<StudyInput, 'slug' | 'summary'> & { slug: string; summary?: string; youtubeId: string };
 
 const youtubeIdPattern = /^[A-Za-z0-9_-]{11}$/;
 export const extractYoutubeId = (value: string): string | null => {
@@ -27,16 +28,18 @@ export const bibleBooks = Object.fromEntries(bookEntries.map(([slug, code, name]
 export const bibleReferenceLabel = (reference: BibleReference) => `${bibleBooks[reference.book]?.name || reference.book} ${reference.chapter}:${reference.verseStart}${reference.verseEnd && reference.verseEnd !== reference.verseStart ? `–${reference.verseEnd}` : ''}`;
 export const validateBibleReference = (reference: BibleReference) => Boolean(bibleBooks[reference.book] && Number.isInteger(reference.chapter) && reference.chapter > 0 && Number.isInteger(reference.verseStart) && reference.verseStart > 0 && (reference.verseEnd === undefined || Number.isInteger(reference.verseEnd) && reference.verseEnd >= reference.verseStart));
 
-export const normalizeStudy = (input: Study): Study => {
+export const normalizeStudy = (input: StudyInput): Study => {
   const youtubeId = extractYoutubeId(input.youtubeUrl);
   const slug = input.slug || slugifyStudyTitle(input.title);
-  if (!input.id.trim() || !input.title.trim() || !input.summary.trim() || !input.transcript.trim()) throw new Error('Estudo com campos obrigatórios vazios.');
+  if (!input.title.trim() || !input.transcript.trim()) throw new Error('Estudo com campos obrigatórios vazios.');
   if (!youtubeId) throw new Error('URL do YouTube inválida.');
   if (!isValidStudySlug(slug)) throw new Error('Slug inválido.');
   if (Number.isNaN(Date.parse(input.publishedAt))) throw new Error('Data de publicação inválida.');
   if (!['draft','published'].includes(input.status)) throw new Error('Status inválido.');
   if (!input.references.every(validateBibleReference)) throw new Error('Referência bíblica inválida.');
-  return { ...input, slug, youtubeId };
+  const summary = input.summary?.trim() || undefined;
+  const id = input.id?.trim() || undefined;
+  return { ...input, id, slug, summary, youtubeId };
 };
 
 export const formatStudyDate = (value: string) => new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value));
