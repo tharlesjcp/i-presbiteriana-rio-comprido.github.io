@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { transposeChord, normalizeSearch } from './hymnal-utils.mjs';
+import { normalizeHymnNumber, parseHymnAbc, parseHymnTxt } from './hymnal-parser.mjs';
+
+const root = resolve(import.meta.dirname, '..');
+const json = async (path) => JSON.parse(await readFile(resolve(root, path), 'utf8'));
+const report = await json('reports/hymnal-import.json');
+const index = await json('public/hymnal-data/index.json');
+assert.equal(report.txtFiles, 71); assert.equal(report.abcFiles, 71); assert.equal(report.pairs, 71);
+assert.equal(report.parseFailures.length, 0); assert.equal(index.length, 71);
+assert(index.some((hymn) => hymn.id === '400-B'), 'numeração com sufixo deve ser preservada');
+assert(index.some((hymn) => hymn.number === '61' && normalizeSearch(hymn.title).includes('acoes de gracas')));
+assert.equal(index.every((hymn) => hymn.content === null && hymn.rights.status === 'unverified'), true, 'conteúdo integral não verificado deve permanecer bloqueado');
+assert.equal(transposeChord('G', 2), 'A'); assert.equal(transposeChord('Bb', 2), 'C');
+assert.equal(transposeChord('F#m7/C#', 2), 'G#m7/D#'); assert.equal(transposeChord('C7', -2), 'A#7');
+assert.equal(normalizeHymnNumber('0400b'), '400-B');
+assert.equal(normalizeSearch('400b'), normalizeSearch('400-B'));
+assert.equal(parseHymnTxt('22b - Título\nC  G\nPrimeira linha').number, '22-B');
+assert.equal(parseHymnTxt('inválido').error, 'cabeçalho TXT inválido');
+assert.equal(parseHymnAbc('X:24b\nT:Título\nM:4/4\nK:Eb').number, '24-B');
+assert.equal(parseHymnAbc('X:1\nT:Sem tom').error, 'ABC sem X, T ou K obrigatórios');
+const page = await readFile(resolve(root, 'src/pages/hinario/[...path].astro'), 'utf8');
+assert.match(page, /abcjs/); assert.match(page, /direitos em verificação/i);
+console.log('Testes do hinário: aprovados.');

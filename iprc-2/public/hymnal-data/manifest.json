@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2025-09-05T08:30:50-03:00",
+  "source": {
+    "repository": "https://github.com/savioa/cifras-novo-cantico",
+    "commit": "065041f7c817e535ecb629e76cf024c45f2cd5fd",
+    "technicalLicense": "MIT",
+    "underlyingRights": "unverified"
+  },
+  "rightsPolicy": {
+    "publishable": [
+      "public-domain",
+      "authorized",
+      "verified-open"
+    ],
+    "blocked": [
+      "unverified",
+      "external-only"
+    ]
+  },
+  "count": 71
+}
