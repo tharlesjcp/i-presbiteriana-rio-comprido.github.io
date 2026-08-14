@@ -67,3 +67,13 @@ A licença MIT do repositório técnico não é tratada como autorização para 
 As rotas `/hinario` e `/hinario/<número>` são geradas estaticamente. Busca tolerante a acentos, navegação anterior/próximo, controles de tom, modos Letra/Cifra/Partitura e o ponto de integração com ABCJS estão preparados sem depender de API externa em runtime. Os controles de conteúdo permanecem bloqueados enquanto o status de direitos não for `public-domain`, `authorized` ou `verified-open`.
 
 Continuação planejada: documentar autorização por hino, liberar somente os conteúdos comprovados, integrar o ABCJS como dependência empacotada e validar visualmente cada partitura antes da publicação.
+
+## Fase 4 — Estudos Bíblicos
+
+O contrato de domínio está em `src/domain/study.ts`. `StudyInput` representa a entrada editorial humana: título, data, URL comum do YouTube, transcrição obrigatória, referências, status e, opcionalmente, ID, slug e resumo. `Study` é a entidade normalizada, com `slug` definitivo e `youtubeId` derivado automaticamente. A normalização valida os campos, descarta resumo vazio, gera ou valida o slug e extrai o ID do vídeo sem exigir que o editor o descubra. A transcrição usa um subconjunto seguro de Markdown (`##`, parágrafos, listas e citações), renderizado por componentes sem HTML arbitrário.
+
+As páginas dependem da interface `src/repositories/StudyRepository.ts`, não da persistência. Nesta fase `StaticStudyRepository` recebe entradas `StudyInput` de `src/data/studies.ts` e entrega somente entidades `Study` normalizadas. Na arquitetura final, uma futura `D1StudyRepository` (ou outra implementação persistente sobre Cloudflare D1) poderá implementar o mesmo contrato sem refazer páginas ou componentes. A infraestrutura prevista é Cloudflare Workers + Static Assets, D1, R2 e Access; sua configuração, autenticação, painel e YouTube Data API não fazem parte desta fase.
+
+Para adicionar temporariamente um estudo real e autorizado, inclua um objeto `StudyInput` em `src/data/studies.ts`, usando URL normal do YouTube, transcrição em Markdown seguro, referências com `book`, `chapter`, `verseStart` e `verseEnd`, e `status: 'published'`. `slug` e `summary` são opcionais; `youtubeId` não pertence à entrada editorial. Use `draft` para impedir publicação. Em seguida execute `pnpm study:test`, `pnpm check` e `pnpm build`. Não adicione fixtures ou conteúdo demonstrativo nesse arquivo.
+
+O preview de referências carrega sob demanda os artefatos BLIVRE já gerados por capítulo em `public/bible-data`, sem duplicar textos. A busca local fica planejada para quando houver um acervo público real; não há interface de busca vazia ou implementação parcial nesta rodada.

@@ -11,12 +11,13 @@
     "bible:test": "node scripts/test-bible-data.mjs",
     "hymnal:build": "node scripts/import-hymnal-data.mjs",
     "hymnal:test": "node scripts/test-hymnal-data.mjs",
+    "study:test": "node --experimental-strip-types scripts/test-study-data.mjs",
     "predev": "pnpm bible:build && pnpm hymnal:build",
     "prebuild": "pnpm bible:build && pnpm hymnal:build",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm hymnal:build && pnpm hymnal:test && pnpm check && pnpm build"
+    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm hymnal:build && pnpm hymnal:test && pnpm study:test && pnpm check && pnpm build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
