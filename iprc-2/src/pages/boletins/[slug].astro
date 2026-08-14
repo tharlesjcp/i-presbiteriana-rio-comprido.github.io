@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RichText from '../../components/RichText.astro';
+import { bibleReferenceLabel, bibleBooks } from '../../domain/study';
+import { formatBulletinDate } from '../../domain/bulletin';
+import '../../styles/bulletins.css';
+export async function getStaticPaths(){const {bulletinRepository}=await import('../../repositories/StaticBulletinRepository');return(await bulletinRepository.listPublished()).map(bulletin=>({params:{slug:bulletin.slug},props:{bulletin}}))}
+const { bulletin } = Astro.props;
+---
+<BaseLayout title={`${bulletin.pastoral.title} — Boletim nº ${bulletin.number} — IPRC`} description={bulletin.pastoral.title} canonicalPath={`/boletins/${bulletin.slug}`}>
+  <article class="bulletin-digital container"><header><a class="bulletin-back" href="/boletins">← Todos os boletins</a><p class="eyebrow">Boletim nº {bulletin.number}</p><h1>{bulletin.pastoral.title}</h1><time datetime={bulletin.date}>{formatBulletinDate(bulletin.date)}</time>{bulletin.pastoral.bibleReference && <p><a href={`/biblia/${bulletin.pastoral.bibleReference.book}/${bulletin.pastoral.bibleReference.chapter}#v${bulletin.pastoral.bibleReference.verseStart}`}>{bibleReferenceLabel(bulletin.pastoral.bibleReference)}</a></p>}</header><div class="bulletin-digital-grid"><section aria-labelledby="pastoral-title"><h2 id="pastoral-title">Pastoral</h2><RichText document={bulletin.pastoral.body} /></section><aside><section><h2>Avisos</h2>{bulletin.announcements.map(item => <article><h3>{item.title}</h3><RichText document={item.content} /></article>)}</section>{bulletin.monthActivities.length > 0 && <section><h2>Atividades do mês</h2><ul>{bulletin.monthActivities.map(item => <li>{item.text}{item.agendaEventId && <a href="/agenda"> Ver na Agenda</a>}</li>)}</ul></section>}{bulletin.weeklyReadings.length > 0 && <section><h2>Leituras da semana</h2><ul>{bulletin.weeklyReadings.map(item => <li><strong>{item.day}:</strong> {item.reference ? <a href={`/biblia/${bibleBooks[item.reference.book].slug}/${item.reference.chapter}#v${item.reference.verseStart}`}>{item.referenceText}</a> : item.referenceText}</li>)}</ul></section>}</aside></div>
+  </article>
+</BaseLayout>
