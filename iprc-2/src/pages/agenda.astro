@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AgendaEventCard from '../components/AgendaEventCard.astro';
+import NextMeeting from '../components/NextMeeting.astro';
+import { weekdayNames, formatAgendaTime, type Weekday } from '../domain/agenda';
+import { agendaRepository } from '../repositories/StaticAgendaRepository';
+import '../styles/agenda.css';
+const schedules = await agendaRepository.listActiveRecurring();
+const specialEvents = await agendaRepository.listUpcomingEvents();
+const groups = [...new Set(schedules.map(schedule => schedule.weekday))].map(weekday => ({ weekday: weekday as Weekday, schedules: schedules.filter(schedule => schedule.weekday === weekday) }));
+---
+<BaseLayout title="Agenda da igreja — IPRC" description="Horários, programação semanal e eventos especiais da Igreja Presbiteriana do Rio Comprido." canonicalPath="/agenda">
+  <section class="agenda-hero"><div class="container"><p class="eyebrow">Nossa programação</p><h1>Agenda<br />da igreja</h1><p>Encontre rapidamente o próximo encontro, conheça nossa rotina semanal e acompanhe atividades especiais.</p></div></section>
+  <section class="agenda-next-section container" aria-labelledby="next-title"><h2 id="next-title" class="sr-only">Próximo encontro da igreja</h2><NextMeeting {schedules} headingLevel="h3" /></section>
+  <section class="agenda-special section" aria-labelledby="special-title"><div class="container"><div class="agenda-section-heading"><p class="eyebrow">Além da rotina</p><h2 id="special-title">Próximos eventos especiais</h2></div>{specialEvents.length > 0 ? <div class="agenda-event-grid">{specialEvents.map(event => <AgendaEventCard {event} />)}</div> : <div class="agenda-empty" data-empty-agenda-events><p>Nenhum evento especial publicado no momento.</p><p>A programação semanal continua acontecendo normalmente.</p></div>}</div></section>
+  <section class="weekly-schedule section" aria-labelledby="weekly-title"><div class="container"><div class="agenda-section-heading"><p class="eyebrow">Toda semana</p><h2 id="weekly-title">Programação semanal</h2></div><div class="weekly-groups">{groups.map(group => <section class="weekly-group" aria-labelledby={`weekday-${group.weekday}`}><h3 id={`weekday-${group.weekday}`}>{weekdayNames[group.weekday]}</h3><ul>{group.schedules.map(schedule => <li><time datetime={schedule.startTime}>{formatAgendaTime(schedule.startTime)}</time><div><strong>{schedule.title}</strong><span>{schedule.location.name}</span></div></li>)}</ul></section>)}</div><p class="weekly-location"><strong>Igreja Presbiteriana do Rio Comprido</strong><span>Rua Sampaio Viana, 185, Rio Comprido - RJ</span></p></div></section>
+</BaseLayout>

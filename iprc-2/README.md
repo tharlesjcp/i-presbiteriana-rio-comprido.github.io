@@ -17,16 +17,16 @@ npm run validate
 
 - `src/layouts/BaseLayout.astro`: documento, metadados e shell global.
 - `src/components/`: Header, Footer, Hero, cards e agenda.
-- `src/pages/`: rotas Astro; nesta fase somente a Home.
-- `src/data/site.ts`: mocks e links temporários para o Legacy.
+- `src/pages/`: rotas Astro da Home e dos módulos já migrados.
+- `src/data/`: fontes estáticas editoriais e links temporários para o Legacy.
 - `src/styles/global.css`: tokens, design system e responsividade.
 - `wrangler.example.jsonc`: referência não ativa para Static Assets.
 
 ## Estratégia de migração
 
 - O site atual, assets, dados bíblicos, páginas e painel permanecem na raiz, sem alteração.
-- A Home 2.0 não usa Firebase; estudos e boletim são mocks tipados.
-- A agenda continua vindo do Google Calendar oficial.
+- A Home 2.0 não usa Firebase; os módulos migrados usam fontes estáticas versionadas e Repositories.
+- A Agenda própria da IPRC é a fonte oficial; sua persistência futura será o Cloudflare D1.
 - Recursos ainda não migrados apontam para o Netlify Legacy.
 - D1, R2, Workers/API, Access, Turnstile, DNS e produção ficam fora deste escopo.
 - A saída `dist/` é estática e compatível com Cloudflare Workers Static Assets. O adaptador server-side só deve ser avaliado quando a Fase 3 introduzir API/SSR.
@@ -36,7 +36,7 @@ npm run validate
 - páginas públicas HTML (`biblia`, `boletim`, `estudos`, `hinario`, `pedidos`, `sobre`);
 - `dados/biblia/` e versões estáticas;
 - `images/`, banners, logo e ícones sociais;
-- includes e agenda atual;
+- includes e agenda legada, preservados apenas como inventário histórico;
 - painel `adm/` apenas como referência para reconstrução futura;
 - conteúdo e dados existentes no Firebase, sem nova dependência nesta Home.
 
@@ -77,3 +77,13 @@ As páginas dependem da interface `src/repositories/StudyRepository.ts`, não da
 Para adicionar temporariamente um estudo real e autorizado, inclua um objeto `StudyInput` em `src/data/studies.ts`, usando URL normal do YouTube, transcrição em Markdown seguro, referências com `book`, `chapter`, `verseStart` e `verseEnd`, e `status: 'published'`. `slug` e `summary` são opcionais; `youtubeId` não pertence à entrada editorial. Use `draft` para impedir publicação. Em seguida execute `pnpm study:test`, `pnpm check` e `pnpm build`. Não adicione fixtures ou conteúdo demonstrativo nesse arquivo.
 
 O preview de referências carrega sob demanda os artefatos BLIVRE já gerados por capítulo em `public/bible-data`, sem duplicar textos. A busca local fica planejada para quando houver um acervo público real; não há interface de busca vazia ou implementação parcial nesta rodada.
+
+## Fase 5 — Agenda própria da IPRC
+
+A Agenda própria substitui o calendário externo como fonte oficial. Home e `/agenda` dependem de `AgendaRepository`; nenhuma delas conhece a persistência nem precisa de serviço externo para renderizar. `StaticAgendaRepository` usa `src/data/agenda.ts` nesta fase. A implementação futura será `D1AgendaRepository`, integrada por Cloudflare Workers ao D1, sem alterar os componentes públicos.
+
+O domínio separa `RecurringSchedule`, para a rotina semanal, de `AgendaEvent`, para atividades públicas com data específica ou período. A primeira fonte contém somente os quatro horários confirmados; o catálogo de eventos especiais começa vazio e aceita `draft`, `published` e `cancelled`, mas somente publicados são expostos. `AgendaEvent.source` preserva a origem e IDs opcionais de boletim. Assim, um evento originado no editor de Boletins continuará sendo uma entidade própria da Agenda; no fluxo inverso, um futuro item de boletim poderá referenciar o ID de um evento já existente, sem duplicá-lo.
+
+O próximo encontro não é gravado no HTML durante a build. `NextMeeting.astro` envia a programação recorrente ao navegador e chama o cálculo puro de `src/domain/agenda.ts` com o relógio real do visitante e timezone explícito `America/Sao_Paulo`. A apresentação é recalculada periodicamente enquanto a página permanece aberta, evitando que o destaque fique congelado entre deploys.
+
+No futuro painel, **Agenda → Programação semanal** permitirá criar, editar, reordenar, ativar e desativar horários recorrentes; desativação será preferida quando for necessário preservar histórico. **Agenda → Eventos** permitirá criar, editar, publicar, manter como rascunho ou cancelar eventos, inclusive períodos, horários e imagens opcionais. Uma mudança como EBD de 09:00 para 09:30 será persistida no D1 pelo painel, sem GitHub. Exportação `.ics`, “Adicionar ao meu calendário” e sincronizações opcionais ficam explicitamente adiadas.

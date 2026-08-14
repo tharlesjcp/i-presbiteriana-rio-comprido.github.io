@@ -1,0 +1,47 @@
+---
+import type { RecurringSchedule } from '../domain/agenda';
+interface Props { schedules: RecurringSchedule[]; compact?: boolean; headingLevel?: 'h2' | 'h3'; }
+const { schedules, compact = false, headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
+---
+<article class:list={['next-meeting', compact && 'next-meeting-compact']} data-next-meeting data-schedules={JSON.stringify(schedules)}>
+  <div class="next-date" aria-hidden="true"><strong data-meeting-day>—</strong><span data-meeting-month>Calculando</span></div>
+  <div class="next-copy">
+    <p class="eyebrow">Próximo encontro</p>
+    <Heading data-meeting-title>Consultando a programação…</Heading>
+    <p class="next-when"><time data-meeting-datetime><span data-meeting-weekday></span> <span data-meeting-date></span> · <span data-meeting-time></span></time></p>
+    <p class="next-location"><strong data-meeting-location></strong><span data-meeting-address></span></p>
+  </div>
+</article>
+
+<script>
+  import { AGENDA_TIME_ZONE, calculateNextRecurringOccurrence } from '../domain/agenda';
+
+  const updateMeeting = (element: HTMLElement) => {
+    const schedules = JSON.parse(element.dataset.schedules || '[]');
+    const occurrence = calculateNextRecurringOccurrence(schedules, new Date());
+    if (!occurrence) return;
+    const { schedule, startsAt } = occurrence;
+    const dateParts = new Intl.DateTimeFormat('pt-BR', { timeZone: AGENDA_TIME_ZONE, weekday: 'long', day: '2-digit', month: 'long' }).formatToParts(startsAt);
+    const get = (type: string) => dateParts.find(part => part.type === type)?.value || '';
+    const weekday = get('weekday');
+    const day = get('day');
+    const month = get('month');
+    const time = new Intl.DateTimeFormat('pt-BR', { timeZone: AGENDA_TIME_ZONE, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(startsAt);
+    element.querySelector<HTMLElement>('[data-meeting-day]')!.textContent = day;
+    element.querySelector<HTMLElement>('[data-meeting-month]')!.textContent = month;
+    element.querySelector<HTMLElement>('[data-meeting-title]')!.textContent = schedule.title;
+    element.querySelector<HTMLElement>('[data-meeting-weekday]')!.textContent = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)},`;
+    element.querySelector<HTMLElement>('[data-meeting-date]')!.textContent = `${day} de ${month}`;
+    element.querySelector<HTMLElement>('[data-meeting-time]')!.textContent = time;
+    const datetime = element.querySelector<HTMLTimeElement>('[data-meeting-datetime]')!;
+    datetime.dateTime = startsAt.toISOString();
+    element.querySelector<HTMLElement>('[data-meeting-location]')!.textContent = schedule.location.name;
+    element.querySelector<HTMLElement>('[data-meeting-address]')!.textContent = schedule.location.address || '';
+    element.dataset.nextReady = '';
+  };
+
+  const updateAllMeetings = () => document.querySelectorAll<HTMLElement>('[data-next-meeting]').forEach(updateMeeting);
+  updateAllMeetings();
+  window.setInterval(updateAllMeetings, 30_000);
+</script>
