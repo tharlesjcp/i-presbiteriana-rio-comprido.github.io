@@ -1,0 +1,14 @@
+---
+import { formatAgendaTime, formatEventDate, type AgendaEvent } from '../domain/agenda';
+interface Props { event: AgendaEvent; }
+const { event } = Astro.props;
+---
+<article class="agenda-event-card">
+  {event.image && <img src={event.image} alt="" loading="lazy" />}
+  <div>
+    <p class="agenda-event-date">{formatEventDate(event)}{event.startTime && <> · {formatAgendaTime(event.startTime)}</>}</p>
+    <h3>{event.title}</h3>
+    {event.summary && <p>{event.summary}</p>}
+    <p class="agenda-event-location"><strong>{event.location.name}</strong>{event.location.address && <span>{event.location.address}</span>}</p>
+  </div>
+</article>

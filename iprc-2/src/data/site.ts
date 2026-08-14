@@ -5,7 +5,7 @@ export const navigation = [
   { label: 'Hinário', href: '/hinario' },
   { label: 'Início', href: '/' },
   { label: 'Quem somos', href: '#quem-somos' },
-  { label: 'Agenda', href: '#agenda' },
+  { label: 'Agenda', href: '/agenda' },
   { label: 'Estudos', href: '/estudos' },
   { label: 'Boletim', href: '/#boletim' },
 ];
