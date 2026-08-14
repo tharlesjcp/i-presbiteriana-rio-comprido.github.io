@@ -1,13 +1,21 @@
-import { readFile, readdir, mkdir, rm, writeFile } from 'node:fs/promises';
+import { access, readFile, readdir, mkdir, rm, writeFile } from 'node:fs/promises';
 import { resolve, basename } from 'node:path';
 import { normalizeHymnNumber, parseHymnAbc, parseHymnTxt } from './hymnal-parser.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
-const source = resolve(root, '.source-hymnal');
+const source = resolve(process.env.HYMNAL_SOURCE_DIR || resolve(root, '.source-hymnal'));
 const out = resolve(import.meta.dirname, '../public/hymnal-data');
 const SOURCE_COMMIT = '065041f7c817e535ecb629e76cf024c45f2cd5fd';
 const SOURCE_COMMIT_DATE = '2025-09-05T08:30:50-03:00';
 const fileNumber = (name) => normalizeHymnNumber(basename(name).replace(/\.(txt|abc)$/i, ''));
+try {
+  await Promise.all([access(resolve(source, 'txt')), access(resolve(source, 'abc'))]);
+} catch {
+  const manifest = JSON.parse(await readFile(resolve(out, 'manifest.json'), 'utf8'));
+  if (manifest.source?.commit !== SOURCE_COMMIT || manifest.count !== 71) throw new Error('Fonte ausente e catálogo versionado incompatível. Execute a importação com o commit documentado.');
+  console.log(`Hinário: fonte local ausente; usando catálogo estático verificado do commit ${SOURCE_COMMIT}.`);
+  process.exit(0);
+}
 const txtFiles = (await readdir(resolve(source, 'txt'))).filter((name) => name.endsWith('.txt'));
 const abcFiles = (await readdir(resolve(source, 'abc'))).filter((name) => name.endsWith('.abc'));
 const ids = [...new Set([...txtFiles.map(fileNumber), ...abcFiles.map(fileNumber)].filter(Boolean))]

@@ -60,6 +60,8 @@ Continuação lexical planejada: investigar IDs frequentes sem `glossOriginal`; 
 
 `pnpm hymnal:build` importa de forma reprodutível o repositório técnico `savioa/cifras-novo-cantico`, fixado no commit registrado no relatório, e gera um índice estático em `public/hymnal-data`. O parser separado em `scripts/hymnal-parser.mjs` reconhece os TXT, metadados ABC e variantes como `22-B`; a build registra pares, arquivos isolados, falhas, duplicidades, tonalidades e o estado de direitos em `reports/hymnal-import.json`.
 
+A importação editorial usa um clone local em `../.source-hymnal`, que não é versionado para não republicar os arquivos-fonte. Em CI e no Deploy Preview, quando esse clone não existe, o script valida commit e contagem do catálogo estático já auditado antes de reutilizá-lo; divergências são bloqueantes.
+
 A licença MIT do repositório técnico não é tratada como autorização para republicar letra, tradução, melodia, arranjo ou partitura. Até que cada conteúdo tenha base documental verificável, os 71 hinos ficam como `unverified`: número, título e metadados técnicos são pesquisáveis, mas letra, acordes e ABC não são emitidos nos JSON públicos. A página `/hinario/fontes-e-direitos` explica a distinção e mantém a procedência auditável.
 
 As rotas `/hinario` e `/hinario/<número>` são geradas estaticamente. Busca tolerante a acentos, navegação anterior/próximo, controles de tom, modos Letra/Cifra/Partitura e o ponto de integração com ABCJS estão preparados sem depender de API externa em runtime. Os controles de conteúdo permanecem bloqueados enquanto o status de direitos não for `public-domain`, `authorized` ou `verified-open`.
