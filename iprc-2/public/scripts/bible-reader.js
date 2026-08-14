@@ -39,14 +39,14 @@ if(root){
   };
   const textOf=verse=>verse?.text||verse?.words?.map(word=>word.form).join(' ')||'';
   const originalText=(verse,book=currentBook())=>`<p ${book.testament==='AT'?'dir="rtl"':''}>${verse?.words?verse.words.map((word,index)=>`<button class="word" data-word="${index}">${esc(word.form)}</button>`).join(' '):esc(textOf(verse))}</p>`;
-  const verseCard=(verse,isOriginal=false)=>`<article class="verse${isOriginal?' original':''}" tabindex="0" data-select-verse data-verse="${verse.number}" aria-label="Selecionar versículo ${verse.number}"><span class="verse-number" aria-hidden="true">${verse.number}</span>${isOriginal?originalText(verse):`<p>${esc(textOf(verse))}</p>`}</article>`;
+  const verseCard=(verse,isOriginal=false)=>`<article id="v${verse.number}" class="verse${isOriginal?' original':''}" tabindex="0" data-select-verse data-verse="${verse.number}" aria-label="Selecionar versículo ${verse.number}"><span class="verse-number" aria-hidden="true">${verse.number}</span>${isOriginal?originalText(verse):`<p>${esc(textOf(verse))}</p>`}</article>`;
   const render=()=>{
     const version=manifest.versions.find(item=>item.id===state.version),reference=`${currentBook().name} ${state.chapter}`;
     el.reference.textContent=reference;el.mobile.textContent=reference;document.title=`${reference} — Bíblia IPRC`;
     if(parallel){
       const rows=chapter.verses.map(verse=>{
         const original=parallel.data.verses.find(item=>item.number===verse.number);
-        return `<article class="parallel-verse" data-verse="${verse.number}"><button class="parallel-number" data-select-verse aria-label="Selecionar versículo ${verse.number}">${verse.number}</button><div class="parallel-portuguese" tabindex="0" data-select-verse><p>${esc(textOf(verse))}</p></div><div class="parallel-original" tabindex="0" data-select-verse>${originalText(original)}</div></article>`;
+        return `<article id="v${verse.number}" class="parallel-verse" data-verse="${verse.number}"><button class="parallel-number" data-select-verse aria-label="Selecionar versículo ${verse.number}">${verse.number}</button><div class="parallel-portuguese" tabindex="0" data-select-verse><p>${esc(textOf(verse))}</p></div><div class="parallel-original" tabindex="0" data-select-verse>${originalText(original)}</div></article>`;
       }).join('');
       el.content.innerHTML=`<section class="parallel-chapter"><header><span><strong>${esc(version.abbreviation)}</strong> ${esc(version.name)}</span><span><strong>Texto original</strong> ${esc(languageLabel(parallel.data.verses[0]))}</span></header>${rows}</section>`;
     }else{
@@ -143,6 +143,8 @@ if(root){
   };
   fetch('/bible-data/manifest.json').then(response=>response.json()).then(async data=>{
     manifest=data;state=initial();populate();await load(false);
+    const linkedVerse=location.hash.match(/^#v(\d+)$/)?.[1];
+    if(linkedVerse)document.getElementById(`v${linkedVerse}`)?.scrollIntoView({block:'center'});
     el.book.onchange=()=>{state.book=el.book.value;state.chapter=1;populate();load()};
     el.chapter.onchange=()=>{state.chapter=Number(el.chapter.value);load()};
     el.version.onchange=()=>{state.version=el.version.value;load()};

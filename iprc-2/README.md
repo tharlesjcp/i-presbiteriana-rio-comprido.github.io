@@ -67,3 +67,13 @@ A licença MIT do repositório técnico não é tratada como autorização para 
 As rotas `/hinario` e `/hinario/<número>` são geradas estaticamente. Busca tolerante a acentos, navegação anterior/próximo, controles de tom, modos Letra/Cifra/Partitura e o ponto de integração com ABCJS estão preparados sem depender de API externa em runtime. Os controles de conteúdo permanecem bloqueados enquanto o status de direitos não for `public-domain`, `authorized` ou `verified-open`.
 
 Continuação planejada: documentar autorização por hino, liberar somente os conteúdos comprovados, integrar o ABCJS como dependência empacotada e validar visualmente cada partitura antes da publicação.
+
+## Fase 4 — Estudos Bíblicos
+
+O contrato de domínio está em `src/domain/study.ts`: `Study` contém exclusivamente `id`, `slug`, `title`, `publishedAt`, `summary`, `youtubeUrl`, `youtubeId`, `transcript`, `references` estruturadas e `status`. A normalização valida URL comum do YouTube, gera/valida slug, recalcula `youtubeId`, valida data, status e referências. A transcrição usa um subconjunto seguro de Markdown (`##`, parágrafos, listas e citações), renderizado por componentes sem HTML arbitrário.
+
+As páginas dependem da interface `src/repositories/StudyRepository.ts`, não da persistência. Nesta fase `StaticStudyRepository` lê `src/data/studies.ts`; futuramente uma `SupabaseStudyRepository` poderá implementar o mesmo contrato sem refazer páginas ou componentes. Firebase, Supabase, autenticação, painel e YouTube Data API não fazem parte desta fase.
+
+Para adicionar temporariamente um estudo real e autorizado, inclua um objeto `Study` em `src/data/studies.ts`, usando URL normal do YouTube, transcrição em Markdown seguro, referências com `book`, `chapter`, `verseStart` e `verseEnd`, e `status: 'published'`. Use `draft` para impedir publicação. Em seguida execute `pnpm study:test`, `pnpm check` e `pnpm build`. Não adicione fixtures ou conteúdo demonstrativo nesse arquivo.
+
+O preview de referências carrega sob demanda os artefatos BLIVRE já gerados por capítulo em `public/bible-data`, sem duplicar textos. A busca local fica planejada para quando houver um acervo público real; não há interface de busca vazia ou implementação parcial nesta rodada.
