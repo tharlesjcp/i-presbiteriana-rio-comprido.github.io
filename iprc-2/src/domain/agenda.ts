@@ -1,3 +1,5 @@
+import { isValidCivilDate } from './civil-date.ts';
+
 export const AGENDA_TIME_ZONE = 'America/Sao_Paulo';
 
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -38,7 +40,6 @@ export type AgendaItem =
   | { kind: 'recurring'; startsAt: Date; occurrence: RecurringOccurrence }
   | { kind: 'special'; startsAt: Date; event: AgendaEvent };
 
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const timePattern = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const zonedFormatter = new Intl.DateTimeFormat('en-CA', {
   timeZone: AGENDA_TIME_ZONE,
@@ -76,8 +77,8 @@ export const validateRecurringSchedule = (schedule: RecurringSchedule) => Boolea
 );
 
 export const validateAgendaEvent = (event: AgendaEvent) => Boolean(
-  event.id.trim() && event.title.trim() && datePattern.test(event.startDate)
-  && (!event.endDate || datePattern.test(event.endDate) && event.endDate >= event.startDate)
+  event.id.trim() && event.title.trim() && isValidCivilDate(event.startDate)
+  && (!event.endDate || isValidCivilDate(event.endDate) && event.endDate >= event.startDate)
   && (!event.startTime || timePattern.test(event.startTime)) && (!event.endTime || timePattern.test(event.endTime))
   && event.location.name.trim() && ['draft', 'published', 'cancelled'].includes(event.status)
   && ['manual', 'bulletin'].includes(event.source.kind),

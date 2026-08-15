@@ -7,12 +7,5 @@ export const navigation = [
   { label: 'Quem somos', href: '#quem-somos' },
   { label: 'Agenda', href: '/agenda' },
   { label: 'Estudos', href: '/estudos' },
-  { label: 'Boletim', href: '/#boletim' },
+  { label: 'Boletim', href: '/boletins' },
 ];
-
-export const bulletin = {
-  date: 'Semana de 03 a 09 de agosto',
-  title: 'Boletim semanal da IPRC',
-  summary: 'Liturgia, avisos, escalas e programação da nossa comunidade reunidos em um só lugar.',
-  href: `${LEGACY_BASE}/boletim.html`,
-};

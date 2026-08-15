@@ -1,0 +1,24 @@
+---
+import { estimateBulletinFit, formatBulletinDate, type Bulletin } from '../domain/bulletin';
+interface Props { bulletin?: Bulletin; }
+const { bulletin } = Astro.props;
+const fit = bulletin ? estimateBulletinFit(bulletin) : null;
+const fitLabels = { 'within-limit': 'Conteúdo dentro do limite estimado', 'near-limit': 'Conteúdo próximo do limite estimado', 'over-limit': 'Conteúdo excedeu o limite estimado' };
+---
+<section class="print-preview" data-print-preview aria-label="Prévia estrutural do boletim impresso">
+  <header class="print-preview-heading"><div><p class="eyebrow">Prévia de impressão</p><h2>A4 horizontal · duas páginas</h2></div>{fit && <p class:list={['fit-indicator', `fit-${fit.status}`]}>{fitLabels[fit.status]}</p>}</header>
+  {!bulletin && <p class="preview-notice">Prévia técnica do template. Nenhum boletim ou conteúdo demonstrativo está sendo publicado.</p>}
+  <div class="print-sheet" aria-label="Página 1, três painéis">
+    <span class="sheet-label">Página 1</span>
+    <section class="print-panel print-back"><small>Painel 1</small><h3>Contracapa</h3><p>Informações institucionais reutilizáveis</p></section>
+    <section class="print-panel"><small>Painel 2</small><h3>Informações e atividades</h3>{bulletin ? <><p>Boletim nº {bulletin.number}</p><p>{formatBulletinDate(bulletin.date)}</p><p>{bulletin.monthActivities.length} atividade(s)</p></> : <p>Programação, leituras, escala e aniversariantes</p>}</section>
+    <section class="print-panel print-cover"><small>Painel 3</small><h3>Capa</h3>{bulletin ? <><strong>Boletim nº {bulletin.number}</strong><p>{bulletin.pastoral.title}</p></> : <p>Arte cadastrada pelo template anual ou especial</p>}</section>
+  </div>
+  <div class="print-sheet" aria-label="Página 2, três colunas">
+    <span class="sheet-label">Página 2</span>
+    <section class="print-panel"><small>Coluna 1</small><h3>Pastoral</h3><p>{bulletin?.pastoral.title || 'Fluxo inicial do texto pastoral'}</p></section>
+    <section class="print-panel"><small>Coluna 2</small><h3>Continuação</h3><p>Continuação da pastoral e conteúdo estruturado</p></section>
+    <section class="print-panel"><small>Coluna 3</small><h3>Avisos</h3><p>{bulletin ? `${bulletin.announcements.length} aviso(s) organizado(s)` : 'Avisos e outros blocos semanais'}</p></section>
+  </div>
+  <p class="preview-caption">A indicação de capacidade é aproximada. A futura geração de PDF deverá medir o layout real e nunca reduzir o texto até ficar ilegível.</p>
+</section>
