@@ -9,7 +9,7 @@ type ParentRow = {
 };
 type AnnouncementRow = { id: string; title: string; content_json: string; image_key: string | null; agenda_event_id: string | null; sort_order: number };
 type ActivityRow = { id: string; text: string; start_date: string | null; end_date: string | null; start_time: string | null; end_time: string | null; location_name: string | null; location_address: string | null; description: string | null; agenda_event_id: string | null; sort_order: number };
-type BirthdayRow = { id: string; name: string; date: string; source: 'manual' | 'member'; member_id: string | null; sort_order: number };
+type BirthdayRow = { id: string; name: string; date: string; source: 'manual' | 'member'; member_id: string | null; visibility: 'hidden' | 'print' | 'public'; sort_order: number };
 type DiaconalRow = { id: string; date: string; responsible_json: string; sort_order: number };
 type ReadingRow = { id: string; day: string; reference_text: string; bible_book: string | null; bible_chapter: number | null; bible_verse_start: number | null; bible_verse_end: number | null; sort_order: number };
 type BlockRow = { block_json: string; sort_order: number };
@@ -27,7 +27,7 @@ export class D1BulletinRepository implements BulletinRepository {
     const queries = [
       this.db.prepare('SELECT id, title, content_json, image_key, agenda_event_id, sort_order FROM bulletin_announcements WHERE bulletin_id = ? ORDER BY sort_order, id').bind(parent.id).all<AnnouncementRow>(),
       this.db.prepare('SELECT id, text, start_date, end_date, start_time, end_time, location_name, location_address, description, agenda_event_id, sort_order FROM bulletin_activities WHERE bulletin_id = ? ORDER BY sort_order, id').bind(parent.id).all<ActivityRow>(),
-      this.db.prepare('SELECT id, name, date, source, member_id, sort_order FROM bulletin_birthdays WHERE bulletin_id = ? ORDER BY sort_order, id').bind(parent.id).all<BirthdayRow>(),
+      this.db.prepare("SELECT id, name, date, source, member_id, visibility, sort_order FROM bulletin_birthdays WHERE bulletin_id = ? AND visibility = 'public' ORDER BY sort_order, id").bind(parent.id).all<BirthdayRow>(),
       this.db.prepare('SELECT id, date, responsible_json, sort_order FROM bulletin_diaconal_schedule WHERE bulletin_id = ? ORDER BY sort_order, id').bind(parent.id).all<DiaconalRow>(),
       this.db.prepare('SELECT id, day, reference_text, bible_book, bible_chapter, bible_verse_start, bible_verse_end, sort_order FROM bulletin_weekly_readings WHERE bulletin_id = ? ORDER BY sort_order, id').bind(parent.id).all<ReadingRow>(),
       this.db.prepare('SELECT block_json, sort_order FROM bulletin_blocks WHERE bulletin_id = ? ORDER BY sort_order, id').bind(parent.id).all<BlockRow>(),
@@ -42,7 +42,7 @@ export class D1BulletinRepository implements BulletinRepository {
       },
       announcements: announcements.results.map(row => ({ id: row.id, title: row.title, content: parseJson<RichTextDocument>(row.content_json), image: optional(row.image_key), agendaEventId: optional(row.agenda_event_id), sortOrder: row.sort_order })),
       monthActivities: activities.results.map(row => ({ id: row.id, text: row.text, startDate: optional(row.start_date), endDate: optional(row.end_date), startTime: optional(row.start_time), endTime: optional(row.end_time), locationName: optional(row.location_name), locationAddress: optional(row.location_address), description: optional(row.description), agendaEventId: optional(row.agenda_event_id), sortOrder: row.sort_order })),
-      birthdays: birthdays.results.map(row => ({ id: row.id, name: row.name, date: row.date, source: row.source, memberId: optional(row.member_id), sortOrder: row.sort_order })),
+      birthdays: birthdays.results.filter(row => row.visibility === 'public').map(row => ({ id: row.id, name: row.name, date: row.date, source: row.source, memberId: optional(row.member_id), visibility: 'public', sortOrder: row.sort_order })),
       diaconalSchedule: diaconal.results.map(row => ({ id: row.id, date: row.date, responsible: parseJson<string[]>(row.responsible_json), sortOrder: row.sort_order })),
       weeklyReadings: readings.results.map(row => ({ id: row.id, day: row.day, referenceText: row.reference_text, reference: bibleReference(row.bible_book, row.bible_chapter, row.bible_verse_start, row.bible_verse_end), sortOrder: row.sort_order })),
       additionalBlocks: blocks.results.map(row => parseJson<RichTextDocument>(row.block_json)),

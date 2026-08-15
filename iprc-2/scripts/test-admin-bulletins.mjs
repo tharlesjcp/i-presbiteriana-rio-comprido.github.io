@@ -21,6 +21,10 @@ assert.throws(() => normalizeBulletinAdminInput({ ...base, monthActivities: [{ i
 assert.equal(agendaStatusForBulletin('draft'), 'draft', 'autosave de rascunho não publica evento na Agenda');
 assert.equal(agendaStatusForBulletin('published'), 'published', 'boletim publicado pode criar evento publicado');
 assert.equal(agendaStatusForBulletin('trashed'), 'draft', 'despublicação não cria evento público');
+const birthdayDefault = normalizeBulletinAdminInput({ ...base, birthdays: [{ id:'birthday-1', name:'Pessoa', date:'2028-03-01', source:'manual', sortOrder:0 }] });
+assert.equal(birthdayDefault.birthdays[0].visibility, 'print', 'aniversariante deve iniciar somente na impressão');
+const birthdayPublic = normalizeBulletinAdminInput({ ...base, birthdays: [{ id:'birthday-2', name:'Pessoa', date:'2028-03-01', source:'manual', visibility:'public', sortOrder:0 }] });
+assert.equal(birthdayPublic.birthdays[0].visibility, 'public', 'editor pode liberar aniversariante para digital e impressão');
 
 const normalized = normalizeBulletin({ ...base, id: 'source', slug: 'boletim-120-2028-02-29', pastoral: { title: 'Pastoral', body: rich }, announcements: [{ id: 'a1', title: 'Aviso', content: rich, sortOrder: 0, agendaEventId: 'event-1' }], monthActivities: [{ id: 'm1', text: 'Atividade', sortOrder: 0, agendaEventId: 'event-1' }] });
 const copy = duplicateBulletin(normalized, [normalized]);
@@ -35,6 +39,8 @@ assert(client.includes('setTimeout(() => save(false), 1400)'), 'autosave deve us
 assert(client.includes("getData('text/plain')"), 'colagem deve descartar HTML externo');
 assert(client.includes("existing:${event.id}"), 'atividade pode vincular evento existente');
 assert(client.includes("agendaMode === 'new'"), 'atividade pode criar evento da Agenda');
+assert(client.includes("entry.visibility === 'public'"), 'prévia digital deve omitir aniversariantes somente de impressão');
+assert(client.includes("entry.visibility!=='hidden'"), 'prévia impressa deve respeitar visibilidade');
 for (const route of ['/api/admin/bulletins','/duplicate']) assert(worker.includes(route));
 assert(repositorySource.includes("status='published',updated_at=? WHERE bulletin_id=? AND source_kind='bulletin' AND status='draft'"), 'publicação promove apenas eventos criados pelo próprio boletim');
 assert(!repositorySource.includes("status='draft',updated_at=? WHERE bulletin_id"), 'despublicação não rebaixa eventos implicitamente');

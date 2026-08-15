@@ -42,7 +42,8 @@ export type BulletinActivity = {
 };
 export type WeeklyReading = { id: string; day: string; referenceText: string; reference?: BibleReference; sortOrder: number };
 export type DiaconalScheduleItem = { id: string; date: string; responsible: string[]; sortOrder: number };
-export type BirthdayEntry = { id: string; name: string; date: string; source: 'manual' | 'member'; memberId?: string; sortOrder: number };
+export type BulletinVisibility = 'hidden' | 'print' | 'public';
+export type BirthdayEntry = { id: string; name: string; date: string; source: 'manual' | 'member'; memberId?: string; visibility: BulletinVisibility; sortOrder: number };
 export type BulletinTemplate = {
   id: string;
   name: string;
@@ -100,7 +101,7 @@ export const validateBulletinInput = (input: BulletinInput) => Boolean(
   && input.monthActivities.every(item => item.id.trim() && item.text.trim() && validOptionalCivilDate(item.startDate) && validOptionalCivilDate(item.endDate) && (!item.endDate || !item.startDate || item.endDate >= item.startDate))
   && input.weeklyReadings.every(item => item.id.trim() && item.day.trim() && item.referenceText.trim() && (!item.reference || validateBibleReference(item.reference)))
   && input.diaconalSchedule.every(item => item.id.trim() && isValidCivilDate(item.date) && item.responsible.length > 0 && item.responsible.every(Boolean))
-  && input.birthdays.every(item => item.id.trim() && item.name.trim() && isValidCivilDate(item.date) && (item.source === 'manual' || Boolean(item.memberId)))
+  && input.birthdays.every(item => item.id.trim() && item.name.trim() && isValidCivilDate(item.date) && ['hidden', 'print', 'public'].includes(item.visibility || 'print') && (item.source === 'manual' || Boolean(item.memberId)))
   && (!input.deletedAt || !Number.isNaN(Date.parse(input.deletedAt))) && (input.status !== 'trashed' || Boolean(input.deletedAt))
   && (!input.additionalBlocks || input.additionalBlocks.every(validateRichText)),
 );
@@ -117,7 +118,7 @@ export const normalizeBulletin = (input: BulletinInput): Bulletin => {
     monthActivities: [...input.monthActivities].sort((a, b) => a.sortOrder - b.sortOrder),
     weeklyReadings: [...input.weeklyReadings].sort((a, b) => a.sortOrder - b.sortOrder),
     diaconalSchedule: [...input.diaconalSchedule].sort((a, b) => a.sortOrder - b.sortOrder),
-    birthdays: [...input.birthdays].sort((a, b) => a.sortOrder - b.sortOrder),
+    birthdays: input.birthdays.map(item => ({ ...item, visibility: item.visibility || 'print' })).sort((a, b) => a.sortOrder - b.sortOrder),
   };
 };
 

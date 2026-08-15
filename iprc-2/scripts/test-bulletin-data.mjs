@@ -36,6 +36,7 @@ const input = (overrides = {}) => ({
 const normalized = normalizeBulletin(input());
 assert.equal(normalized.slug, 'boletim-12-2026-08-16');
 assert.equal(normalized.id, 'bulletin-12');
+assert.equal(normalizeBulletin(input({ birthdays: [{ id:'birthday-default', name:'Pessoa', date:'2026-08-16', source:'manual', sortOrder:0 }] })).birthdays[0].visibility, 'print');
 assert.equal(validateBulletinInput(input({ date: '' })), false, 'data é obrigatória');
 assert.equal(validateBulletinInput(input({ number: 0 })), false, 'número positivo é obrigatório');
 for (const date of ['2026-02-29', '2026-02-31', '2026-04-31', '2026-13-01', '2026-00-10']) {
