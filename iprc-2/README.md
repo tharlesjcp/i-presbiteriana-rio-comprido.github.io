@@ -99,3 +99,15 @@ A Agenda e o boletim permanecem entidades independentes. Um item pode guardar `a
 O template técnico em `/boletins/modelo-de-impressao` documenta duas páginas A4 horizontais com três painéis cada. O indicador atual estima capacidade a partir do conteúdo estruturado; a geração futura deverá medir o layout real e alertar o editor, sem reduzir texto até ficar ilegível. Capas e contracapas pertencem a templates anuais ou especiais e não são inventadas neste acervo vazio.
 
 O site digital em `/boletins` é a publicação canônica. PDF não é uma segunda edição digital: no fluxo futuro, os mesmos dados aprovados no D1 serão renderizados em HTML/CSS, convertidos em PDF de impressão e armazenados no R2. Geração de PDF, D1, R2, autenticação, painel administrativo e IA não fazem parte desta fase.
+
+## Fase 7 — Backend Cloudflare
+
+A fundação dinâmica é um Worker separado em `src/worker`, configurado por `wrangler.jsonc`. O Astro permanece com `output: 'static'`: Bíblia, Hinário e as demais rotas continuam sendo pré-renderizadas, enquanto somente `/api/*` e `/media/*` passam primeiro pelo Worker em uma futura implantação Cloudflare. O deploy e a configuração do Netlify não foram removidos; não houve alteração de DNS ou cutover.
+
+Os bindings oficiais são `DB` (D1), `MEDIA` (R2) e `ASSETS` (Static Assets). Migrations versionadas criam Agenda e Boletins, com tabelas filhas editoriais, soft delete e número de boletim protegido por `UNIQUE`. `D1AgendaRepository` e `D1BulletinRepository` implementam os mesmos contratos das versões estáticas, que continuam disponíveis e são selecionadas explicitamente por `repositoryFactory.ts`.
+
+O shell `/admin` possui layout próprio e não apresenta CRUDs falsos. Não existe login caseiro: o painel e a futura `/api/admin/*` serão protegidos pelo Cloudflare Access, com validação do JWT na borda como defesa em profundidade. A API administrativa permanece desabilitada nesta fase.
+
+R2 é privado e acessado por `R2MediaStorage`. O Worker só serve objetos referenciados por conteúdo publicado; visualização e download usam rotas e `Content-Disposition` distintos. Nenhum PDF é gerado agora.
+
+Instruções completas de criação de recursos, migrations, desenvolvimento local, Access, object keys, atomicidade e transição estão em [`docs/cloudflare-backend.md`](docs/cloudflare-backend.md). Recursos remotos exigem autenticação manual e não são criados pelos testes.

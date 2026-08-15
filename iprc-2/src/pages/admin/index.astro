@@ -1,0 +1,13 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+const modules = [
+  { title: 'Agenda', description: 'Programação semanal e eventos da comunidade.', href: '/admin/agenda', status: 'Fundação D1 pronta' },
+  { title: 'Boletins', description: 'Edições, templates e vínculo com a Agenda.', href: '/admin/boletins', status: 'Fundação D1 pronta' },
+  { title: 'Configurações', description: 'Dados institucionais e integrações futuras.', href: '/admin/configuracoes', status: 'Estrutura inicial' },
+];
+---
+<AdminLayout title="Visão geral" description="Fundação do painel administrativo da IPRC" current="inicio">
+  <header class="admin-page-header"><p class="admin-eyebrow">Fundação administrativa</p><h1>Boa gestão,<br />com simplicidade.</h1><p>Esta fase prepara dados e navegação. Nenhuma ação editorial incompleta é apresentada como funcional.</p></header>
+  <section class="admin-grid" aria-labelledby="modules-title"><h2 id="modules-title" class="sr-only">Módulos</h2>{modules.map(module => <a class="admin-module" href={module.href}><span class="admin-status">{module.status}</span><h2>{module.title}</h2><p>{module.description}</p><span aria-hidden="true">Abrir estrutura →</span></a>)}</section>
+  <section class="admin-foundation"><p class="admin-eyebrow">Próximos módulos</p><h2>Estudos, pedidos de oração e membros</h2><p>Não foram criadas telas falsas. Esses módulos serão conectados somente quando seus contratos e fluxos forem definidos.</p></section>
+</AdminLayout>

@@ -14,12 +14,19 @@
     "study:test": "node --experimental-strip-types scripts/test-study-data.mjs",
     "agenda:test": "node --experimental-strip-types scripts/test-agenda-data.mjs",
     "bulletin:test": "node --experimental-strip-types scripts/test-bulletin-data.mjs",
+    "cloudflare:test": "node --experimental-strip-types scripts/test-cloudflare-data.mjs",
+    "cf:types": "wrangler types --include-runtime false",
+    "cf:types:check": "wrangler types --include-runtime false --check",
+    "cf:dev": "wrangler dev --local",
+    "cf:migrate:local": "wrangler d1 migrations apply DB --local",
+    "cf:migrate:preview": "wrangler d1 migrations apply DB --remote --env preview",
+    "cf:migrate:production": "wrangler d1 migrations apply DB --remote --env production",
     "predev": "pnpm bible:build && pnpm hymnal:build",
     "prebuild": "pnpm bible:build && pnpm hymnal:build",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm hymnal:build && pnpm hymnal:test && pnpm study:test && pnpm agenda:test && pnpm bulletin:test && pnpm check && pnpm build"
+    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm hymnal:build && pnpm hymnal:test && pnpm study:test && pnpm agenda:test && pnpm bulletin:test && pnpm cf:types:check && pnpm cloudflare:test && pnpm check && pnpm build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -27,6 +34,8 @@
     "typescript": "^5.9.2"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0"
+    "@cloudflare/workers-types": "^5.20260815.1",
+    "@types/node": "^26.2.0",
+    "wrangler": "^4.0.0"
   }
 }

@@ -1,0 +1,34 @@
+---
+import '../styles/admin.css';
+interface Props { title: string; description: string; current?: 'inicio' | 'agenda' | 'boletins' | 'configuracoes'; }
+const { title, description, current = 'inicio' } = Astro.props;
+const navigation = [
+  { id: 'inicio', label: 'Visão geral', href: '/admin' },
+  { id: 'agenda', label: 'Agenda', href: '/admin/agenda' },
+  { id: 'boletins', label: 'Boletins', href: '/admin/boletins' },
+  { id: 'configuracoes', label: 'Configurações', href: '/admin/configuracoes' },
+];
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/logo-iprc.svg" />
+    <title>{title} — Administração IPRC</title>
+  </head>
+  <body>
+    <a class="admin-skip" href="#admin-content">Pular para o conteúdo</a>
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <a class="admin-brand" href="/admin" aria-label="Administração IPRC — início"><img src="/logo-iprc.svg" alt="" /><span><strong>IPRC</strong><small>Administração</small></span></a>
+        <nav aria-label="Administração"><ul>{navigation.map(item => <li><a href={item.href} aria-current={current === item.id ? 'page' : undefined}>{item.label}</a></li>)}</ul></nav>
+        <p class="admin-access-note"><strong>Acesso protegido</strong><br />Cloudflare Access será a barreira de identidade antes da ativação.</p>
+        <a class="admin-public-link" href="/">Voltar ao site público <span aria-hidden="true">→</span></a>
+      </aside>
+      <main id="admin-content" class="admin-main"><slot /></main>
+    </div>
+  </body>
+</html>

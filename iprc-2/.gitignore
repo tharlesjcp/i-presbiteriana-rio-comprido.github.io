@@ -3,4 +3,6 @@ dist/
 public/bible-data/
 .astro/
 .wrangler/
+.dev.vars
+.dev.vars.*
 .DS_Store

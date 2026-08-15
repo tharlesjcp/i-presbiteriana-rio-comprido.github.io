@@ -1,0 +1,62 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "iprc-2-backend",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-08-14",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/media/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "iprc-2-development",
+      "database_id": "replace-with-d1-database-id",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "iprc-2-media-development",
+      "preview_bucket_name": "iprc-2-media-preview"
+    }
+  ],
+  "env": {
+    "preview": {
+      "name": "iprc-2-backend-preview",
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "iprc-2-preview",
+          "database_id": "27f56f77-80aa-40fd-b6d9-6320a5691048",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "MEDIA",
+          "bucket_name": "iprc-2-media-preview"
+        }
+      ]
+    },
+    "production": {
+      "name": "iprc-2-backend-production",
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "iprc-2-production",
+          "database_id": "replace-with-production-d1-database-id",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "MEDIA",
+          "bucket_name": "iprc-2-media"
+        }
+      ]
+    }
+  }
+}

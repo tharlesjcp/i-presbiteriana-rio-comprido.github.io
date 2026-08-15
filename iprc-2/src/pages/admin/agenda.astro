@@ -1,0 +1,7 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+<AdminLayout title="Agenda" description="Fundação administrativa da Agenda da IPRC" current="agenda">
+  <header class="admin-page-header"><p class="admin-eyebrow">Agenda</p><h1>Programação<br />e eventos.</h1><p>O schema D1 e o repositório dinâmico estão preparados. A edição visual será implementada em uma fase posterior.</p></header>
+  <section class="admin-foundation"><span class="admin-status">Sem CRUD nesta fase</span><h2>O que já está conectado</h2><ul><li>Programação semanal inicial via migration idempotente</li><li>Eventos com rascunho, publicação e cancelamento</li><li>Origem e associação opcional com boletins</li><li>Cálculo recorrente reutilizado do domínio atual</li></ul></section>
+</AdminLayout>
