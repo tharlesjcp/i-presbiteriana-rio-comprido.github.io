@@ -48,6 +48,9 @@ export const handleRequest = async (request: Request, env: Env): Promise<Respons
     }
     const mediaMatch = /^\/media\/(view|download)\/(.+)$/.exec(url.pathname);
     if (mediaMatch) return serveMedia(request, env, mediaMatch[1] as 'view' | 'download', mediaMatch[2]);
+    if (/^\/boletins\/[a-z0-9-]+\/?$/.test(url.pathname) && !['/boletins/ler','/boletins/modelo-de-impressao'].includes(url.pathname.replace(/\/$/,''))) {
+      const slug=url.pathname.split('/').filter(Boolean).at(-1); const assetUrl=new URL(`/boletins/ler?slug=${encodeURIComponent(slug||'')}`,url); return env.ASSETS.fetch(new Request(assetUrl,request));
+    }
     return env.ASSETS.fetch(request);
   } catch (error) {
     console.error('Unhandled worker error', error instanceof Error ? error.message : 'unknown');

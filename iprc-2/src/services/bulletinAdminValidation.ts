@@ -1,0 +1,23 @@
+import { createAgendaEventFromActivity, normalizeBulletin, validateRichText, type AgendaEventDraft, type BulletinInput, type RichTextDocument } from '../domain/bulletin.ts';
+
+export class BulletinAdminValidationError extends Error {}
+const text=(value:unknown,max=10_000)=>typeof value==='string'?value.trim().slice(0,max):'';
+const document=(value:unknown):RichTextDocument=>{
+  if(!value||typeof value!=='object'||!validateRichText(value as RichTextDocument))throw new BulletinAdminValidationError('O conteúdo editorial possui uma estrutura inválida.');
+  const raw=value as RichTextDocument;
+  return {version:1,blocks:raw.blocks.map(block=>block.type==='list'?{...block,items:block.items.map(items=>items.map(item=>({text:text(item.text),marks:item.marks?.filter(mark=>['bold','italic','underline'].includes(mark))})))}:{...block,content:block.content.map(item=>({text:text(item.text),marks:item.marks?.filter(mark=>['bold','italic','underline'].includes(mark))}))})};
+};
+export const normalizeBulletinAdminInput=(raw:unknown):BulletinInput=>{
+  if(!raw||typeof raw!=='object')throw new BulletinAdminValidationError('Informe os dados do boletim.');
+  const value=structuredClone(raw) as BulletinInput;
+  value.number=Number(value.number); value.date=text(value.date,10); value.templateId=text(value.templateId,80); value.status=value.status||'draft';
+  value.pastoral={...value.pastoral,title:text(value.pastoral?.title,180),body:document(value.pastoral?.body)};
+  value.announcements=(value.announcements||[]).map((item,index)=>({...item,id:text(item.id,100),title:text(item.title,180),content:document(item.content),sortOrder:index,image:text(item.image,500)||undefined,agendaEventId:text(item.agendaEventId,100)||undefined}));
+  value.monthActivities=(value.monthActivities||[]).map((item,index)=>{const agendaEventDraft=item.agendaEventDraft?{title:text(item.agendaEventDraft.title,180),startDate:text(item.agendaEventDraft.startDate,10),endDate:text(item.agendaEventDraft.endDate,10)||undefined,startTime:text(item.agendaEventDraft.startTime,5)||undefined,endTime:text(item.agendaEventDraft.endTime,5)||undefined,location:{name:text(item.agendaEventDraft.location?.name,180),address:text(item.agendaEventDraft.location?.address,250)||undefined},summary:text(item.agendaEventDraft.summary,320)||undefined,description:text(item.agendaEventDraft.description,2000)||undefined,image:text(item.agendaEventDraft.image,500)||undefined} satisfies AgendaEventDraft:undefined;const normalized={...item,id:text(item.id,100),text:text(item.text,250),startDate:text(item.startDate,10)||undefined,endDate:text(item.endDate,10)||undefined,startTime:text(item.startTime,5)||undefined,endTime:text(item.endTime,5)||undefined,locationName:text(item.locationName,180)||undefined,locationAddress:text(item.locationAddress,250)||undefined,description:text(item.description,2000)||undefined,agendaEventId:text(item.agendaEventId,100)||undefined,publishToAgenda:Boolean(item.publishToAgenda),agendaEventDraft,sortOrder:index};if(normalized.publishToAgenda)try{createAgendaEventFromActivity(normalized,'validation-bulletin','validation-event');}catch{throw new BulletinAdminValidationError('Revise os dados da atividade que será publicada na Agenda.');}return normalized;});
+  value.birthdays=(value.birthdays||[]).map((item,index)=>({...item,id:text(item.id,100),name:text(item.name,180),date:text(item.date,10),source:'manual',memberId:undefined,sortOrder:index}));
+  value.diaconalSchedule=(value.diaconalSchedule||[]).map((item,index)=>({...item,id:text(item.id,100),date:text(item.date,10),responsible:(item.responsible||[]).map(name=>text(name,120)).filter(Boolean),sortOrder:index}));
+  value.weeklyReadings=(value.weeklyReadings||[]).map((item,index)=>({...item,id:text(item.id,100),day:text(item.day,40),referenceText:text(item.referenceText,180),sortOrder:index}));
+  value.additionalBlocks=(value.additionalBlocks||[]).map(document);
+  try{return normalizeBulletin(value);}catch(error){throw new BulletinAdminValidationError(error instanceof Error?error.message:'Boletim inválido.');}
+};
+export const bulletinExpectedVersion=(raw:unknown)=>{if(!raw||typeof raw!=='object')throw new BulletinAdminValidationError('Requisição inválida.');const body=raw as {value?:unknown;expectedVersion?:unknown};if(typeof body.expectedVersion!=='string'||!body.expectedVersion)throw new BulletinAdminValidationError('A versão atual do boletim é obrigatória.');return{value:normalizeBulletinAdminInput(body.value),version:body.expectedVersion};};

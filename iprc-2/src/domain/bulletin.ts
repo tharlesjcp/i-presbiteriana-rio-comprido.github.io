@@ -30,6 +30,11 @@ export type BulletinActivity = {
   text: string;
   startDate?: string;
   endDate?: string;
+  startTime?: string;
+  endTime?: string;
+  locationName?: string;
+  locationAddress?: string;
+  description?: string;
   sortOrder: number;
   agendaEventId?: string;
   publishToAgenda?: boolean;
@@ -68,6 +73,7 @@ export type BulletinInput = {
   pdf?: BulletinPdfReference;
 };
 export type Bulletin = Omit<BulletinInput, 'id' | 'slug'> & { id: string; slug: string };
+export type VersionedBulletin = Bulletin & { createdAt: string; updatedAt: string };
 export type BulletinFit = { status: 'within-limit' | 'near-limit' | 'over-limit'; estimatedUnits: number; limit: number };
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -88,7 +94,7 @@ export const slugifyBulletin = (number: number, date: string) => `boletim-${numb
 export const validateBulletinInput = (input: BulletinInput) => Boolean(
   Number.isInteger(input.number) && input.number > 0 && isValidCivilDate(input.date) && input.templateId.trim()
   && ['draft', 'published', 'trashed'].includes(input.status)
-  && input.pastoral.title.trim() && validateRichText(input.pastoral.body)
+  && (input.status !== 'published' || input.pastoral.title.trim()) && validateRichText(input.pastoral.body)
   && (!input.pastoral.bibleReference || validateBibleReference(input.pastoral.bibleReference))
   && input.announcements.every(item => item.id.trim() && item.title.trim() && validateRichText(item.content))
   && input.monthActivities.every(item => item.id.trim() && item.text.trim() && validOptionalCivilDate(item.startDate) && validOptionalCivilDate(item.endDate) && (!item.endDate || !item.startDate || item.endDate >= item.startDate))

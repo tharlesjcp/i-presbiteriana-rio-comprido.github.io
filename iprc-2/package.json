@@ -17,6 +17,7 @@
     "links:test": "node scripts/test-public-links.mjs",
     "cloudflare:test": "node --experimental-strip-types scripts/test-cloudflare-data.mjs",
     "admin:test": "node --experimental-strip-types scripts/test-admin-agenda.mjs",
+    "admin:bulletin:test": "node --experimental-strip-types scripts/test-admin-bulletins.mjs",
     "cf:types": "wrangler types --include-runtime false",
     "cf:types:check": "wrangler types --include-runtime false --check",
     "cf:dev": "wrangler dev --local",
@@ -30,7 +31,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm hymnal:build && pnpm hymnal:test && pnpm study:test && pnpm agenda:test && pnpm bulletin:test && pnpm links:test && pnpm cf:types:check && pnpm cloudflare:test && pnpm admin:test && pnpm check && pnpm build"
+    "validate": "pnpm bible:audit && pnpm bible:build && pnpm bible:test && pnpm hymnal:build && pnpm hymnal:test && pnpm study:test && pnpm agenda:test && pnpm bulletin:test && pnpm links:test && pnpm cf:types:check && pnpm cloudflare:test && pnpm admin:test && pnpm admin:bulletin:test && pnpm check && pnpm build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

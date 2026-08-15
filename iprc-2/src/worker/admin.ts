@@ -1,6 +1,9 @@
 import { D1AgendaAdminRepository } from '../repositories/D1AgendaAdminRepository.ts';
 import { AgendaConflictError, AgendaNotFoundError } from '../repositories/AgendaAdminRepository.ts';
+import { D1BulletinAdminRepository } from '../repositories/D1BulletinAdminRepository.ts';
+import { BulletinAdminConflictError, BulletinAdminNotFoundError, BulletinNumberConflictError } from '../repositories/BulletinAdminRepository.ts';
 import { AgendaValidationError, expectedVersion, normalizeEventInput, normalizeRecurringInput } from '../services/agendaAdminValidation.ts';
+import { BulletinAdminValidationError, bulletinExpectedVersion, normalizeBulletinAdminInput } from '../services/bulletinAdminValidation.ts';
 import { authenticateAccessRequest, type AccessIdentity } from './access.ts';
 import { validateAdminOrigin } from './csrf.ts';
 import type { Env } from './env.ts';
@@ -13,7 +16,7 @@ const authError = (error:unknown) => error instanceof Error&&error.message==='AC
 export const handleAdminApi = async (request:Request,env:Env,authenticate:Authenticator=authenticateAccessRequest):Promise<Response> => {
   let identity:AccessIdentity; try{identity=await authenticate(request,env);}catch(error){return authError(error);}
   if(!validateAdminOrigin(request,env.ADMIN_ORIGIN)) return apiError(403,'ORIGIN_DENIED','Origem da requisição não autorizada.');
-  const url=new URL(request.url), repo=new D1AgendaAdminRepository(env.DB);
+  const url=new URL(request.url), repo=new D1AgendaAdminRepository(env.DB),bulletins=new D1BulletinAdminRepository(env.DB);
   try {
     if(request.method==='GET'&&url.pathname==='/api/admin/session') return apiSuccess({email:identity.email});
     if(request.method==='GET'&&url.pathname==='/api/admin/agenda/recurring') return apiSuccess(await repo.listRecurring());
@@ -24,11 +27,23 @@ export const handleAdminApi = async (request:Request,env:Env,authenticate:Authen
     if(request.method==='POST'&&url.pathname==='/api/admin/agenda/events') return apiSuccess(await repo.createEvent(normalizeEventInput(await readJson(request)),identity.email),201);
     const event=/^\/api\/admin\/agenda\/events\/([^/]+)$/.exec(url.pathname);
     if(event&&request.method==='PUT'){const body=await readJson(request);const {value,version}=expectedVersion(body);return apiSuccess(await repo.updateEvent(decodeURIComponent(event[1]),normalizeEventInput(value),version,identity.email));}
+    if(request.method==='GET'&&url.pathname==='/api/admin/bulletins') return apiSuccess(await bulletins.list());
+    if(request.method==='GET'&&url.pathname==='/api/admin/bulletins/suggestions') return apiSuccess(await bulletins.suggestions());
+    if(request.method==='POST'&&url.pathname==='/api/admin/bulletins') return apiSuccess(await bulletins.create(normalizeBulletinAdminInput(await readJson(request)),identity.email),201);
+    const bulletin=/^\/api\/admin\/bulletins\/([^/]+)$/.exec(url.pathname);
+    if(bulletin&&request.method==='GET') return apiSuccess(await bulletins.find(decodeURIComponent(bulletin[1])));
+    if(bulletin&&request.method==='PUT'){const {value,version}=bulletinExpectedVersion(await readJson(request));return apiSuccess(await bulletins.update(decodeURIComponent(bulletin[1]),value,version,identity.email));}
+    const duplicate=/^\/api\/admin\/bulletins\/([^/]+)\/duplicate$/.exec(url.pathname);
+    if(duplicate&&request.method==='POST') return apiSuccess(await bulletins.duplicate(decodeURIComponent(duplicate[1]),identity.email),201);
     return apiError(404,'ADMIN_ROUTE_NOT_FOUND','Rota administrativa não encontrada.');
   } catch(error) {
     if(error instanceof AgendaValidationError) return apiError(400,'VALIDATION_ERROR',error.message);
     if(error instanceof AgendaConflictError) return apiError(409,'UPDATE_CONFLICT',error.message);
     if(error instanceof AgendaNotFoundError) return apiError(404,'AGENDA_NOT_FOUND',error.message);
+    if(error instanceof BulletinAdminValidationError) return apiError(400,'BULLETIN_VALIDATION_ERROR',error.message);
+    if(error instanceof BulletinAdminConflictError) return apiError(409,'UPDATE_CONFLICT',error.message);
+    if(error instanceof BulletinNumberConflictError) return apiError(409,'BULLETIN_NUMBER_CONFLICT',error.message);
+    if(error instanceof BulletinAdminNotFoundError) return apiError(404,'BULLETIN_NOT_FOUND',error.message);
     console.error('Admin API error',error instanceof Error?error.message:'unknown'); return apiError(500,'INTERNAL_ERROR','Não foi possível concluir a operação.');
   }
 };

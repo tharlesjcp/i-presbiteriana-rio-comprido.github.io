@@ -1,0 +1,8 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/bulletins.css';
+---
+<BaseLayout title="Boletim — IPRC" description="Boletim semanal da Igreja Presbiteriana do Rio Comprido." canonicalPath="/boletins">
+  <article class="bulletin-digital container" data-runtime-bulletin><header><a class="bulletin-back" href="/boletins">← Todos os boletins</a><p class="eyebrow">Boletim da IPRC</p><h1 data-title>Carregando boletim…</h1><time data-date></time></header><div class="bulletin-digital-grid" hidden data-content><section aria-labelledby="runtime-pastoral"><h2 id="runtime-pastoral">Pastoral</h2><div class="rich-text" data-pastoral></div></section><aside><section data-announcements-section><h2>Avisos</h2><div data-announcements></div></section><section data-activities-section><h2>Atividades do mês</h2><ul data-activities></ul></section><section data-readings-section><h2>Leituras da semana</h2><ul data-readings></ul></section></aside></div><p data-error hidden>Não foi possível encontrar este boletim publicado. <a href="/boletins">Voltar aos boletins</a>.</p></article>
+</BaseLayout>
+<script>import '../../scripts/public-bulletin-reader';</script>
