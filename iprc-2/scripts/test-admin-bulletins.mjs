@@ -35,6 +35,7 @@ const client = await readFile(resolve(import.meta.dirname, '../src/scripts/admin
 const worker = await readFile(resolve(import.meta.dirname, '../src/worker/admin.ts'), 'utf8');
 const repositorySource = await readFile(resolve(import.meta.dirname, '../src/repositories/D1BulletinAdminRepository.ts'), 'utf8');
 for (const label of ['Novo boletim','Pastoral','Avisos','Atividades','Aniversariantes','Escala diaconal','Leituras bíblicas','Digital','Impressão']) assert(page.includes(label), `interface deve incluir ${label}`);
+assert(page.includes("admin-bulletins.css?raw") && page.includes('set:html={bulletinStyles}'), 'estilos do editor protegido devem ser entregues inline');
 assert(client.includes('setTimeout(() => save(false), 1400)'), 'autosave deve usar debounce');
 assert(client.includes('expectedVersion: current.updatedAt'), 'autosave deve enviar a versão esperada pelo contrato do Worker');
 assert(!client.includes('expectedUpdatedAt: current.updatedAt'), 'autosave não deve usar o nome de campo antigo da Agenda');

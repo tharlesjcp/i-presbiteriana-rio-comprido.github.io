@@ -1,13 +1,14 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import AdminEditorCollection from '../../components/AdminEditorCollection.astro';
-import '../../styles/admin-bulletins.css';
+import bulletinStyles from '../../styles/admin-bulletins.css?raw';
 import clientSource from '../../scripts/admin-bulletins.ts?raw';
 import { iprcBulletinTemplate as template } from '../../data/bulletin-template';
 import ts from 'typescript';
 const clientCode=ts.transpileModule(clientSource,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
 ---
 <AdminLayout title="Boletins" description="Editor dos Boletins da IPRC" current="boletins">
+  <style is:inline set:html={bulletinStyles}></style>
   <div id="bulletin-list-view">
     <header class="admin-page-header bulletin-admin-heading"><div><p class="admin-eyebrow">Boletins</p><h1>Edições<br />da comunidade.</h1><p>Crie, revise e publique o boletim semanal com segurança.</p></div><button class="admin-primary" type="button" id="new-bulletin">Novo boletim</button></header>
     <p id="bulletin-session" class="admin-session" aria-live="polite">Confirmando acesso…</p>
