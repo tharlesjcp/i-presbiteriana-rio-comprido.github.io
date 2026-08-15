@@ -115,3 +115,5 @@ Instruções completas de criação de recursos, migrations, desenvolvimento loc
 ## Fase 8 — Administração da Agenda
 
 O Worker administrativo separado, a proteção Access/JWT, CSRF, concorrência otimista e auditoria estão documentados em [`docs/cloudflare-admin-agenda.md`](docs/cloudflare-admin-agenda.md). A configuração é exclusivamente de preview e reutiliza o D1/R2 existentes.
+
+As dependências públicas temporárias do site anterior e as futuras rotas `/visite-nos` e `/pedido-de-oracao` estão inventariadas em [`docs/public-legacy-dependencies.md`](docs/public-legacy-dependencies.md). Bíblia, Hinário, Agenda, Estudos e Boletins já usam exclusivamente suas rotas novas; nenhuma página provisória foi criada para substituir experiências ainda não reconstruídas.
