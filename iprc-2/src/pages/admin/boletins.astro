@@ -2,6 +2,9 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import AdminEditorCollection from '../../components/AdminEditorCollection.astro';
 import '../../styles/admin-bulletins.css';
+import clientSource from '../../scripts/admin-bulletins.ts?raw';
+import ts from 'typescript';
+const clientCode=ts.transpileModule(clientSource,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
 ---
 <AdminLayout title="Boletins" description="Editor dos Boletins da IPRC" current="boletins">
   <div id="bulletin-list-view">
@@ -28,4 +31,4 @@ import '../../styles/admin-bulletins.css';
 
   <dialog id="bulletin-preview" class="bulletin-preview-dialog"><div class="preview-dialog-header"><div><p class="admin-eyebrow">Prévia do boletim</p><h2>Visualização</h2></div><button type="button" id="close-preview" aria-label="Fechar prévia">×</button></div><div class="preview-tabs" role="tablist"><button type="button" role="tab" aria-selected="true" data-preview-tab="digital">Digital</button><button type="button" role="tab" aria-selected="false" data-preview-tab="print">Impressão</button></div><div id="digital-preview" class="bulletin-live-digital"></div><div id="print-preview" class="bulletin-live-print" hidden><p id="fit-indicator" class="fit-indicator"></p><div class="live-sheet"><article><small>Painel 1</small><h3>Contracapa</h3><p>Informações institucionais da IPRC</p></article><article><small>Painel 2</small><h3>Informações</h3><div data-print-info></div></article><article class="live-cover"><small>Painel 3</small><h3>Capa</h3><div data-print-cover></div></article></div><div class="live-sheet"><article><small>Painel 4</small><h3>Pastoral</h3><div data-print-pastoral></div></article><article><small>Painel 5</small><h3>Continuação</h3><p>Continuação do conteúdo pastoral</p></article><article><small>Painel 6</small><h3>Avisos</h3><div data-print-announcements></div></article></div></div></dialog>
 </AdminLayout>
-<script>import '../../scripts/admin-bulletins';</script>
+<script is:inline type="module" set:html={clientCode}></script>
