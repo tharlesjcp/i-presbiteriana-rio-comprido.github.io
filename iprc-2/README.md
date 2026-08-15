@@ -111,3 +111,9 @@ O shell `/admin` possui layout próprio e não apresenta CRUDs falsos. Não exis
 R2 é privado e acessado por `R2MediaStorage`. O Worker só serve objetos referenciados por conteúdo publicado; visualização e download usam rotas e `Content-Disposition` distintos. Nenhum PDF é gerado agora.
 
 Instruções completas de criação de recursos, migrations, desenvolvimento local, Access, object keys, atomicidade e transição estão em [`docs/cloudflare-backend.md`](docs/cloudflare-backend.md). Recursos remotos exigem autenticação manual e não são criados pelos testes.
+
+## Fase 8 — Administração da Agenda
+
+O Worker administrativo separado, a proteção Access/JWT, CSRF, concorrência otimista e auditoria estão documentados em [`docs/cloudflare-admin-agenda.md`](docs/cloudflare-admin-agenda.md). A configuração é exclusivamente de preview e reutiliza o D1/R2 existentes.
+
+As dependências públicas temporárias do site anterior e as futuras rotas `/visite-nos` e `/pedido-de-oracao` estão inventariadas em [`docs/public-legacy-dependencies.md`](docs/public-legacy-dependencies.md). Bíblia, Hinário, Agenda, Estudos e Boletins já usam exclusivamente suas rotas novas; nenhuma página provisória foi criada para substituir experiências ainda não reconstruídas.
