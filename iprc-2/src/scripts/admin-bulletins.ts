@@ -74,7 +74,7 @@ function serializeRich(target: HTMLElement): RichDocument {
     else if (/^h[23]$/.test(tag)) blocks.push({ type: 'heading', level: Number(tag[1]), content: serializeInline(node) });
     else blocks.push({ type: tag === 'blockquote' ? 'quote' : 'paragraph', content: serializeInline(node) });
   }
-  if (!blocks.length && target.textContent?.trim()) blocks.push({ type: 'paragraph', content: [{ text: target.textContent }] });
+  if (!blocks.length && target.textContent?.trim()) blocks.push(...target.textContent.split(/\n+/).map(line=>line.trim()).filter(Boolean).map(line=>({ type:'paragraph', content:[{ text:line }] })));
   return { version: 1, blocks };
 }
 
