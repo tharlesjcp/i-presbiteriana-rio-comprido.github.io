@@ -36,6 +36,8 @@ const worker = await readFile(resolve(import.meta.dirname, '../src/worker/admin.
 const repositorySource = await readFile(resolve(import.meta.dirname, '../src/repositories/D1BulletinAdminRepository.ts'), 'utf8');
 for (const label of ['Novo boletim','Pastoral','Avisos','Atividades','Aniversariantes','Escala diaconal','Leituras bíblicas','Digital','Impressão']) assert(page.includes(label), `interface deve incluir ${label}`);
 assert(client.includes('setTimeout(() => save(false), 1400)'), 'autosave deve usar debounce');
+assert(client.includes('expectedVersion: current.updatedAt'), 'autosave deve enviar a versão esperada pelo contrato do Worker');
+assert(!client.includes('expectedUpdatedAt: current.updatedAt'), 'autosave não deve usar o nome de campo antigo da Agenda');
 assert(client.includes("getData('text/plain')"), 'colagem deve descartar HTML externo');
 assert(client.includes("existing:${event.id}"), 'atividade pode vincular evento existente');
 assert(client.includes("agendaMode === 'new'"), 'atividade pode criar evento da Agenda');
