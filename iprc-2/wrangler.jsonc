@@ -30,7 +30,7 @@
         {
           "binding": "DB",
           "database_name": "iprc-2-preview",
-          "database_id": "replace-with-preview-d1-database-id",
+          "database_id": "27f56f77-80aa-40fd-b6d9-6320a5691048",
           "migrations_dir": "migrations"
         }
       ],
