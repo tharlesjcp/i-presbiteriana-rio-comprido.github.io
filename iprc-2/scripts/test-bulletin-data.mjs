@@ -11,6 +11,7 @@ import {
   validateBulletinInput,
 } from '../src/domain/bulletin.ts';
 import { validateAgendaEvent } from '../src/domain/agenda.ts';
+import { isValidCivilDate } from '../src/domain/civil-date.ts';
 import { staticBulletins, bulletinTemplates } from '../src/data/bulletins.ts';
 import { churchSettings } from '../src/data/church.ts';
 import { recurringSchedules } from '../src/data/agenda.ts';
@@ -37,6 +38,15 @@ assert.equal(normalized.slug, 'boletim-12-2026-08-16');
 assert.equal(normalized.id, 'bulletin-12');
 assert.equal(validateBulletinInput(input({ date: '' })), false, 'data é obrigatória');
 assert.equal(validateBulletinInput(input({ number: 0 })), false, 'número positivo é obrigatório');
+for (const date of ['2026-02-29', '2026-02-31', '2026-04-31', '2026-13-01', '2026-00-10']) {
+  assert.equal(isValidCivilDate(date), false, `${date} deve ser uma data civil inválida`);
+  assert.equal(validateBulletinInput(input({ date })), false, `${date} não pode ser data do boletim`);
+}
+assert.equal(isValidCivilDate('2028-02-29'), true, 'ano bissexto válido');
+assert.equal(validateBulletinInput(input({ date: '2028-02-29' })), true, 'boletim aceita 29 de fevereiro em ano bissexto');
+assert.equal(validateBulletinInput(input({ monthActivities: [{ id: 'atividade-invalida', text: 'Atividade', startDate: '2026-04-31', sortOrder: 1 }] })), false);
+assert.equal(validateBulletinInput(input({ diaconalSchedule: [{ id: 'escala-invalida', date: '2026-02-29', responsible: ['Diácono'], sortOrder: 1 }] })), false);
+assert.equal(validateBulletinInput(input({ birthdays: [{ id: 'aniversario-invalido', name: 'Pessoa', date: '2026-13-01', source: 'manual', sortOrder: 1 }] })), false);
 assert.throws(() => assertUniqueBulletinNumbers([input(), input({ status: 'trashed', deletedAt: '2026-08-20T00:00:00Z' })]), /duplicado/, 'lixeira também reserva número');
 assert.equal(suggestNextBulletinNumber([input(), input({ number: 30 })]), 31);
 assert.equal(suggestNextSunday('2026-08-16'), '2026-08-23');

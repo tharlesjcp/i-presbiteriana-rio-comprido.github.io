@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { agendaEvents, churchLocation, recurringSchedules } from '../src/data/agenda.ts';
-import { AGENDA_TIME_ZONE, calculateNextRecurringOccurrence, formatEventDate, listUpcomingPublishedEvents } from '../src/domain/agenda.ts';
+import { AGENDA_TIME_ZONE, calculateNextRecurringOccurrence, formatEventDate, listUpcomingPublishedEvents, validateAgendaEvent } from '../src/domain/agenda.ts';
 import { StaticAgendaRepository } from '../src/repositories/StaticAgendaRepository.ts';
 
 const at = value => new Date(value);
@@ -34,6 +34,8 @@ assert.equal(nextIso('2026-08-16T12:00:00Z'), '2026-08-16T12:00:00.000Z', 'o in�
 assert.equal(nextIso('2026-08-16T11:00:00Z'), '2026-08-16T12:00:00.000Z', '09h em São Paulo deve corresponder a 12h UTC');
 
 const single = { id: 'single', title: 'Evento real de teste', startDate: '2026-08-29', startTime: '19:00', location: churchLocation, status: 'published', source: { kind: 'manual' } };
+assert.equal(validateAgendaEvent({ ...single, startDate: '2026-02-29' }), false, 'Agenda rejeita data civil impossível');
+assert.equal(validateAgendaEvent({ ...single, startDate: '2028-02-29' }), true, 'Agenda aceita ano bissexto');
 const period = { id: 'period', title: 'Período real de teste', startDate: '2026-08-09', endDate: '2026-08-16', location: churchLocation, status: 'published', source: { kind: 'manual' } };
 const draft = { ...single, id: 'draft', startDate: '2026-08-10', status: 'draft' };
 const cancelled = { ...single, id: 'cancelled', startDate: '2026-08-11', status: 'cancelled' };

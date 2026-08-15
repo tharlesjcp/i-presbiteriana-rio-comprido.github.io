@@ -1,4 +1,5 @@
 import { validateAgendaEvent, type AgendaEvent, type AgendaLocation } from './agenda.ts';
+import { isValidCivilDate } from './civil-date.ts';
 import { validateBibleReference, type BibleReference } from './study.ts';
 
 export type BulletinStatus = 'draft' | 'published' | 'trashed';
@@ -69,7 +70,6 @@ export type BulletinInput = {
 export type Bulletin = Omit<BulletinInput, 'id' | 'slug'> & { id: string; slug: string };
 export type BulletinFit = { status: 'within-limit' | 'near-limit' | 'over-limit'; estimatedUnits: number; limit: number };
 
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const marks = new Set<TextMark>(['bold', 'italic', 'underline']);
 const alignments = new Set<TextAlignment>(['left', 'center', 'right']);
@@ -82,19 +82,19 @@ export const validateRichText = (document: RichTextDocument) => Boolean(document
     && (block.type !== 'heading' || [2, 3].includes(block.level));
 }));
 
-const validDate = (value?: string) => !value || datePattern.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+const validOptionalCivilDate = (value?: string) => !value || isValidCivilDate(value);
 export const slugifyBulletin = (number: number, date: string) => `boletim-${number}-${date}`;
 
 export const validateBulletinInput = (input: BulletinInput) => Boolean(
-  Number.isInteger(input.number) && input.number > 0 && Boolean(input.date) && validDate(input.date) && input.templateId.trim()
+  Number.isInteger(input.number) && input.number > 0 && isValidCivilDate(input.date) && input.templateId.trim()
   && ['draft', 'published', 'trashed'].includes(input.status)
   && input.pastoral.title.trim() && validateRichText(input.pastoral.body)
   && (!input.pastoral.bibleReference || validateBibleReference(input.pastoral.bibleReference))
   && input.announcements.every(item => item.id.trim() && item.title.trim() && validateRichText(item.content))
-  && input.monthActivities.every(item => item.id.trim() && item.text.trim() && validDate(item.startDate) && validDate(item.endDate) && (!item.endDate || !item.startDate || item.endDate >= item.startDate))
+  && input.monthActivities.every(item => item.id.trim() && item.text.trim() && validOptionalCivilDate(item.startDate) && validOptionalCivilDate(item.endDate) && (!item.endDate || !item.startDate || item.endDate >= item.startDate))
   && input.weeklyReadings.every(item => item.id.trim() && item.day.trim() && item.referenceText.trim() && (!item.reference || validateBibleReference(item.reference)))
-  && input.diaconalSchedule.every(item => item.id.trim() && validDate(item.date) && item.responsible.length > 0 && item.responsible.every(Boolean))
-  && input.birthdays.every(item => item.id.trim() && item.name.trim() && validDate(item.date) && (item.source === 'manual' || Boolean(item.memberId)))
+  && input.diaconalSchedule.every(item => item.id.trim() && isValidCivilDate(item.date) && item.responsible.length > 0 && item.responsible.every(Boolean))
+  && input.birthdays.every(item => item.id.trim() && item.name.trim() && isValidCivilDate(item.date) && (item.source === 'manual' || Boolean(item.memberId)))
   && (!input.deletedAt || !Number.isNaN(Date.parse(input.deletedAt))) && (input.status !== 'trashed' || Boolean(input.deletedAt))
   && (!input.additionalBlocks || input.additionalBlocks.every(validateRichText)),
 );
