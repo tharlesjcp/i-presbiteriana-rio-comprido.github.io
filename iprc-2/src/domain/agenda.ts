@@ -15,6 +15,8 @@ export type RecurringSchedule = {
   active: boolean;
   sortOrder?: number;
 };
+export type VersionedAgendaEntity<T> = T & { updatedAt: string };
+export type RecurringScheduleInput = Omit<RecurringSchedule, 'id'> & { id?: string };
 export type AgendaEventStatus = 'draft' | 'published' | 'cancelled';
 export type AgendaEventSource = {
   kind: 'manual' | 'bulletin';
@@ -35,6 +37,7 @@ export type AgendaEvent = {
   status: AgendaEventStatus;
   source: AgendaEventSource;
 };
+export type AgendaEventInput = Omit<AgendaEvent, 'id' | 'source'> & { id?: string };
 export type RecurringOccurrence = { schedule: RecurringSchedule; startsAt: Date };
 export type AgendaItem =
   | { kind: 'recurring'; startsAt: Date; occurrence: RecurringOccurrence }
@@ -76,6 +79,11 @@ export const validateRecurringSchedule = (schedule: RecurringSchedule) => Boolea
   && schedule.location.name.trim(),
 );
 
+export const validateRecurringScheduleInput = (input: RecurringScheduleInput) => validateRecurringSchedule({
+  ...input,
+  id: input.id || 'pending',
+});
+
 export const validateAgendaEvent = (event: AgendaEvent) => Boolean(
   event.id.trim() && event.title.trim() && isValidCivilDate(event.startDate)
   && (!event.endDate || isValidCivilDate(event.endDate) && event.endDate >= event.startDate)
@@ -83,6 +91,12 @@ export const validateAgendaEvent = (event: AgendaEvent) => Boolean(
   && event.location.name.trim() && ['draft', 'published', 'cancelled'].includes(event.status)
   && ['manual', 'bulletin'].includes(event.source.kind),
 );
+
+export const validateAgendaEventInput = (input: AgendaEventInput) => validateAgendaEvent({
+  ...input,
+  id: input.id || 'pending',
+  source: { kind: 'manual' },
+});
 
 export const calculateNextRecurringOccurrence = (schedules: RecurringSchedule[], now = new Date()): RecurringOccurrence | null => {
   const current = zonedParts(now);

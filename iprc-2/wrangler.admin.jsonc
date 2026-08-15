@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "iprc-2-admin",
+  "main": "src/worker/admin-index.ts",
+  "compatibility_date": "2026-08-14",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "env": {
+    "preview": {
+      "name": "iprc-2-admin-preview",
+      "vars": {
+        "ADMIN_ORIGIN": "https://iprc-2-admin-preview.iprc-2.workers.dev",
+        "PUBLIC_ORIGIN": "https://iprc-2-backend-preview.iprc-2.workers.dev"
+      },
+      "d1_databases": [{
+        "binding": "DB",
+        "database_name": "iprc-2-preview",
+        "database_id": "27f56f77-80aa-40fd-b6d9-6320a5691048",
+        "migrations_dir": "migrations"
+      }],
+      "r2_buckets": [{
+        "binding": "MEDIA",
+        "bucket_name": "iprc-2-media-preview"
+      }]
+    }
+  }
+}

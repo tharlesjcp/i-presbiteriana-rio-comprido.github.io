@@ -25,8 +25,8 @@ const navigation = [
       <aside class="admin-sidebar">
         <a class="admin-brand" href="/admin" aria-label="Administração IPRC — início"><img src="/logo-iprc.svg" alt="" /><span><strong>IPRC</strong><small>Administração</small></span></a>
         <nav aria-label="Administração"><ul>{navigation.map(item => <li><a href={item.href} aria-current={current === item.id ? 'page' : undefined}>{item.label}</a></li>)}</ul></nav>
-        <p class="admin-access-note"><strong>Acesso protegido</strong><br />Cloudflare Access será a barreira de identidade antes da ativação.</p>
-        <a class="admin-public-link" href="/">Voltar ao site público <span aria-hidden="true">→</span></a>
+        <p class="admin-access-note"><strong>Acesso protegido</strong><br />Sua identidade é verificada pela Cloudflare antes de qualquer operação.</p>
+        <a class="admin-public-link" href="https://iprc-2-backend-preview.iprc-2.workers.dev/">Voltar ao site público <span aria-hidden="true">→</span></a>
       </aside>
       <main id="admin-content" class="admin-main"><slot /></main>
     </div>

@@ -36,6 +36,9 @@ const publicApi = async (url: URL, env: Env) => {
 
 export const handleRequest = async (request: Request, env: Env): Promise<Response> => {
   const url = new URL(request.url);
+  if ((url.pathname === '/admin' || url.pathname.startsWith('/admin/')) && env.ADMIN_ORIGIN) {
+    return Response.redirect(new URL(url.pathname + url.search, env.ADMIN_ORIGIN), 302);
+  }
   if (request.method !== 'GET' && request.method !== 'HEAD') return apiError(405, 'METHOD_NOT_ALLOWED', 'Método não permitido.');
   try {
     if (url.pathname === '/api/health') return health(env);

@@ -26,6 +26,9 @@
   "env": {
     "preview": {
       "name": "iprc-2-backend-preview",
+      "vars": {
+        "ADMIN_ORIGIN": "https://iprc-2-admin-preview.iprc-2.workers.dev"
+      },
       "d1_databases": [
         {
           "binding": "DB",

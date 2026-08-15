@@ -28,7 +28,7 @@ const queryJson = command => {
 };
 
 runWrangler(['d1', 'migrations', 'apply', 'DB', '--local']);
-const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks'];
+const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks', 'admin_audit_log'];
 const tables = queryJson("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name;").map(row => row.name);
 for (const table of expectedTables) assert(tables.includes(table), `migration deve criar ${table}`);
 assert.equal(queryJson('SELECT COUNT(*) AS total FROM recurring_schedules;')[0].total, 4);
