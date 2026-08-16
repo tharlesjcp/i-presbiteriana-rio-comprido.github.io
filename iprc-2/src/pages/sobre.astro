@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { recurringSchedules } from '../data/agenda';
+import { weekdayNames, formatAgendaTime } from '../domain/agenda';
+import '../styles/about.css';
+const mapUrl='https://www.google.com/maps/search/?api=1&query=Igreja+Presbiteriana+do+Rio+Comprido%2C+Rua+Sampaio+Viana%2C+185%2C+Rio+de+Janeiro';
+---
+<BaseLayout title="Sobre a IPRC" description="Conheça a Igreja Presbiteriana do Rio Comprido, sua programação, endereço e contato." canonicalPath="/sobre">
+  <section class="about-hero"><div class="container"><p class="eyebrow">Conheça a igreja</p><h1>Sobre a IPRC</h1><p>A Igreja Presbiteriana do Rio Comprido é uma comunidade cristã reformada presente no bairro do Rio Comprido, no Rio de Janeiro.</p></div></section>
+  <main class="about-main container">
+    <section class="about-intro" aria-labelledby="about-intro-title"><div><p class="eyebrow">Igreja Presbiteriana do Rio Comprido</p><h2 id="about-intro-title">Palavra, comunhão e serviço.</h2></div><p>Somos uma comunidade reunida pela graça de Deus para conhecer a Palavra, caminhar em comunhão e viver o evangelho. Se você deseja conhecer a IPRC, consulte abaixo nossos horários, endereço e contato.</p></section>
+    <section class="about-schedule" aria-labelledby="about-schedule-title"><div class="about-heading"><p class="eyebrow">Toda semana</p><h2 id="about-schedule-title">Nossa programação</h2></div><ul>{recurringSchedules.filter(item=>item.active).map(item=><li><div><span>{weekdayNames[item.weekday]}</span><time datetime={item.startTime}>{formatAgendaTime(item.startTime)}</time></div><strong>{item.title}</strong></li>)}</ul><a class="text-link" href="/agenda">Ver agenda completa <span aria-hidden="true">→</span></a></section>
+    <section class="about-location" aria-labelledby="about-location-title"><div><p class="eyebrow">Onde estamos</p><h2 id="about-location-title">No coração do Rio Comprido.</h2><p><strong>Igreja Presbiteriana do Rio Comprido</strong><br />Rua Sampaio Viana, 185<br />Rio Comprido — Rio de Janeiro, RJ</p><a class="button button-primary" href={mapUrl} target="_blank" rel="noopener noreferrer">Como chegar <span class="sr-only">(abre o Google Maps em nova aba)</span></a></div><iframe title="Mapa da Igreja Presbiteriana do Rio Comprido" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Rua%20Sampaio%20Viana%20185%20Rio%20Comprido%20RJ&output=embed"></iframe></section>
+    <section class="about-contact" aria-labelledby="about-contact-title"><div><p class="eyebrow">Contato</p><h2 id="about-contact-title">Fale com a IPRC</h2><a href="mailto:ipriocomprido@gmail.com">ipriocomprido@gmail.com</a></div><div><p class="eyebrow">Primeira visita</p><h2>Será uma alegria receber você.</h2><p>Consulte a programação e use o mapa para planejar sua visita à igreja.</p><div class="button-row"><a class="button button-primary" href="/agenda">Consultar horários</a><a class="button about-outline" href={mapUrl} target="_blank" rel="noopener noreferrer">Ver localização</a></div></div></section>
+  </main>
+</BaseLayout>
