@@ -21,6 +21,10 @@ assert.match(admin,/setTimeout\(\(\)=>focusTarget\?\.focus\(\),50\)/,'fechamento
 assert.doesNotMatch(admin,/current=null;render\(\);trigger\?\.focus/,'lista não deve invalidar o botão antes de restaurar o foco');
 assert.match(admin,/Alterações não publicadas/,'editor deve sinalizar alterações pendentes');
 assert.match(admin,/publish\.textContent=current\.hasUnpublishedChanges\?'Republicar'/,'ação explícita deve distinguir Republicar');
+assert.match(admin,/parseBibleReferencesInput/,'Admin deve usar o parser canônico linha a linha');
+assert.match(admin,/setReferenceErrors/,'erros de referência devem permanecer visíveis dentro do drawer');
+assert.match(page,/study-reference-errors[^>]*role="alert"/,'campo deve possuir região acessível para erros por linha');
+assert.match(styles,/button:disabled/,'botões desabilitados devem possuir estado visual explícito');
 assert.match(repository,/INSERT INTO study_publications/,'publicação deve criar snapshot versionado');
 assert.match(repository,/source_updated_at!==row\.updated_at/,'estado pendente deve comparar snapshot e entidade administrativa');
 assert.match(publicRepository,/FROM study_publications/,'site público deve ler somente snapshots ativos');

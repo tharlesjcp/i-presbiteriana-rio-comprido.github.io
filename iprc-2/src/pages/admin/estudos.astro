@@ -31,7 +31,7 @@ import studyStyles from '../../styles/admin-studies.css?raw';
           <label class="wide">Link do YouTube<input id="study-youtube" type="url" required /></label><label class="wide">Thumbnail<input id="study-thumbnail" type="url" /></label><label>Duração em segundos<input id="study-duration" type="number" min="0" /></label>
         </div></fieldset>
         <fieldset><legend>Apresentação</legend><div class="study-form-grid">
-          <label class="wide">Resumo opcional<textarea id="study-summary" rows="5"></textarea></label><label class="wide">Referências bíblicas <small>Uma por linha, por exemplo: joao 3:16-18</small><textarea id="study-references" rows="6"></textarea></label>
+          <label class="wide">Resumo opcional<textarea id="study-summary" rows="5"></textarea></label><label class="wide">Referências bíblicas <small>Uma por linha, por exemplo: João 3:16–18 ou Gênesis 1</small><textarea id="study-references" rows="6" aria-describedby="study-reference-errors"></textarea><span class="study-reference-errors" id="study-reference-errors" role="alert" hidden></span></label>
         </div></fieldset>
         <fieldset><legend>Texto do estudo</legend><label>Conteúdo editorial<textarea id="study-content" rows="22"></textarea></label></fieldset>
         <fieldset><legend>Fonte</legend><div class="study-form-grid">

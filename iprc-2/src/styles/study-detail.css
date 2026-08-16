@@ -5,4 +5,4 @@
 .study-text-pending h2{margin-top:0;font:400 2rem/1.1 var(--serif)}
 .study-text-pending p{margin-bottom:0;color:var(--muted)}
 .study-content-grid:has(.study-references[hidden]){grid-template-columns:minmax(0,52rem);justify-content:center}
-.study-detail>.study-summary{width:min(52rem,100%);margin:0 auto 3rem}.study-prose h2{margin:2.5rem 0 .8rem;font:400 clamp(2rem,4vw,3rem)/1.05 var(--serif)}.study-prose p{font-size:1.05rem;line-height:1.8}.study-transcript-details{margin-top:2rem}
+.study-prose h2{margin:2.5rem 0 .8rem;font:400 clamp(2rem,4vw,3rem)/1.05 var(--serif)}.study-prose p{font-size:1.05rem;line-height:1.8}.study-transcript-details{margin-top:2rem}

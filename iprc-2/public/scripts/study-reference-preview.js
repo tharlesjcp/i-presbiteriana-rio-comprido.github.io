@@ -14,11 +14,11 @@ if (dialog) {
     const button = event.target.closest?.('[data-bible-reference]');
     if (!button) return;
     trigger = button;
-    const { book, code, chapter, start, end, label } = button.dataset;
+    const { book, code, chapter, start, end, label, wholeChapter } = button.dataset;
     title.textContent = label;
     text.textContent = 'Carregando…';
     error.hidden = true;
-    const target = `/biblia/${book}/${chapter}#v${start}`;
+    const target = `/biblia/${book}/${chapter}${wholeChapter === 'true' ? '' : `#v${start}`}`;
     chapterLink.href = target;
     openLink.href = target;
     dialog.showModal();
