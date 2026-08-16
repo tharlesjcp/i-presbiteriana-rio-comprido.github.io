@@ -17,7 +17,7 @@ assert.match(styles,/width:min\(72vw,68rem\)/,'drawer desktop deve ocupar cerca 
 assert.match(styles,/@media\(max-width:850px\).*width:100vw/s,'drawer deve ocupar a viewport no mobile');
 assert.match(admin,/dialog\.addEventListener\('cancel'/,'Escape deve fechar o drawer');
 assert.match(admin,/dialog\.addEventListener\('keydown'.*event\.key==='Escape'/,'Escape deve possuir tratamento explícito além do cancel nativo');
-assert.match(admin,/setTimeout\(\(\)=>focusTarget\?\.focus\(\),0\)/,'fechamento deve restaurar o foco depois do ciclo nativo do dialog');
+assert.match(admin,/setTimeout\(\(\)=>focusTarget\?\.focus\(\),50\)/,'fechamento deve restaurar o foco depois do ciclo nativo do dialog');
 assert.doesNotMatch(admin,/current=null;render\(\);trigger\?\.focus/,'lista não deve invalidar o botão antes de restaurar o foco');
 assert.match(admin,/Alterações não publicadas/,'editor deve sinalizar alterações pendentes');
 assert.match(admin,/publish\.textContent=current\.hasUnpublishedChanges\?'Republicar'/,'ação explícita deve distinguir Republicar');
