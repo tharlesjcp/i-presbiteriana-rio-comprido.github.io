@@ -12,6 +12,9 @@ const surface = q<HTMLDivElement>('#pastoral-body');
 const feedback = q<HTMLDivElement>('#bulletin-feedback');
 const editorFeedback = q<HTMLDivElement>('#editor-feedback');
 const saveStatus = q<HTMLElement>('#save-status');
+const publicationState = q<HTMLElement>('#publication-state');
+const publishButton = q<HTMLButtonElement>('#publish-button');
+const unpublishButton = q<HTMLButtonElement>('#unpublish-button');
 const preview = q<HTMLDialogElement>('#bulletin-preview');
 let bulletins: Json[] = [];
 let agendaEvents: Json[] = [];
@@ -118,7 +121,22 @@ function fillEditor(item: Json) {
   current = item; q<HTMLInputElement>('#bulletin-number').value = String(item.number || ''); q<HTMLInputElement>('#bulletin-date').value = item.date || ''; q<HTMLSelectElement>('#bulletin-template').value = item.templateId || 'iprc-padrao'; q<HTMLSelectElement>('#bulletin-status').value = item.status || 'draft'; q<HTMLInputElement>('#pastoral-title').value = item.pastoral?.title || ''; q<HTMLInputElement>('#pastoral-reference').value = item.pastoral?.bibleReference ? bibleReferenceLabel(item.pastoral.bibleReference) : '';
   renderRich(surface, item.pastoral?.body || emptyDocument()); for (const name of ['announcements', 'activities', 'birthdays', 'diaconal', 'readings']) q(`#${name}-items`).replaceChildren();
   (item.announcements || []).forEach((entry: Json) => addItem('announcements', entry)); (item.monthActivities || []).forEach((entry: Json) => addItem('activities', entry)); (item.birthdays || []).forEach((entry: Json) => addItem('birthdays', entry)); (item.diaconalSchedule || []).forEach((entry: Json) => addItem('diaconal', entry)); (item.weeklyReadings || []).forEach((entry: Json) => addItem('readings', entry));
-  q('#editor-heading').textContent = item.id ? `Boletim ${item.number}` : 'Novo boletim'; saveStatus.textContent = item.id ? 'Todas as alterações salvas' : 'Ainda não salvo'; clearMessage(editorFeedback);
+  q('#editor-heading').textContent = item.id ? `Boletim ${item.number}` : 'Novo boletim'; saveStatus.textContent = item.id ? 'Todas as alterações salvas' : 'Ainda não salvo';
+  const revision = Number(item.publication?.revision || 0);
+  if (item.status === 'published' && item.hasUnpublishedChanges) {
+    publicationState.textContent = `Publicado · revisão ${revision} · há alterações não publicadas`;
+    publicationState.dataset.pending = 'true'; publishButton.textContent = 'Republicar'; publishButton.disabled = false; unpublishButton.hidden = false;
+  } else if (item.status === 'published') {
+    publicationState.textContent = `Publicado · revisão ${revision}${item.publication?.publishedAt ? ` · ${new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(item.publication.publishedAt))}` : ''}`;
+    delete publicationState.dataset.pending; publishButton.textContent = 'Republicar'; publishButton.disabled = true; unpublishButton.hidden = false;
+  } else if (revision > 0 || item.publication?.withdrawnAt) {
+    publicationState.textContent = 'Despublicado — a última versão pública foi retirada';
+    delete publicationState.dataset.pending; publishButton.textContent = 'Publicar novamente'; publishButton.disabled = false; unpublishButton.hidden = true;
+  } else {
+    publicationState.textContent = 'Rascunho ainda não publicado';
+    delete publicationState.dataset.pending; publishButton.textContent = 'Publicar'; publishButton.disabled = false; unpublishButton.hidden = true;
+  }
+  clearMessage(editorFeedback);
 }
 function openEditor(item: Json) { fillEditor(item); listView.hidden = true; editorView.hidden = false; window.scrollTo({ top: 0 }); }
 function renderList() {
@@ -127,17 +145,31 @@ function renderList() {
   for (const item of visible) { const card = document.createElement('article'); card.className = 'bulletin-list-card'; const info = document.createElement('div'); const meta = document.createElement('p'); meta.className = 'admin-card-meta'; const changed = item.updatedAt ? ` · alterado ${new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(item.updatedAt.split('#')[0]))}` : ''; meta.textContent = `${formatDate(item.date)} · ${item.status === 'published' ? 'Publicado' : item.status === 'trashed' ? 'Lixeira' : 'Rascunho'}${changed}`; const title = document.createElement('h2'); title.textContent = `Boletim ${item.number}`; const pastoral = document.createElement('p'); pastoral.textContent = item.pastoral?.title || 'Pastoral ainda sem título'; add(info, meta, title, pastoral); const actions = document.createElement('div'); actions.className = 'bulletin-card-actions'; const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'admin-secondary'; edit.textContent = 'Editar'; edit.addEventListener('click', () => openEditor(item)); const view = document.createElement('button'); view.type='button'; view.className='admin-link-button'; view.textContent='Visualizar'; view.addEventListener('click',()=>{openEditor(item);renderPreview();}); const duplicate = document.createElement('button'); duplicate.type = 'button'; duplicate.className = 'admin-link-button'; duplicate.textContent = 'Duplicar'; duplicate.addEventListener('click', () => duplicateBulletin(item)); add(actions, edit, view, duplicate); if (item.status !== 'trashed') { const trash = document.createElement('button'); trash.type = 'button'; trash.className = 'admin-link-button danger'; trash.textContent = 'Mover para lixeira'; trash.addEventListener('click', () => trashBulletin(item)); add(actions, trash); } add(card, info, actions); add(target, card); }
 }
 async function load() { try { const [session, items, events] = await Promise.all([api('/api/admin/session'), api('/api/admin/bulletins'), api('/api/admin/agenda/events')]); q('#bulletin-session').textContent = `Acesso confirmado para ${session.email}`; bulletins = items; agendaEvents = events; renderList(); } catch (error) { show(feedback, error instanceof Error ? error.message : 'Falha ao carregar boletins.', true); q('#bulletin-session').textContent = 'Acesso não confirmado'; } }
-async function save(manual = false) {
-  if (loading) return; loading = true; window.clearTimeout(autosave); clearMessage(editorFeedback); saveStatus.textContent = 'Salvando…';
-  try { const input = editorValue(); const isNew = !current?.id; const saved = current?.id ? await api(`/api/admin/bulletins/${encodeURIComponent(current.id)}`, { method: 'PUT', body: JSON.stringify({ value: input, expectedVersion: current.updatedAt }) }) : await api('/api/admin/bulletins', { method: 'POST', body: JSON.stringify(input) }); current = saved; if (isNew) fillEditor(saved); else { q('#editor-heading').textContent = `Boletim ${saved.number}`; clearMessage(editorFeedback); } await refreshList(); saveStatus.textContent = manual ? 'Salvo agora' : 'Alterações salvas automaticamente'; }
-  catch (error) { const conflict = (error as any).status === 409; show(editorFeedback, conflict ? 'Este boletim foi alterado em outra sessão. Volte à lista e abra novamente antes de salvar.' : error instanceof Error ? error.message : 'Falha ao salvar.', true); saveStatus.textContent = 'Não foi possível salvar'; }
+async function save(manual = false): Promise<Json | null> {
+  if (loading) return current; loading = true; window.clearTimeout(autosave); clearMessage(editorFeedback); saveStatus.textContent = 'Salvando…';
+  try { const input = editorValue(); const isNew = !current?.id; const saved = current?.id ? await api(`/api/admin/bulletins/${encodeURIComponent(current.id)}`, { method: 'PUT', body: JSON.stringify({ value: input, expectedVersion: current.updatedAt }) }) : await api('/api/admin/bulletins', { method: 'POST', body: JSON.stringify(input) }); current = saved; if (isNew) fillEditor(saved); else { q('#editor-heading').textContent = `Boletim ${saved.number}`; clearMessage(editorFeedback); } await refreshList(); saveStatus.textContent = manual ? 'Salvo agora' : 'Alterações salvas automaticamente'; return saved; }
+  catch (error) { const conflict = (error as any).status === 409; show(editorFeedback, conflict ? 'Este boletim foi alterado em outra sessão. Volte à lista e abra novamente antes de salvar.' : error instanceof Error ? error.message : 'Falha ao salvar.', true); saveStatus.textContent = 'Não foi possível salvar'; return null; }
   finally { loading = false; }
 }
-const scheduleSave = () => { saveStatus.textContent = 'Alterações pendentes…'; window.clearTimeout(autosave); autosave = window.setTimeout(() => save(false), 1400); };
+const scheduleSave = () => { saveStatus.textContent = 'Alterações pendentes…'; if(current?.status==='published'){publicationState.textContent=`Publicado · revisão ${current.publication?.revision||1} · há alterações não publicadas`;publicationState.dataset.pending='true';publishButton.disabled=false;} window.clearTimeout(autosave); autosave = window.setTimeout(() => save(false), 1400); };
 async function refreshList() { bulletins = await api('/api/admin/bulletins'); renderList(); }
 async function newBulletin() { try { const suggestions = await api('/api/admin/bulletins/suggestions'); openEditor({ number: suggestions.number, date: suggestions.date, templateId: 'iprc-padrao', status: 'draft', pastoral: { title: '', body: emptyDocument() }, announcements: [], monthActivities: [], birthdays: [], diaconalSchedule: [], weeklyReadings: [] }); } catch (error) { show(feedback, error instanceof Error ? error.message : 'Falha ao preparar boletim.', true); } }
 async function duplicateBulletin(item: Json) { try { const copy = await api(`/api/admin/bulletins/${encodeURIComponent(item.id)}/duplicate`, { method: 'POST', body: '{}' }); await refreshList(); openEditor(copy); show(editorFeedback, 'Cópia criada como rascunho. Revise número, data e conteúdo.'); } catch (error) { show(feedback, error instanceof Error ? error.message : 'Falha ao duplicar.', true); } }
 async function trashBulletin(item: Json) { if (!confirm(`Mover o Boletim ${item.number} para a lixeira?`)) return; try { const payload = { ...item, status: 'trashed', deletedAt: new Date().toISOString() }; await api(`/api/admin/bulletins/${encodeURIComponent(item.id)}`, { method: 'PUT', body: JSON.stringify({ value: payload, expectedVersion: item.updatedAt }) }); await refreshList(); show(feedback, 'Boletim movido para a lixeira.'); } catch (error) { show(feedback, error instanceof Error ? error.message : 'Falha ao mover para a lixeira.', true); } }
+
+async function changePublication(action: 'publish' | 'unpublish') {
+  if (!current?.id) { const saved = await save(true); if (!saved?.id) return; }
+  if (action === 'publish') { const saved = await save(true); if (!saved) return; }
+  if (action === 'unpublish' && !confirm('Despublicar este boletim? Ele deixará de aparecer no site, mas o conteúdo editorial e o histórico serão preservados.')) return;
+  if (!current?.id) return;
+  loading = true; clearMessage(editorFeedback);
+  try {
+    const changed = await api(`/api/admin/bulletins/${encodeURIComponent(current.id)}/${action}`, { method: 'POST', body: JSON.stringify({ expectedVersion: current.updatedAt }) });
+    fillEditor(changed); await refreshList();
+    show(editorFeedback, action === 'publish' ? `Boletim ${changed.publication?.revision > 1 ? 'republicado' : 'publicado'} com sucesso.` : 'Boletim despublicado. O conteúdo editorial e os eventos da Agenda foram preservados.');
+  } catch (error) { const conflict=(error as any).status===409;show(editorFeedback,conflict?'O boletim mudou em outra sessão. Reabra-o antes de continuar.':error instanceof Error?error.message:'Falha ao alterar a publicação.',true); }
+  finally { loading = false; }
+}
 
 function renderPreview() {
   const item = editorValue(); const digital = q('#digital-preview'); digital.replaceChildren(); const header = document.createElement('header'); const eyebrow = document.createElement('p'); eyebrow.textContent = `Boletim ${item.number} · ${formatDate(item.date)}`; const heading = document.createElement('h2'); heading.textContent = item.pastoral.title || 'Pastoral sem título'; add(header, eyebrow, heading); add(digital, header); const body = document.createElement('section'); renderRich(body, item.pastoral.body); add(digital, body);
@@ -147,7 +179,7 @@ function renderPreview() {
   const units = documentText(item.pastoral.body).length + item.announcements.reduce((sum: number, entry: Json) => sum + entry.title.length + documentText(entry.content).length, 0) + item.monthActivities.length * 40 + item.weeklyReadings.length * 45 + item.diaconalSchedule.length * 55 + item.birthdays.length * 35; const fit = units > 7000 ? 'Excede o espaço — reduza ou redistribua o conteúdo.' : units > 5740 ? 'Próximo do limite — revise antes de imprimir.' : 'Cabe no espaço estimado.'; q('#fit-indicator').textContent = fit; preview.showModal();
 }
 
-q('#new-bulletin').addEventListener('click', newBulletin); q('#back-to-bulletins').addEventListener('click', async () => { window.clearTimeout(autosave); if (value('#bulletin-number') && value('#bulletin-date')) await save(false); editorView.hidden = true; listView.hidden = false; current = null; }); q('#save-button').addEventListener('click', () => save(true)); q('#preview-button').addEventListener('click', renderPreview); q('#close-preview').addEventListener('click', () => preview.close());
+q('#new-bulletin').addEventListener('click', newBulletin); q('#back-to-bulletins').addEventListener('click', async () => { window.clearTimeout(autosave); if (value('#bulletin-number') && value('#bulletin-date')) await save(false); editorView.hidden = true; listView.hidden = false; current = null; }); q('#save-button').addEventListener('click', () => save(true)); publishButton.addEventListener('click',()=>changePublication('publish'));unpublishButton.addEventListener('click',()=>changePublication('unpublish'));q('#preview-button').addEventListener('click', renderPreview); q('#close-preview').addEventListener('click', () => preview.close());
 all<HTMLButtonElement>('[data-filter]').forEach(button => button.addEventListener('click', () => { statusFilter = button.dataset.filter || 'all'; all<HTMLButtonElement>('[data-filter]').forEach(item => item.setAttribute('aria-pressed', String(item === button))); renderList(); }));
 all<HTMLButtonElement>('[data-command]').forEach(button => button.addEventListener('click', () => { surface.focus(); document.execCommand(button.dataset.command || ''); scheduleSave(); })); all<HTMLButtonElement>('[data-block]').forEach(button => button.addEventListener('click', () => { surface.focus(); document.execCommand('formatBlock', false, button.dataset.block); scheduleSave(); }));
 surface.addEventListener('paste', event => { event.preventDefault(); document.execCommand('insertText', false, event.clipboardData?.getData('text/plain') || ''); scheduleSave(); }); form.addEventListener('input', scheduleSave);

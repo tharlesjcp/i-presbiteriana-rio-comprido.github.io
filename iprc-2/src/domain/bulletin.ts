@@ -74,7 +74,8 @@ export type BulletinInput = {
   pdf?: BulletinPdfReference;
 };
 export type Bulletin = Omit<BulletinInput, 'id' | 'slug'> & { id: string; slug: string };
-export type VersionedBulletin = Bulletin & { createdAt: string; updatedAt: string };
+export type BulletinPublication = { revision: number; sourceUpdatedAt: string; publishedAt: string; publishedBy: string; withdrawnAt?: string; withdrawnBy?: string };
+export type VersionedBulletin = Bulletin & { createdAt: string; updatedAt: string; publication?: BulletinPublication; hasUnpublishedChanges: boolean };
 export type BulletinFit = { status: 'within-limit' | 'near-limit' | 'over-limit'; estimatedUnits: number; limit: number };
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

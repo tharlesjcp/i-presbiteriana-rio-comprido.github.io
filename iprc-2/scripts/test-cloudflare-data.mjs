@@ -28,7 +28,7 @@ const queryJson = command => {
 };
 
 runWrangler(['d1', 'migrations', 'apply', 'DB', '--local']);
-const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks', 'admin_audit_log'];
+const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks', 'bulletin_publications', 'admin_audit_log'];
 const tables = queryJson("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name;").map(row => row.name);
 for (const table of expectedTables) assert(tables.includes(table), `migration deve criar ${table}`);
 assert.equal(queryJson('SELECT COUNT(*) AS total FROM recurring_schedules;')[0].total, 4);
@@ -51,6 +51,7 @@ const bulletinParents = [
   { id: 'bulletin-draft', number: 9, slug: 'boletim-9-2028-03-12', date: '2028-03-12', template_id: 'standard', status: 'draft', pastoral_title: 'Rascunho', pastoral_body_json: richText, bible_book: null, bible_chapter: null, bible_verse_start: null, bible_verse_end: null, published_at: null, deleted_at: null, pdf_storage_key: null, pdf_generated_at: null, pdf_page_count: null },
   { id: 'bulletin-trashed', number: 10, slug: 'boletim-10-2028-03-19', date: '2028-03-19', template_id: 'standard', status: 'trashed', pastoral_title: 'Lixeira', pastoral_body_json: richText, bible_book: null, bible_chapter: null, bible_verse_start: null, bible_verse_end: null, published_at: null, deleted_at: '2028-03-20T12:00:00Z', pdf_storage_key: null, pdf_generated_at: null, pdf_page_count: null },
 ];
+const bulletinSnapshot={id:'bulletin-published',number:8,slug:'boletim-8-2028-03-05',date:'2028-03-05',templateId:'standard',status:'published',pastoral:{title:'Publicado',body:JSON.parse(richText)},announcements:[],monthActivities:[],birthdays:[],diaconalSchedule:[],weeklyReadings:[],additionalBlocks:[],publishedAt:'2028-03-01T12:00:00Z'};
 
 class FakeStatement {
   constructor(db, sql) { this.db = db; this.sql = sql; this.values = []; }
@@ -58,12 +59,14 @@ class FakeStatement {
   async all() {
     if (this.sql.includes('recurring_schedules')) return { results: schedules.filter(row => row.active) };
     if (this.sql.includes('agenda_events')) return { results: events.filter(row => row.status === 'published') };
+    if (this.sql.includes('bulletin_publications')) return { results: [{snapshot_json:JSON.stringify(bulletinSnapshot)}] };
     if (this.sql.includes('FROM bulletins')) return { results: bulletinParents.filter(row => row.status === 'published' && row.deleted_at === null).sort((a, b) => b.number - a.number) };
     return { results: [] };
   }
   async first() {
     if (this.sql.includes('SELECT 1 AS healthy')) return { healthy: 1 };
     if (this.sql.includes('allowed FROM bulletins')) return { allowed: 1 };
+    if (this.sql.includes('bulletin_publications')) {if(this.sql.includes('b.number=?')&&this.values[0]!==8)return null;if(this.sql.includes('b.slug=?')&&this.values[0]!==bulletinSnapshot.slug)return null;return{snapshot_json:JSON.stringify(bulletinSnapshot)};}
     if (this.sql.includes('FROM bulletins')) {
       const publicRows = bulletinParents.filter(row => row.status === 'published' && row.deleted_at === null);
       if (this.sql.includes('slug = ?')) return publicRows.find(row => row.slug === this.values[0]) || null;

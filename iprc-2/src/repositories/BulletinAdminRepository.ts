@@ -11,5 +11,7 @@ export interface BulletinAdminRepository {
   suggestions(): Promise<BulletinSuggestions>;
   create(input: BulletinInput, actor: string): Promise<VersionedBulletin>;
   update(id: string, input: BulletinInput, expectedVersion: string, actor: string): Promise<VersionedBulletin>;
+  publish(id: string, expectedVersion: string, actor: string): Promise<VersionedBulletin>;
+  unpublish(id: string, expectedVersion: string, actor: string): Promise<VersionedBulletin>;
   duplicate(id: string, actor: string): Promise<VersionedBulletin>;
 }

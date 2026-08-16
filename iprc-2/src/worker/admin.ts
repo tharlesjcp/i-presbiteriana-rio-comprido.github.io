@@ -33,6 +33,8 @@ export const handleAdminApi = async (request:Request,env:Env,authenticate:Authen
     const bulletin=/^\/api\/admin\/bulletins\/([^/]+)$/.exec(url.pathname);
     if(bulletin&&request.method==='GET') return apiSuccess(await bulletins.find(decodeURIComponent(bulletin[1])));
     if(bulletin&&request.method==='PUT'){const {value,version}=bulletinExpectedVersion(await readJson(request));return apiSuccess(await bulletins.update(decodeURIComponent(bulletin[1]),value,version,identity.email));}
+    const publication=/^\/api\/admin\/bulletins\/([^/]+)\/(publish|unpublish)$/.exec(url.pathname);
+    if(publication&&request.method==='POST'){const body=await readJson(request) as {expectedVersion?:unknown};if(typeof body.expectedVersion!=='string'||!body.expectedVersion)throw new BulletinAdminValidationError('A versão atual do boletim é obrigatória.');const id=decodeURIComponent(publication[1]);return apiSuccess(publication[2]==='publish'?await bulletins.publish(id,body.expectedVersion,identity.email):await bulletins.unpublish(id,body.expectedVersion,identity.email));}
     const duplicate=/^\/api\/admin\/bulletins\/([^/]+)\/duplicate$/.exec(url.pathname);
     if(duplicate&&request.method==='POST') return apiSuccess(await bulletins.duplicate(decodeURIComponent(duplicate[1]),identity.email),201);
     return apiError(404,'ADMIN_ROUTE_NOT_FOUND','Rota administrativa não encontrada.');
