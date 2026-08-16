@@ -16,7 +16,9 @@ for(const section of ['Informações','Apresentação','Texto do estudo','Fonte'
 assert.match(styles,/width:min\(72vw,68rem\)/,'drawer desktop deve ocupar cerca de 72% da viewport');
 assert.match(styles,/@media\(max-width:850px\).*width:100vw/s,'drawer deve ocupar a viewport no mobile');
 assert.match(admin,/dialog\.addEventListener\('cancel'/,'Escape deve fechar o drawer');
+assert.match(admin,/dialog\.addEventListener\('keydown'.*event\.key==='Escape'/,'Escape deve possuir tratamento explícito além do cancel nativo');
 assert.match(admin,/trigger\?\.focus/,'fechamento deve restaurar o foco');
+assert.doesNotMatch(admin,/current=null;render\(\);trigger\?\.focus/,'lista não deve invalidar o botão antes de restaurar o foco');
 assert.match(admin,/Alterações não publicadas/,'editor deve sinalizar alterações pendentes');
 assert.match(admin,/publish\.textContent=current\.hasUnpublishedChanges\?'Republicar'/,'ação explícita deve distinguir Republicar');
 assert.match(repository,/INSERT INTO study_publications/,'publicação deve criar snapshot versionado');
