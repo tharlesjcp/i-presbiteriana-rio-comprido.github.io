@@ -1,173 +1,130 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bíblia Interlinear</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bíblia on-line e interlinear | Igreja Presbiteriana do Rio Comprido</title>
+  <meta name="description" content="Leia a Bíblia em português e consulte versões interlineares em grego e hebraico, com navegação acessível por livro e capítulo.">
+  <meta name="theme-color" content="#173b57">
+  <link rel="canonical" href="https://dynamic-crisp-a60f33.netlify.app/biblia.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Bíblia on-line e interlinear">
+  <meta property="og:description" content="Leia a Bíblia em português, grego e hebraico.">
+  <meta property="og:url" content="https://dynamic-crisp-a60f33.netlify.app/biblia.html">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <div id="header-container"></div>
+  <main id="conteudo-principal" class="biblia-container" tabindex="-1">
+    <header class="page-header">
+      <p class="eyebrow">Leitura e estudo</p>
+      <h1>Bíblia on-line</h1>
+      <p>Escolha uma tradução, um livro e um capítulo. Use as setas do teclado para avançar ou voltar.</p>
+    </header>
 
-  <main class="biblia-container">
-    <div class="navegacao-topo">
-      <select id="livro"></select>
-      <select id="capitulo"></select>
-      <select id="versao">
-        <option value="almeida_ra.json">Almeida RA (PT)</option>
-        <option value="trparsed.json">Grego Interlinear</option>
-        <option value="wlc.json">Hebraico (WLC)</option>
-        <option value="pt_acf.json">Almeida Corrigida e Revisada Fiel (PT ACF)</option>
-      </select>
-    </div>
+    <form class="navegacao-topo" aria-label="Opções de leitura" onsubmit="return false">
+      <div class="campo"><label for="versao">Versão</label><select id="versao"><option value="almeida_ra.json">Almeida Revista e Atualizada</option><option value="trparsed.json">Grego interlinear</option><option value="wlc.json">Hebraico (WLC)</option><option value="pt_acf.json">Almeida Corrigida Fiel</option></select></div>
+      <div class="campo"><label for="livro">Livro</label><select id="livro"></select></div>
+      <div class="campo campo-curto"><label for="capitulo">Capítulo</label><select id="capitulo"></select></div>
+    </form>
 
-    <h2 id="titulo-capitulo"></h2>
+    <div id="status-leitura" class="status-leitura" role="status" aria-live="polite">Carregando texto bíblico…</div>
+    <article aria-labelledby="titulo-capitulo">
+      <h2 id="titulo-capitulo"></h2>
+      <div id="versiculos" class="versiculos-lista"></div>
+    </article>
 
-    <div id="versiculos" class="versiculos-lista">
-      <p>Selecione uma versão, livro e capítulo para visualizar os versículos.</p>
-    </div>
-
-    <div class="navegacao-lateral">
-      <button id="anterior-capitulo">&#8249;</button>
-      <span id="capitulo-indicador"></span>
-      <button id="proximo-capitulo">&#8250;</button>
-    </div>
+    <nav class="navegacao-lateral" aria-label="Navegação entre capítulos">
+      <button id="anterior-capitulo" type="button" aria-label="Capítulo anterior">‹ <span>Anterior</span></button>
+      <span id="capitulo-indicador" aria-live="polite"></span>
+      <button id="proximo-capitulo" type="button" aria-label="Próximo capítulo"><span>Próximo</span> ›</button>
+    </nav>
   </main>
-
   <div id="footer-container"></div>
-
   <script src="includes/layout.js"></script>
-  <script type="module">
-    let dados = [];
-    let livrosDisponiveis = [];
+  <script>
+    (() => {
+      let dados = [];
+      const versao = document.getElementById('versao');
+      const livro = document.getElementById('livro');
+      const capitulo = document.getElementById('capitulo');
+      const lista = document.getElementById('versiculos');
+      const titulo = document.getElementById('titulo-capitulo');
+      const indicador = document.getElementById('capitulo-indicador');
+      const status = document.getElementById('status-leitura');
+      const anterior = document.getElementById('anterior-capitulo');
+      const proximo = document.getElementById('proximo-capitulo');
 
-    const versaoSelect = document.getElementById('versao');
-    const livroSelect = document.getElementById('livro');
-    const capituloSelect = document.getElementById('capitulo');
-    const versiculosDiv = document.getElementById('versiculos');
-    const tituloCapitulo = document.getElementById('titulo-capitulo');
-    const btnProximo = document.getElementById('proximo-capitulo');
-    const btnAnterior = document.getElementById('anterior-capitulo');
-    const capituloIndicador = document.getElementById('capitulo-indicador');
+      const criarOpcao = (value, text) => { const option = document.createElement('option'); option.value = value; option.textContent = text; return option; };
+      const salvar = () => { localStorage.setItem('versao', versao.value); localStorage.setItem('livro', livro.value); localStorage.setItem('capitulo', capitulo.value); };
 
-    async function carregarVersao(arquivo, manterSelecao = true) {
-      const res = await fetch(`dados/biblia/${arquivo}`);
-      const json = await res.json();
+      function renderizarToken(texto) {
+        const fragmento = document.createDocumentFragment();
+        const partes = texto.split(/\s+/);
+        for (let i = 0; i < partes.length; i += 3) {
+          const token = document.createElement('span'); token.className = 'token';
+          const palavra = document.createElement('strong'); palavra.textContent = partes[i] || '';
+          const strong = document.createElement('em'); strong.textContent = partes[i + 1] || '';
+          const gramatica = document.createElement('small'); gramatica.textContent = partes[i + 2] || '';
+          token.append(palavra, strong, gramatica); fragmento.append(token, ' ');
+        }
+        return fragmento;
+      }
 
-      if (arquivo === "pt_acf.json") {
-        dados = [];
-        json.forEach(livro => {
-          livro.chapters.forEach((capitulo, capIndex) => {
-            capitulo.forEach((texto, versIndex) => {
-              dados.push({
-                book_name: livro.name,
-                chapter: capIndex + 1,
-                verse: versIndex + 1,
-                text: texto
-              });
-            });
-          });
+      function mostrarVersiculos() {
+        const numero = Number(capitulo.value);
+        const encontrados = dados.filter(v => v.book_name === livro.value && Number(v.chapter) === numero);
+        titulo.textContent = `${livro.value} ${numero}`;
+        indicador.textContent = `Capítulo ${numero} de ${capitulo.options.length}`;
+        lista.replaceChildren();
+        encontrados.forEach(v => {
+          const p = document.createElement('p'); p.className = 'versiculo';
+          const sup = document.createElement('sup'); sup.textContent = v.verse; p.append(sup, ' ');
+          const texto = String(v.text || '').trim();
+          p.append(/[GN]-?\d|\bG\d/.test(texto) ? renderizarToken(texto) : document.createTextNode(texto));
+          lista.appendChild(p);
         });
-      } else {
-        dados = json.verses || [];
+        status.textContent = encontrados.length ? `${encontrados.length} versículos carregados.` : 'Nenhum versículo encontrado.';
+        anterior.disabled = livro.selectedIndex === 0 && capitulo.selectedIndex === 0;
+        proximo.disabled = livro.selectedIndex === livro.options.length - 1 && capitulo.selectedIndex === capitulo.options.length - 1;
+        salvar();
       }
 
-      const livros = [...new Set(dados.map(v => v.book_name))];
-      livrosDisponiveis = livros;
-      livroSelect.innerHTML = livros.map(livro => `<option value="${livro}">${livro}</option>`).join('');
-
-      if (manterSelecao) {
-        const livroSalvo = localStorage.getItem("livro");
-        if (livroSalvo && livros.includes(livroSalvo)) livroSelect.value = livroSalvo;
-      }
-      carregarCapitulos(manterSelecao);
-    }
-
-    function carregarCapitulos(manterSelecao = true) {
-      const livroSelecionado = livroSelect.value;
-      const capitulos = [...new Set(dados.filter(v => v.book_name === livroSelecionado).map(v => v.chapter))];
-      capituloSelect.innerHTML = capitulos.map(c => `<option value="${c}">${c}</option>`).join('');
-
-      if (manterSelecao) {
-        const capituloSalvo = localStorage.getItem("capitulo");
-        if (capituloSalvo && capitulos.includes(parseInt(capituloSalvo))) capituloSelect.value = capituloSalvo;
-      }
-      mostrarVersiculos();
-    }
-
-    function mostrarVersiculos() {
-      const livro = livroSelect.value;
-      const capitulo = parseInt(capituloSelect.value);
-      const versiculos = dados.filter(v => v.book_name === livro && v.chapter === capitulo);
-
-      tituloCapitulo.textContent = `${livro} ${capitulo}`;
-      capituloIndicador.textContent = `Capítulo ${capitulo} de ${capituloSelect.options.length}`;
-
-      versiculosDiv.innerHTML = versiculos.map(v => {
-        if (v.text.includes('G') || v.text.includes('N-')) {
-          const partes = v.text.split(' ');
-          const tokens = [];
-          for (let i = 0; i < partes.length; i += 3) {
-            const palavra = partes[i] || '';
-            const strong = partes[i + 1] || '';
-            const gramatica = partes[i + 2] || '';
-            tokens.push(`<span class="token"><strong>${palavra}</strong><em>${strong}</em><small>${gramatica}</small></span>`);
-          }
-          return `<p class="versiculo"><sup>${v.verse}</sup> ${tokens.join(' ')}</p>`;
-        } else {
-          return `<p class="versiculo"><sup>${v.verse}</sup> ${v.text.trim()}</p>`;
-        }
-      }).join('');
-
-      localStorage.setItem("versao", versaoSelect.value);
-      localStorage.setItem("livro", livro);
-      localStorage.setItem("capitulo", capitulo);
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    versaoSelect.addEventListener('change', () => carregarVersao(versaoSelect.value, false));
-    livroSelect.addEventListener('change', () => carregarCapitulos(false));
-    capituloSelect.addEventListener('change', mostrarVersiculos);
-
-    btnProximo.addEventListener('click', () => {
-      const index = capituloSelect.selectedIndex;
-      if (index < capituloSelect.options.length - 1) {
-        capituloSelect.selectedIndex = index + 1;
+      function carregarCapitulos(manter = true) {
+        const capitulos = [...new Set(dados.filter(v => v.book_name === livro.value).map(v => Number(v.chapter)))];
+        capitulo.replaceChildren(...capitulos.map(n => criarOpcao(n, n)));
+        const salvo = manter ? localStorage.getItem('capitulo') : null;
+        if (salvo && capitulos.includes(Number(salvo))) capitulo.value = salvo;
         mostrarVersiculos();
-      } else {
-        const livroIndex = livroSelect.selectedIndex;
-        if (livroIndex < livroSelect.options.length - 1) {
-          livroSelect.selectedIndex = livroIndex + 1;
-          carregarCapitulos(false);
+      }
+
+      async function carregarVersao(arquivo, manter = true) {
+        status.textContent = 'Carregando texto bíblico…'; lista.replaceChildren();
+        try {
+          const response = await fetch(`dados/biblia/${arquivo}`);
+          if (!response.ok) throw new Error('Arquivo bíblico indisponível');
+          const json = await response.json();
+          dados = arquivo === 'pt_acf.json' ? json.flatMap(item => item.chapters.flatMap((cap, ci) => cap.map((text, vi) => ({book_name:item.name, chapter:ci+1, verse:vi+1, text})))) : (json.verses || []);
+          const livros = [...new Set(dados.map(v => v.book_name))];
+          livro.replaceChildren(...livros.map(nome => criarOpcao(nome, nome)));
+          const salvo = manter ? localStorage.getItem('livro') : null;
+          if (salvo && livros.includes(salvo)) livro.value = salvo;
+          carregarCapitulos(manter);
+        } catch (error) {
+          console.error(error); status.textContent = 'Não foi possível carregar esta versão. Tente novamente.'; status.classList.add('erro');
         }
       }
-    });
 
-    btnAnterior.addEventListener('click', () => {
-      const index = capituloSelect.selectedIndex;
-      if (index > 0) {
-        capituloSelect.selectedIndex = index - 1;
-        mostrarVersiculos();
-      } else {
-        const livroIndex = livroSelect.selectedIndex;
-        if (livroIndex > 0) {
-          livroSelect.selectedIndex = livroIndex - 1;
-          carregarCapitulos(false);
-          capituloSelect.selectedIndex = capituloSelect.options.length - 1;
-          mostrarVersiculos();
-        }
-      }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') btnProximo.click();
-      if (e.key === 'ArrowLeft') btnAnterior.click();
-    });
-
-    const versaoSalva = localStorage.getItem("versao") || versaoSelect.value;
-    versaoSelect.value = versaoSalva;
-    carregarVersao(versaoSalva);
+      versao.addEventListener('change', () => carregarVersao(versao.value, false));
+      livro.addEventListener('change', () => carregarCapitulos(false));
+      capitulo.addEventListener('change', mostrarVersiculos);
+      proximo.addEventListener('click', () => { if (capitulo.selectedIndex < capitulo.options.length - 1) capitulo.selectedIndex++; else if (livro.selectedIndex < livro.options.length - 1) { livro.selectedIndex++; carregarCapitulos(false); return; } mostrarVersiculos(); });
+      anterior.addEventListener('click', () => { if (capitulo.selectedIndex > 0) capitulo.selectedIndex--; else if (livro.selectedIndex > 0) { livro.selectedIndex--; carregarCapitulos(false); capitulo.selectedIndex = capitulo.options.length - 1; } mostrarVersiculos(); });
+      document.addEventListener('keydown', event => { if (!['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)) { if (event.key === 'ArrowRight') proximo.click(); if (event.key === 'ArrowLeft') anterior.click(); } });
+      const versaoSalva = localStorage.getItem('versao'); if ([...versao.options].some(o => o.value === versaoSalva)) versao.value = versaoSalva;
+      carregarVersao(versao.value);
+    })();
   </script>
 </body>
 </html>

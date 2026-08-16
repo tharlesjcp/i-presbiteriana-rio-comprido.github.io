@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /adm/
+Disallow: /testes/
+
+Sitemap: https://dynamic-crisp-a60f33.netlify.app/sitemap.xml

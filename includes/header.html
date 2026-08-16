@@ -1,26 +1,21 @@
-<header class="menu-superior">
-  <a href="index.html">
-    <img src="images/logoinicio.svg" alt="Logo da Igreja">
-  </a>
-
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="estudos.html">Estudos Bíblicos</a>
-    <a href="boletim.html">Boletim</a>
-    <a href="biblia.html">Bíblia</a>
-    <a href="hinario.html">Hinário</a>
-    <a href="pedidos.html">Pedidos de Oração</a>
-    <a href="sobre.html">Quem Somos</a>
-  </nav>
-
-  <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+<header class="site-header">
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="Igreja Presbiteriana do Rio Comprido — página inicial">
+      <img src="images/logoinicio.svg" alt="" width="180" height="50">
+    </a>
+    <button class="menu-toggle" type="button" aria-controls="menu-principal" aria-expanded="false">
+      <span class="sr-only">Abrir menu principal</span>
+      <span aria-hidden="true">☰</span>
+    </button>
+    <nav id="menu-principal" class="menu-principal" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="estudos.html">Estudos bíblicos</a>
+      <a href="boletim.html">Boletim</a>
+      <a href="biblia.html">Bíblia</a>
+      <a href="hinario.html">Hinário</a>
+      <a href="pedidos.html">Pedidos de oração</a>
+      <a href="sobre.html">Quem somos</a>
+    </nav>
+  </div>
 </header>
-
-<script>
-  const menuToggle = document.getElementById('menu-toggle');
-  const nav = document.querySelector('.menu-superior nav');
-
-  menuToggle.addEventListener('click', () => {
-    nav.classList.toggle('active');
-  });
-</script>
