@@ -1,19 +1,7 @@
 ---
-import type { RichTextDocument, RichTextInline } from '../domain/bulletin';
+import type { RichTextDocument } from '../domain/bulletin';
+import { renderRichTextHtml } from '../services/richTextPresentation';
 interface Props { document: RichTextDocument; }
 const { document } = Astro.props;
-const inline = (items: RichTextInline[]) => items;
 ---
-<div class="rich-text">
-  {document.blocks.map(block => {
-    if (block.type === 'list') {
-      const List = block.style === 'numbered' ? 'ol' : 'ul';
-      return <List>{block.items.map(item => <li>{inline(item).map(part => <span class:list={[part.marks?.includes('bold') && 'text-bold', part.marks?.includes('italic') && 'text-italic', part.marks?.includes('underline') && 'text-underline']}>{part.text}</span>)}</li>)}</List>;
-    }
-    const content = inline(block.content).map(part => <span class:list={[part.marks?.includes('bold') && 'text-bold', part.marks?.includes('italic') && 'text-italic', part.marks?.includes('underline') && 'text-underline']}>{part.text}</span>);
-    const style = `text-align:${block.alignment || 'left'}`;
-    if (block.type === 'heading') return block.level === 2 ? <h2 style={style}>{content}</h2> : <h3 style={style}>{content}</h3>;
-    if (block.type === 'quote') return <blockquote style={style}><p>{content}</p></blockquote>;
-    return <p style={style}>{content}</p>;
-  })}
-</div>
+<div class="rich-text" set:html={renderRichTextHtml(document)}></div>

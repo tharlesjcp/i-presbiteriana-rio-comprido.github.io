@@ -1,0 +1,7 @@
+.study-detail>.study-video{width:min(60rem,100%);margin-inline:auto}
+.study-transcript-details,.study-text-pending{padding:1.25rem;border:1px solid var(--line);border-radius:1rem;background:#fff}
+.study-transcript-details summary{cursor:pointer;font-weight:700}
+.study-transcript-source{color:var(--muted);font-size:.86rem}
+.study-text-pending h2{margin-top:0;font:400 2rem/1.1 var(--serif)}
+.study-text-pending p{margin-bottom:0;color:var(--muted)}
+.study-content-grid:has(.study-references[hidden]){grid-template-columns:minmax(0,52rem);justify-content:center}

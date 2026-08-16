@@ -8,5 +8,5 @@
 .bulletin-digital>header.bulletin-digital-header{max-width:none}
 .bulletin-reference{display:block;padding:0;border:0;background:transparent;text-align:left;text-decoration:underline;text-underline-offset:.25em;cursor:pointer}
 .inline-bible-reference{padding:0;border:0;background:transparent;color:var(--forest);font:inherit;text-align:left;text-decoration:underline;text-underline-offset:.2em;cursor:pointer}
-.bulletin-digital-grid main .rich-text>p{text-align:justify;hyphens:auto}
+.bulletin-digital-grid main .rich-text>p{text-align:justify;hyphens:none}
 @media(max-width:760px){.bulletin-digital-grid main .rich-text>p{text-align:left;hyphens:none}}

@@ -5,6 +5,7 @@ import { duplicateBulletin, normalizeBulletin } from '../src/domain/bulletin.ts'
 import { agendaStatusForBulletin, D1BulletinAdminRepository } from '../src/repositories/D1BulletinAdminRepository.ts';
 import { publicBulletinFromSnapshot } from '../src/repositories/D1BulletinRepository.ts';
 import { bulletinExpectedVersion, normalizeBulletinAdminInput } from '../src/services/bulletinAdminValidation.ts';
+import { renderRichTextHtml } from '../src/services/richTextPresentation.ts';
 const root=resolve(import.meta.dirname,'..');
 
 const rich = { version: 1, blocks: [{ type: 'paragraph', content: [{ text: ' Texto ', marks: ['bold'] }] }] };
@@ -69,6 +70,14 @@ activeSnapshot=JSON.stringify({...editorialChanged,status:'published',publishedA
 const republished=publicBulletinFromSnapshot({snapshot_json:activeSnapshot});
 assert.equal(republished.pastoral.title,'Alteração ainda privada','republicação explícita atualiza o conteúdo público');
 assert.equal(republished.slug,publicV1.slug,'republicação preserva slug');assert.equal(republished.number,publicV1.number,'republicação preserva número');
+const richFlow={version:1,blocks:[{type:'paragraph',content:[{text:'Simonton',marks:['bold']},{text:' chegou à igreja e '},{text:'pregou',marks:['italic']},{text:' a Palavra.'}]}]};
+const editorPayload=normalizeBulletinAdminInput({...base,pastoral:{title:'Integração de espaços',body:richFlow}});
+const d1ParentJson=JSON.stringify(editorPayload.pastoral.body);
+const publicationJson=JSON.stringify(normalizeBulletin({...editorPayload,id:'rich-flow',slug:'boletim-120-2028-02-29',status:'published',publishedAt:'2028-02-29T12:00:00.000Z',pastoral:{...editorPayload.pastoral,body:JSON.parse(d1ParentJson)}}));
+const publicFromD1=publicBulletinFromSnapshot({snapshot_json:publicationJson});
+const renderedPublic=renderRichTextHtml(publicFromD1.pastoral.body);
+assert.match(renderedPublic,/> chegou à igreja e </,'fluxo editor → D1 → snapshot → render público deve preservar espaços nas fronteiras inline');
+assert.equal(publicFromD1.pastoral.body.blocks[0].content.map(item=>item.text).join(''),'Simonton chegou à igreja e pregou a Palavra.','snapshot público não pode fundir palavras');
 
 const parent = { id:'bulletin-atomic', number:120, slug:'boletim-120-2028-02-29', date:'2028-02-29', template_id:'iprc-padrao', status:'draft', pastoral_title:'Antes', pastoral_body_json:JSON.stringify(rich), bible_book:null, bible_chapter:null, bible_verse_start:null, bible_verse_end:null, published_at:null, deleted_at:null, pdf_storage_key:null, pdf_generated_at:null, pdf_page_count:null, created_at:'v0', updated_at:'v1' };
 class Statement { constructor(db,sql){this.db=db;this.sql=sql;this.values=[];} bind(...values){this.values=values;return this;} async first(){return this.sql.startsWith('SELECT * FROM bulletins')?{...this.db.parent}:null;} }
@@ -91,7 +100,7 @@ const referencePreview=await readFile(resolve(root,'public/scripts/study-referen
 assert.match(referencePreview,/document\.addEventListener\('click'/,'preview reutilizável deve aceitar botões inseridos após o carregamento');
 const bulletinStyles=await readFile(resolve(root,'src/styles/bulletins.css'),'utf8');
 assert.match(bulletinStyles,/header\.bulletin-digital-header\{max-width:none\}/,'hero digital não pode herdar o limite antigo de 55rem');
-assert.match(bulletinStyles,/text-align:justify;hyphens:auto/,'Pastoral deve ser justificada em telas largas');
+assert.match(bulletinStyles,/text-align:justify;hyphens:none/,'Pastoral deve ser justificada sem hifenização automática em telas largas');
 assert.match(bulletinStyles,/@media\(max-width:760px\)\{\.bulletin-digital-grid main \.rich-text>p\{text-align:left;hyphens:none\}\}/,'mobile deve voltar ao alinhamento à esquerda');
 
 console.log('Admin Boletins: snapshots públicos, republicação, privacidade, Agenda em draft, atomicidade, autosave e rotas aprovados.');

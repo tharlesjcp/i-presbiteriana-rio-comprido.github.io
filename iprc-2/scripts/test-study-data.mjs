@@ -81,6 +81,8 @@ assert.match(page, /public-studies/);
 const detail = await readFile(resolve(root, 'src/pages/estudos/ler.astro'), 'utf8');
 assert.match(detail, /data-study-video/, 'detalhe deve reservar o player privado');
 assert.match(detail, /data-study-summary[^>]*hidden/, 'resumo ausente não deve reservar espaço');
+assert.match(detail, /headerMode="solid"/, 'detalhe deve usar a variante compartilhada de cabeçalho legível');
+assert.match(detail, /A versão em texto deste estudo ainda está sendo preparada/, 'detalhe sem texto deve apresentar fallback editorial honesto');
 const migration = await readFile(resolve(root, 'migrations/0007_studies.sql'), 'utf8');
 assert.equal((migration.match(/'study-[^']+'/g)||[]).length, 8, 'migration deve cadastrar exatamente oito estudos reais');
 assert.equal(migration.split('\n').filter(line=>line.startsWith("('study-")&&line.includes(",'published',")).length, 8, 'os oito estudos confirmados devem iniciar publicados');
@@ -90,6 +92,7 @@ assert.match(publicScript,/slice\(1\)/,'a lista deve destacar um estudo e carreg
 assert.doesNotMatch(publicScript,/youtube-nocookie\.com\/embed/,'o índice não deve criar oito players');
 const detailScript=await readFile(resolve(root,'src/scripts/public-study-detail.ts'),'utf8');
 assert.match(detailScript,/youtube-nocookie\.com\/embed/);
+assert.match(detailScript,/!s\.editorialContent&&!s\.transcript/,'fallback só deve aparecer quando não houver nenhum texto útil');
 const bibleReader = await readFile(resolve(root, 'public/scripts/bible-reader.js'), 'utf8');
 assert.match(bibleReader, /id="v\$\{verse\.number\}"/, 'cada versículo precisa expor âncora navegável');
 assert.match(bibleReader, /location\.hash\.match\(\/\^#v/, 'a Bíblia precisa posicionar a referência recebida');

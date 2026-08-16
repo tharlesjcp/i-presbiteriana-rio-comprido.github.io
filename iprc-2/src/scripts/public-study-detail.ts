@@ -11,7 +11,8 @@ fetch(`/api/public/studies/${encodeURIComponent(slug)}`).then(async r=>{
   if(s.summary){q('[data-study-summary]').textContent=s.summary;q('[data-study-summary]').hidden=false;}
   const iframe=q('[data-study-video]') as HTMLIFrameElement;iframe.src=`https://www.youtube-nocookie.com/embed/${s.youtubeId}`;iframe.title=`Vídeo: ${s.title}`;
   if(s.editorialContent){prose(q('[data-study-editorial]'),s.editorialContent);q('[data-study-editorial-section]').hidden=false;}
-  if(s.transcript){prose(q('[data-study-transcript]'),s.transcript);q('[data-study-transcript-section]').hidden=false;}
+  if(s.transcript){prose(q('[data-study-transcript]'),s.transcript);q('[data-study-transcript-section]').hidden=false;if(s.transcriptSource){q('[data-study-transcript-source]').textContent=`Fonte: ${s.transcriptSource}`;q('[data-study-transcript-source]').hidden=false;}}
+  if(!s.editorialContent&&!s.transcript)q('[data-study-text-pending]').hidden=false;
   const refs=q('[data-study-references]');for(const ref of s.references||[]){const book=bibleBooks[ref.book];if(!book)continue;const button=document.createElement('button');button.type='button';button.dataset.bibleReference='';button.dataset.book=book.slug;button.dataset.code=book.code;button.dataset.chapter=String(ref.chapter);button.dataset.start=String(ref.verseStart);button.dataset.end=String(ref.verseEnd||ref.verseStart);button.dataset.label=bibleReferenceLabel(ref);button.textContent=button.dataset.label;refs.appendChild(button);}
   q('[data-study-references-section]').hidden=!refs.childElementCount;q('[data-study-detail]').hidden=false;q('[data-study-loading]').hidden=true;document.title=`${s.title} — Estudos IPRC`;
 }).catch(()=>{q('[data-study-loading]').hidden=true;q('[data-study-error]').hidden=false;});

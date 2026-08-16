@@ -11,6 +11,7 @@ import { StaticBulletinRepository } from '../src/repositories/StaticBulletinRepo
 import { R2MediaStorage } from '../src/storage/R2MediaStorage.ts';
 import { mediaKeys } from '../src/storage/mediaKeys.ts';
 import { handleRequest } from '../src/worker/index.ts';
+import { handleAdminRequest } from '../src/worker/admin-index.ts';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const persistTo = mkdtempSync(join(tmpdir(), 'iprc-d1-test-'));
@@ -127,5 +128,12 @@ const downloadResponse = await handleRequest(new Request(`https://example.test/m
 assert.match(downloadResponse.headers.get('content-disposition'), /^attachment/);
 const staticResponse = await handleRequest(new Request('https://example.test/'), workerEnv);
 assert.equal(await staticResponse.text(), 'static-asset');
+const adminAssets={fetch:async request=>new Response(`admin-asset:${new URL(request.url).pathname}`)};
+for(const path of ['/_astro/admin.js','/logo-iprc.svg']){
+  const response=await handleAdminRequest(new Request(`https://admin.example.test${path}`),{...workerEnv,ASSETS:adminAssets});
+  assert.equal(await response.text(),`admin-asset:${path}`,'Admin deve entregar seus próprios bundles e logo');
+}
+const blockedPublic=await handleAdminRequest(new Request('https://admin.example.test/estudos'),{...workerEnv,ASSETS:adminAssets});
+assert.equal(blockedPublic.status,404,'origem administrativa não deve expor páginas públicas');
 
 console.log('Cloudflare: migrations, D1 repositories, seleção de backend, R2 e API aprovados.');
