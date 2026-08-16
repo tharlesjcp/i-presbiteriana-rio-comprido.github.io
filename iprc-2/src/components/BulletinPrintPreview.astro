@@ -1,24 +1,28 @@
 ---
 import { estimateBulletinFit, formatBulletinDate, type Bulletin } from '../domain/bulletin';
+import { iprcBulletinTemplate as template } from '../data/bulletin-template';
 interface Props { bulletin?: Bulletin; }
 const { bulletin } = Astro.props;
 const fit = bulletin ? estimateBulletinFit(bulletin) : null;
 const fitLabels = { 'within-limit': 'Conteúdo dentro do limite estimado', 'near-limit': 'Conteúdo próximo do limite estimado', 'over-limit': 'Conteúdo excedeu o limite estimado' };
+const richText=(bulletin?.pastoral.body.blocks||[]).map(block=>block.type==='list'?block.items.map(item=>item.map(part=>part.text).join('')).join('\n'):block.content.map(part=>part.text).join('')).filter(Boolean);
+const midpoint=Math.ceil(richText.join('\n').length/2);let length=0,split=0;while(split<richText.length&&length<midpoint){length+=richText[split].length;split++;}
+const printBirthdays=bulletin?.birthdays.filter(item=>item.visibility!=='hidden')||[];
 ---
 <section class="print-preview" data-print-preview aria-label="Prévia estrutural do boletim impresso">
   <header class="print-preview-heading"><div><p class="eyebrow">Prévia de impressão</p><h2>A4 horizontal · duas páginas</h2></div>{fit && <p class:list={['fit-indicator', `fit-${fit.status}`]}>{fitLabels[fit.status]}</p>}</header>
   {!bulletin && <p class="preview-notice">Prévia técnica do template. Nenhum boletim ou conteúdo demonstrativo está sendo publicado.</p>}
   <div class="print-sheet" aria-label="Página 1, três painéis">
     <span class="sheet-label">Página 1</span>
-    <section class="print-panel print-back"><small>Painel 1</small><h3>Contracapa</h3><p>Informações institucionais reutilizáveis</p></section>
-    <section class="print-panel"><small>Painel 2</small><h3>Informações e atividades</h3>{bulletin ? <><p>Boletim nº {bulletin.number}</p><p>{formatBulletinDate(bulletin.date)}</p><p>{bulletin.monthActivities.length} atividade(s)</p></> : <p>Programação, leituras, escala e aniversariantes</p>}</section>
-    <section class="print-panel print-cover"><small>Painel 3</small><h3>Capa</h3>{bulletin ? <><strong>Boletim nº {bulletin.number}</strong><p>{bulletin.pastoral.title}</p></> : <p>Arte cadastrada pelo template anual ou especial</p>}</section>
+    <section class="print-panel print-back"><small>Painel 1 · contracapa</small><img src="/logo-iprc.svg" alt="" /><h3>Agenda semanal</h3><ul>{template.weeklySchedule.map(item=><li>{item}</li>)}</ul><h3>Contato</h3><p>{template.email}<br />{template.address}</p><h3>Liderança</h3>{template.leadership.map(item=><p>{item}</p>)}<footer>{template.institutional}</footer></section>
+    <section class="print-panel"><small>Painel 2 · conteúdo mensal</small>{bulletin ? <><h3>Atividades do mês</h3>{bulletin.monthActivities.map(item=><p>{item.text}</p>)}{printBirthdays.length>0&&<><h3>Aniversariantes</h3>{printBirthdays.map(item=><p>{item.name} · {formatBulletinDate(item.date)}</p>)}</>}<h3>Leituras bíblicas da semana</h3>{bulletin.weeklyReadings.map(item=><p><strong>{item.day}</strong> · {item.referenceText}</p>)}</> : <p>Atividades, aniversariantes, contribuição e leituras</p>}<h3>Contribuição</h3>{template.contribution.map(item=><p>{item}</p>)}</section>
+    <section class="print-panel print-cover"><small>Painel 3 · capa</small><img src="/logo-iprc.svg" alt="" /><div><strong>{template.title}</strong><p>{template.subtitle}</p></div>{bulletin ? <><p>Boletim Dominical nº {bulletin.number}</p><p>{formatBulletinDate(bulletin.date)}</p></> : <p>Arte anual com número e data dinâmicos</p>}</section>
   </div>
   <div class="print-sheet" aria-label="Página 2, três colunas">
     <span class="sheet-label">Página 2</span>
-    <section class="print-panel"><small>Coluna 1</small><h3>Pastoral</h3><p>{bulletin?.pastoral.title || 'Fluxo inicial do texto pastoral'}</p></section>
-    <section class="print-panel"><small>Coluna 2</small><h3>Continuação</h3><p>Continuação da pastoral e conteúdo estruturado</p></section>
-    <section class="print-panel"><small>Coluna 3</small><h3>Avisos</h3><p>{bulletin ? `${bulletin.announcements.length} aviso(s) organizado(s)` : 'Avisos e outros blocos semanais'}</p></section>
+    <section class="print-panel"><small>Painel 4</small><h3>Pastoral</h3><strong>{bulletin?.pastoral.title || 'Fluxo inicial do texto pastoral'}</strong>{richText.slice(0,split).map(item=><p>{item}</p>)}</section>
+    <section class="print-panel"><small>Painel 5</small><h3>Pastoral · continuação</h3>{richText.slice(split).map(item=><p>{item}</p>)}</section>
+    <section class="print-panel"><small>Painel 6</small><h3>Avisos</h3>{bulletin ? <>{bulletin.announcements.map(item=><section><strong>{item.title}</strong><p>{item.content.blocks.map(block=>block.type==='list'?block.items.flat().map(part=>part.text).join(' '):block.content.map(part=>part.text).join('')).join(' ')}</p></section>)}{bulletin.diaconalSchedule.length>0&&<><h3>Plantão diaconal</h3>{bulletin.diaconalSchedule.map(item=><p>{formatBulletinDate(item.date)} · {item.responsible.join(' e ')}</p>)}</>}</> : <p>Avisos e escala estruturados</p>}</section>
   </div>
   <p class="preview-caption">A indicação de capacidade é aproximada. A futura geração de PDF deverá medir o layout real e nunca reduzir o texto até ficar ilegível.</p>
 </section>

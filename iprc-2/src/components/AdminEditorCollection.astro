@@ -1,0 +1,5 @@
+---
+interface Props{id:string;title:string;description:string;button:string}
+const {id,title,description,button}=Astro.props;
+---
+<section class="bulletin-editor-section"><div class="section-title"><div><h2>{title}</h2><p>{description}</p></div><button class="admin-secondary" type="button" data-add={id}>{button}</button></div><div id={`${id}-items`} class="bulletin-items"></div></section>

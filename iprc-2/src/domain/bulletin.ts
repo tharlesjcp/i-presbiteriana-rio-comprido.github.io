@@ -30,6 +30,11 @@ export type BulletinActivity = {
   text: string;
   startDate?: string;
   endDate?: string;
+  startTime?: string;
+  endTime?: string;
+  locationName?: string;
+  locationAddress?: string;
+  description?: string;
   sortOrder: number;
   agendaEventId?: string;
   publishToAgenda?: boolean;
@@ -37,7 +42,8 @@ export type BulletinActivity = {
 };
 export type WeeklyReading = { id: string; day: string; referenceText: string; reference?: BibleReference; sortOrder: number };
 export type DiaconalScheduleItem = { id: string; date: string; responsible: string[]; sortOrder: number };
-export type BirthdayEntry = { id: string; name: string; date: string; source: 'manual' | 'member'; memberId?: string; sortOrder: number };
+export type BulletinVisibility = 'hidden' | 'print' | 'public';
+export type BirthdayEntry = { id: string; name: string; date: string; source: 'manual' | 'member'; memberId?: string; visibility: BulletinVisibility; sortOrder: number };
 export type BulletinTemplate = {
   id: string;
   name: string;
@@ -68,6 +74,8 @@ export type BulletinInput = {
   pdf?: BulletinPdfReference;
 };
 export type Bulletin = Omit<BulletinInput, 'id' | 'slug'> & { id: string; slug: string };
+export type BulletinPublication = { revision: number; sourceUpdatedAt: string; publishedAt: string; publishedBy: string; withdrawnAt?: string; withdrawnBy?: string };
+export type VersionedBulletin = Bulletin & { createdAt: string; updatedAt: string; publication?: BulletinPublication; hasUnpublishedChanges: boolean };
 export type BulletinFit = { status: 'within-limit' | 'near-limit' | 'over-limit'; estimatedUnits: number; limit: number };
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -88,13 +96,13 @@ export const slugifyBulletin = (number: number, date: string) => `boletim-${numb
 export const validateBulletinInput = (input: BulletinInput) => Boolean(
   Number.isInteger(input.number) && input.number > 0 && isValidCivilDate(input.date) && input.templateId.trim()
   && ['draft', 'published', 'trashed'].includes(input.status)
-  && input.pastoral.title.trim() && validateRichText(input.pastoral.body)
+  && (input.status !== 'published' || input.pastoral.title.trim()) && validateRichText(input.pastoral.body)
   && (!input.pastoral.bibleReference || validateBibleReference(input.pastoral.bibleReference))
   && input.announcements.every(item => item.id.trim() && item.title.trim() && validateRichText(item.content))
   && input.monthActivities.every(item => item.id.trim() && item.text.trim() && validOptionalCivilDate(item.startDate) && validOptionalCivilDate(item.endDate) && (!item.endDate || !item.startDate || item.endDate >= item.startDate))
   && input.weeklyReadings.every(item => item.id.trim() && item.day.trim() && item.referenceText.trim() && (!item.reference || validateBibleReference(item.reference)))
   && input.diaconalSchedule.every(item => item.id.trim() && isValidCivilDate(item.date) && item.responsible.length > 0 && item.responsible.every(Boolean))
-  && input.birthdays.every(item => item.id.trim() && item.name.trim() && isValidCivilDate(item.date) && (item.source === 'manual' || Boolean(item.memberId)))
+  && input.birthdays.every(item => item.id.trim() && item.name.trim() && isValidCivilDate(item.date) && ['hidden', 'print', 'public'].includes(item.visibility || 'print') && (item.source === 'manual' || Boolean(item.memberId)))
   && (!input.deletedAt || !Number.isNaN(Date.parse(input.deletedAt))) && (input.status !== 'trashed' || Boolean(input.deletedAt))
   && (!input.additionalBlocks || input.additionalBlocks.every(validateRichText)),
 );
@@ -111,7 +119,7 @@ export const normalizeBulletin = (input: BulletinInput): Bulletin => {
     monthActivities: [...input.monthActivities].sort((a, b) => a.sortOrder - b.sortOrder),
     weeklyReadings: [...input.weeklyReadings].sort((a, b) => a.sortOrder - b.sortOrder),
     diaconalSchedule: [...input.diaconalSchedule].sort((a, b) => a.sortOrder - b.sortOrder),
-    birthdays: [...input.birthdays].sort((a, b) => a.sortOrder - b.sortOrder),
+    birthdays: input.birthdays.map(item => ({ ...item, visibility: item.visibility || 'print' })).sort((a, b) => a.sortOrder - b.sortOrder),
   };
 };
 
