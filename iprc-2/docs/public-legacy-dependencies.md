@@ -20,21 +20,20 @@ Agenda usa `/agenda`, Estudos usa `/estudos` e Boletins usa `/boletins`. Não fo
 
 ## Dependências temporárias legítimas
 
-Cinco links públicos ainda usam `LEGACY_BASE` porque não existe experiência nova equivalente:
+Dois links públicos ainda usam `LEGACY_BASE` porque não existe experiência nova equivalente:
 
 - Header · **Pedido de oração** → `pedidos.html`;
 - Home · acesso rápido **Pedido de oração** → `pedidos.html`;
-- Home · **Planeje sua visita** → `sobre.html`;
-- Home · **Ver localização** → `sobre.html`;
-- Footer · **Contato e localização** → `sobre.html`.
+
+Os três destinos institucionais antes ligados a `sobre.html` foram substituídos pela página real `/sobre`: **Conheça a igreja**, **Planeje sua visita**, **Ver localização** e **Contato e localização** usam a rota interna conforme o contexto. Não existe mais dependência pública de `sobre.html` no frontend IPRC 2.0.
 
 `LEGACY_BASE` deve permanecer enquanto esses destinos forem necessários. A meta da reconstrução continua sendo zero dependência dele.
 
 ## Próximas rotas públicas
 
-### `/visite-nos`
+### `/sobre` (concluída)
 
-Deverá substituir os três links temporários para `sobre.html` e concentrar:
+Concentra:
 
 - planejamento da primeira visita;
 - contato e localização;
@@ -55,4 +54,4 @@ Deverá substituir os dois links temporários para `pedidos.html` e oferecer:
 - proteção Turnstile;
 - área administrativa privada.
 
-Nenhuma dessas páginas foi criada nesta limpeza. Os links temporários continuam explícitos e auditáveis até que as experiências completas sejam implementadas.
+`/pedido-de-oracao` não foi criada. Os dois links temporários continuam explícitos e auditáveis até que finalidade, privacidade e responsáveis sejam definidos institucionalmente.

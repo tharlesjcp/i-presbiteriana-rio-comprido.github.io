@@ -17,7 +17,9 @@ for (const route of ['/biblia/joao/11', '/hinario', '/agenda', '/estudos', '/bol
 assert.doesNotMatch(publicShell, /LEGACY_BASE}\/biblia\.html|dynamic-crisp-a60f33\.netlify\.app\/biblia\.html/);
 assert.doesNotMatch(publicShell, /LEGACY_BASE}\/hinario\.html|dynamic-crisp-a60f33\.netlify\.app\/hinario\.html/);
 assert.match(header, /LEGACY_BASE}\/pedidos\.html/, 'Pedido de oração permanece legado até existir a rota pública nova');
-assert.match(footer, /LEGACY_BASE}\/sobre\.html/, 'Contato e localização permanece legado até existir /visite-nos');
-assert.doesNotMatch(publicShell, /href=["']\/(?:visite-nos|pedido-de-oracao)["']/, 'rotas futuras não podem ser apresentadas antes de sua implementação');
+assert.match(footer, /href="\/sobre"/, 'Contato e localização deve usar a página institucional nova');
+assert.match(home, /href="\/sobre"/, 'CTAs institucionais da Home devem usar a página institucional nova');
+assert.doesNotMatch(publicShell, /sobre\.html/, 'o frontend novo não pode depender da antiga sobre.html');
+assert.doesNotMatch(publicShell, /href=["']\/pedido-de-oracao["']/, 'Pedido de oração não pode ser apresentado antes de sua implementação');
 
-console.log('Links públicos: módulos migrados usam rotas novas; pendências legadas continuam explícitas.');
+console.log('Links públicos: módulos e Sobre usam rotas novas; somente Pedido de oração permanece legado.');
