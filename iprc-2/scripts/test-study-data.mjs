@@ -15,6 +15,7 @@ import { resolveBibleLivrePreview } from '../src/services/biblePreview.ts';
 const fixture = (overrides = {}) => ({
   id: 'fixture-1',
   title: 'Estudo de teste',
+  author: 'Presb. Maurício Buraseska',
   publishedAt: '2026-01-02',
   youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
   transcript: '## Título\nTexto seguro.',
@@ -67,18 +68,28 @@ assert.match(source, /staticStudies: StudyInput\[\] = \[\]/, 'fonte pública dev
 assert.doesNotMatch(source, /youtubeId\s*:/, 'catálogo editorial não deve armazenar youtubeId');
 const home = await readFile(resolve(root, 'src/pages/index.astro'), 'utf8');
 assert.doesNotMatch(home, /mock-study|Uma fé que atravessa|Esperança em tempos/);
-assert.match(home, /studyRepository\.listPublished/);
+assert.match(home, /data-home-studies/);
+assert.match(home, /public-home-studies/);
 const modal = await readFile(resolve(root, 'public/scripts/study-reference-preview.js'), 'utf8');
 assert.match(modal, /addEventListener\('cancel'/);
 assert.match(modal, /trigger\?\.focus/);
 assert.match(modal, /bible-data\/blivre/);
 assert.match(modal, /showModal/);
 const page = await readFile(resolve(root, 'src/pages/estudos/index.astro'), 'utf8');
-assert.match(page, /Os estudos bíblicos serão publicados aqui em breve/);
-assert.match(page, /latest\.summary &&/, 'resumo opcional não deve gerar espaço vazio');
-const detail = await readFile(resolve(root, 'src/pages/estudos/[slug].astro'), 'utf8');
-assert.match(detail, /study\.summary \|\| study\.title/, 'SEO deve usar fallback seguro para o título');
-assert.match(detail, /study\.summary &&/, 'detalhe não deve renderizar resumo ausente');
+assert.match(page, /data-study-feature/);
+assert.match(page, /public-studies/);
+const detail = await readFile(resolve(root, 'src/pages/estudos/ler.astro'), 'utf8');
+assert.match(detail, /data-study-video/, 'detalhe deve reservar o player privado');
+assert.match(detail, /data-study-summary[^>]*hidden/, 'resumo ausente não deve reservar espaço');
+const migration = await readFile(resolve(root, 'migrations/0007_studies.sql'), 'utf8');
+assert.equal((migration.match(/'study-[^']+'/g)||[]).length, 8, 'migration deve cadastrar exatamente oito estudos reais');
+assert.equal(migration.split('\n').filter(line=>line.startsWith("('study-")&&line.includes(",'published',")).length, 8, 'os oito estudos confirmados devem iniciar publicados');
+assert.doesNotMatch(migration, /[?&]si=/, 'URLs canônicas não armazenam parâmetros de compartilhamento');
+const publicScript=await readFile(resolve(root,'src/scripts/public-studies.ts'),'utf8');
+assert.match(publicScript,/slice\(1\)/,'a lista deve destacar um estudo e carregar os demais sem múltiplos players');
+assert.doesNotMatch(publicScript,/youtube-nocookie\.com\/embed/,'o índice não deve criar oito players');
+const detailScript=await readFile(resolve(root,'src/scripts/public-study-detail.ts'),'utf8');
+assert.match(detailScript,/youtube-nocookie\.com\/embed/);
 const bibleReader = await readFile(resolve(root, 'public/scripts/bible-reader.js'), 'utf8');
 assert.match(bibleReader, /id="v\$\{verse\.number\}"/, 'cada versículo precisa expor âncora navegável');
 assert.match(bibleReader, /location\.hash\.match\(\/\^#v/, 'a Bíblia precisa posicionar a referência recebida');

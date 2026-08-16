@@ -1,7 +1,7 @@
-export type StudyStatus = 'draft' | 'published';
+export type StudyStatus = 'draft' | 'published' | 'archived';
 export type BibleReference = { book: string; chapter: number; verseStart: number; verseEnd?: number };
-export type StudyInput = { id?: string; slug?: string; title: string; publishedAt: string; summary?: string; youtubeUrl: string; transcript: string; references: BibleReference[]; status: StudyStatus };
-export type Study = Omit<StudyInput, 'slug' | 'summary'> & { slug: string; summary?: string; youtubeId: string };
+export type StudyInput = { id?: string; slug?: string; title: string; studyDate?: string; publishedAt?: string; summary?: string; author: string; youtubeUrl: string; thumbnail?: string; durationSeconds?: number; editorialContent?: string; transcript?: string; transcriptSource?: string; transcriptStatus?: 'unavailable'|'raw'|'reviewed'; references: BibleReference[]; status: StudyStatus };
+export type Study = Omit<StudyInput, 'id'|'slug'|'summary'|'publishedAt'|'thumbnail'|'transcript'|'editorialContent'> & { id: string; slug: string; summary?: string; publishedAt?: string; thumbnail: string; transcript: string; editorialContent: string; youtubeId: string; createdAt?: string; updatedAt?: string };
 
 const youtubeIdPattern = /^[A-Za-z0-9_-]{11}$/;
 export const extractYoutubeId = (value: string): string | null => {
@@ -31,15 +31,17 @@ export const validateBibleReference = (reference: BibleReference) => Boolean(bib
 export const normalizeStudy = (input: StudyInput): Study => {
   const youtubeId = extractYoutubeId(input.youtubeUrl);
   const slug = input.slug || slugifyStudyTitle(input.title);
-  if (!input.title.trim() || !input.transcript.trim()) throw new Error('Estudo com campos obrigatórios vazios.');
+  if (!input.title.trim() || !input.author.trim()) throw new Error('Estudo com campos obrigatórios vazios.');
   if (!youtubeId) throw new Error('URL do YouTube inválida.');
   if (!isValidStudySlug(slug)) throw new Error('Slug inválido.');
-  if (Number.isNaN(Date.parse(input.publishedAt))) throw new Error('Data de publicação inválida.');
-  if (!['draft','published'].includes(input.status)) throw new Error('Status inválido.');
+  if (input.studyDate && Number.isNaN(Date.parse(`${input.studyDate}T00:00:00Z`))) throw new Error('Data do estudo inválida.');
+  if (input.publishedAt && Number.isNaN(Date.parse(input.publishedAt))) throw new Error('Data de publicação inválida.');
+  if (!['draft','published','archived'].includes(input.status)) throw new Error('Status inválido.');
   if (!input.references.every(validateBibleReference)) throw new Error('Referência bíblica inválida.');
   const summary = input.summary?.trim() || undefined;
-  const id = input.id?.trim() || undefined;
-  return { ...input, id, slug, summary, youtubeId };
+  const id = input.id?.trim() || `study-${youtubeId}`;
+  return { ...input, id, title:input.title.trim(), author:input.author.trim(), youtubeUrl:`https://www.youtube.com/watch?v=${youtubeId}`, thumbnail:input.thumbnail||`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`, transcript:input.transcript||'',editorialContent:input.editorialContent||'',transcriptStatus:input.transcriptStatus||'unavailable',slug, summary, youtubeId };
 };
 
-export const formatStudyDate = (value: string) => new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value));
+export const formatStudyDate = (value: string) => new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value.length===10?`${value}T00:00:00Z`:value));
+export const formatStudyDuration=(seconds?:number)=>seconds?`${Math.floor(seconds/60)} min`:undefined;

@@ -1,11 +1,12 @@
 ---
 import '../styles/admin.css';
-interface Props { title: string; description: string; current?: 'inicio' | 'agenda' | 'boletins' | 'configuracoes'; }
+interface Props { title: string; description: string; current?: 'inicio' | 'agenda' | 'boletins' | 'estudos' | 'configuracoes'; }
 const { title, description, current = 'inicio' } = Astro.props;
 const navigation = [
   { id: 'inicio', label: 'Visão geral', href: '/admin' },
   { id: 'agenda', label: 'Agenda', href: '/admin/agenda' },
   { id: 'boletins', label: 'Boletins', href: '/admin/boletins' },
+  { id: 'estudos', label: 'Estudos', href: '/admin/estudos' },
   { id: 'configuracoes', label: 'Configurações', href: '/admin/configuracoes' },
 ];
 ---

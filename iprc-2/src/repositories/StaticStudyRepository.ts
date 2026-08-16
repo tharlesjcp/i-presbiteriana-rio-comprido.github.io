@@ -5,7 +5,7 @@ import type { StudyRepository } from './StudyRepository.ts';
 export class StaticStudyRepository implements StudyRepository {
   private readonly records: StudyInput[];
   constructor(records: StudyInput[] = staticStudies) { this.records = records; }
-  async listPublished() { return this.records.map(normalizeStudy).filter(study => study.status === 'published').sort((a,b) => Date.parse(b.publishedAt)-Date.parse(a.publishedAt)); }
+  async listPublished() { return this.records.map(normalizeStudy).filter(study => study.status === 'published').sort((a,b) => Date.parse(b.studyDate||b.publishedAt||'')-Date.parse(a.studyDate||a.publishedAt||'')); }
   async findPublishedBySlug(slug: string) { return (await this.listPublished()).find(study => study.slug === slug) || null; }
   async findLatestPublished() { return (await this.listPublished())[0] || null; }
 }
