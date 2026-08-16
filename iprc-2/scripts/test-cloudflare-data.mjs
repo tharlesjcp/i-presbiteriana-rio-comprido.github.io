@@ -39,6 +39,12 @@ assert.equal(studyEditorial.transcript_source,'manual_user_provided');assert.equ
 const studyPublic=queryJson("SELECT length(json_extract(snapshot_json,'$.transcript')) AS transcript_length,source_updated_at FROM study_publications WHERE study_id='study-b8anLmQG6l0' AND withdrawn_at IS NULL;")[0];
 assert.equal(studyPublic.transcript_length,0,'migration editorial não pode republicar silenciosamente o estudo');
 assert.notEqual(studyPublic.source_updated_at,studyEditorial.updated_at,'versão pública deve registrar alterações administrativas pendentes');
+const remainingStudies=queryJson("SELECT id,length(transcript) AS transcript_length,length(editorial_content) AS editorial_length,transcript_source,transcript_status,json_array_length(references_json) AS references_total,updated_at FROM studies WHERE id<>'study-b8anLmQG6l0' ORDER BY id;");
+assert.equal(remainingStudies.length,7,'migration final deve atualizar os sete registros existentes sem duplicar estudos');
+for(const study of remainingStudies){assert(study.transcript_length>16000,`${study.id}: transcript completo`);assert(study.editorial_length>8000,`${study.id}: editorial completo`);assert.equal(study.transcript_source,'manual_user_provided');assert.equal(study.transcript_status,'raw');assert(study.references_total>=2);}
+assert.equal(queryJson('SELECT COUNT(*) AS total FROM studies;')[0].total,8,'nenhum novo registro de estudo deve ser criado');
+const pendingPublic=queryJson("SELECT COUNT(*) AS total FROM studies s JOIN study_publications p ON p.study_id=s.id AND p.withdrawn_at IS NULL WHERE s.updated_at<>p.source_updated_at;")[0].total;
+assert.equal(pendingPublic,8,'conteúdo privado deve permanecer pendente sem republicação implícita');
 runWrangler(['d1', 'execute', 'DB', '--local', '--file', resolve(projectRoot, 'migrations/0002_seed_recurring_schedules.sql')]);
 assert.equal(queryJson('SELECT COUNT(*) AS total FROM recurring_schedules;')[0].total, 4, 'seed repetido não duplica horários');
 const duplicate = runWrangler(['d1', 'execute', 'DB', '--local', '--command', `INSERT INTO bulletins (id, number, slug, date, template_id, status, pastoral_title, pastoral_body_json) VALUES ('unique-a', 90, 'unique-a', '2028-02-29', 'standard', 'draft', 'A', '{"version":1,"blocks":[]}'); INSERT INTO bulletins (id, number, slug, date, template_id, status, pastoral_title, pastoral_body_json, deleted_at) VALUES ('unique-b', 90, 'unique-b', '2028-03-01', 'standard', 'trashed', 'B', '{"version":1,"blocks":[]}', '2028-03-02T00:00:00Z');`], false);

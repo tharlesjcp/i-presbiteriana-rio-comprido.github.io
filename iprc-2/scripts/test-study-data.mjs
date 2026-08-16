@@ -103,6 +103,17 @@ const migration = await readFile(resolve(root, 'migrations/0007_studies.sql'), '
 assert.equal((migration.match(/'study-[^']+'/g)||[]).length, 8, 'migration deve cadastrar exatamente oito estudos reais');
 assert.equal(migration.split('\n').filter(line=>line.startsWith("('study-")&&line.includes(",'published',")).length, 8, 'os oito estudos confirmados devem iniciar publicados');
 assert.doesNotMatch(migration, /[?&]si=/, 'URLs canônicas não armazenam parâmetros de compartilhamento');
+const sourceReport=JSON.parse(await readFile(resolve(root,'content/studies/remaining-study-source-report.json'),'utf8'));
+assert.equal(sourceReport.length,7,'sete fontes restantes devem estar auditadas');
+for(const entry of sourceReport){
+  const transcript=(await readFile(resolve(root,`content/studies/${entry.slug}.transcript.txt`),'utf8')).trim();
+  const editorial=(await readFile(resolve(root,`content/studies/${entry.slug}.editorial.md`),'utf8')).trim();
+  assert.equal(transcript.length,entry.transcriptCharacters,`${entry.slug}: transcript persistido deve equivaler à fonte extraída`);
+  assert.equal((transcript.match(/\[\d{2}:\d{2}(?::\d{2})?[^\]]*\]/g)||[]).length,entry.timestamps,`${entry.slug}: todas as marcações devem ser preservadas`);
+  assert(transcript.includes('Abre em uma nova janela')||entry.slug==='a-graca-de-deus',`${entry.slug}: resíduos existentes na fonte não devem ser limpos`);
+  assert(editorial.length>8_000,`${entry.slug}: edição de leitura não pode ser um resumo`);
+  assert((editorial.match(/^## /gm)||[]).length>=6,`${entry.slug}: edição deve ter estrutura temática`);
+}
 const publicScript=await readFile(resolve(root,'src/scripts/public-studies.ts'),'utf8');
 assert.match(publicScript,/slice\(1\)/,'a lista deve destacar um estudo e carregar os demais sem múltiplos players');
 assert.doesNotMatch(publicScript,/youtube-nocookie\.com\/embed/,'o índice não deve criar oito players');
