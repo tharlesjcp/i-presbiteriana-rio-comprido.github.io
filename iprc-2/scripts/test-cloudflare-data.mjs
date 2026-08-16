@@ -11,6 +11,7 @@ import { StaticBulletinRepository } from '../src/repositories/StaticBulletinRepo
 import { R2MediaStorage } from '../src/storage/R2MediaStorage.ts';
 import { mediaKeys } from '../src/storage/mediaKeys.ts';
 import { handleRequest } from '../src/worker/index.ts';
+import { handleAdminRequest } from '../src/worker/admin-index.ts';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const persistTo = mkdtempSync(join(tmpdir(), 'iprc-d1-test-'));
@@ -28,10 +29,22 @@ const queryJson = command => {
 };
 
 runWrangler(['d1', 'migrations', 'apply', 'DB', '--local']);
-const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks', 'bulletin_publications', 'admin_audit_log'];
+const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks', 'bulletin_publications', 'study_publications', 'admin_audit_log'];
 const tables = queryJson("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name;").map(row => row.name);
 for (const table of expectedTables) assert(tables.includes(table), `migration deve criar ${table}`);
 assert.equal(queryJson('SELECT COUNT(*) AS total FROM recurring_schedules;')[0].total, 4);
+const studyEditorial=queryJson("SELECT length(transcript) AS transcript_length,transcript_source,transcript_status,json_array_length(references_json) AS references_total,updated_at FROM studies WHERE id='study-b8anLmQG6l0';")[0];
+assert(studyEditorial.transcript_length>16000,'transcript manual integral deve estar na entidade administrativa');
+assert.equal(studyEditorial.transcript_source,'manual_user_provided');assert.equal(studyEditorial.transcript_status,'raw');assert.equal(studyEditorial.references_total,5);
+const studyPublic=queryJson("SELECT length(json_extract(snapshot_json,'$.transcript')) AS transcript_length,source_updated_at FROM study_publications WHERE study_id='study-b8anLmQG6l0' AND withdrawn_at IS NULL;")[0];
+assert.equal(studyPublic.transcript_length,0,'migration editorial não pode republicar silenciosamente o estudo');
+assert.notEqual(studyPublic.source_updated_at,studyEditorial.updated_at,'versão pública deve registrar alterações administrativas pendentes');
+const remainingStudies=queryJson("SELECT id,length(transcript) AS transcript_length,length(editorial_content) AS editorial_length,transcript_source,transcript_status,json_array_length(references_json) AS references_total,updated_at FROM studies WHERE id<>'study-b8anLmQG6l0' ORDER BY id;");
+assert.equal(remainingStudies.length,7,'migration final deve atualizar os sete registros existentes sem duplicar estudos');
+for(const study of remainingStudies){assert(study.transcript_length>16000,`${study.id}: transcript completo`);assert(study.editorial_length>8000,`${study.id}: editorial completo`);assert.equal(study.transcript_source,'manual_user_provided');assert.equal(study.transcript_status,'raw');assert(study.references_total>=2);}
+assert.equal(queryJson('SELECT COUNT(*) AS total FROM studies;')[0].total,8,'nenhum novo registro de estudo deve ser criado');
+const pendingPublic=queryJson("SELECT COUNT(*) AS total FROM studies s JOIN study_publications p ON p.study_id=s.id AND p.withdrawn_at IS NULL WHERE s.updated_at<>p.source_updated_at;")[0].total;
+assert.equal(pendingPublic,8,'conteúdo privado deve permanecer pendente sem republicação implícita');
 runWrangler(['d1', 'execute', 'DB', '--local', '--file', resolve(projectRoot, 'migrations/0002_seed_recurring_schedules.sql')]);
 assert.equal(queryJson('SELECT COUNT(*) AS total FROM recurring_schedules;')[0].total, 4, 'seed repetido não duplica horários');
 const duplicate = runWrangler(['d1', 'execute', 'DB', '--local', '--command', `INSERT INTO bulletins (id, number, slug, date, template_id, status, pastoral_title, pastoral_body_json) VALUES ('unique-a', 90, 'unique-a', '2028-02-29', 'standard', 'draft', 'A', '{"version":1,"blocks":[]}'); INSERT INTO bulletins (id, number, slug, date, template_id, status, pastoral_title, pastoral_body_json, deleted_at) VALUES ('unique-b', 90, 'unique-b', '2028-03-01', 'standard', 'trashed', 'B', '{"version":1,"blocks":[]}', '2028-03-02T00:00:00Z');`], false);
@@ -127,5 +140,12 @@ const downloadResponse = await handleRequest(new Request(`https://example.test/m
 assert.match(downloadResponse.headers.get('content-disposition'), /^attachment/);
 const staticResponse = await handleRequest(new Request('https://example.test/'), workerEnv);
 assert.equal(await staticResponse.text(), 'static-asset');
+const adminAssets={fetch:async request=>new Response(`admin-asset:${new URL(request.url).pathname}`)};
+for(const path of ['/_astro/admin.js','/logo-iprc.svg']){
+  const response=await handleAdminRequest(new Request(`https://admin.example.test${path}`),{...workerEnv,ASSETS:adminAssets});
+  assert.equal(await response.text(),`admin-asset:${path}`,'Admin deve entregar seus próprios bundles e logo');
+}
+const blockedPublic=await handleAdminRequest(new Request('https://admin.example.test/estudos'),{...workerEnv,ASSETS:adminAssets});
+assert.equal(blockedPublic.status,404,'origem administrativa não deve expor páginas públicas');
 
 console.log('Cloudflare: migrations, D1 repositories, seleção de backend, R2 e API aprovados.');

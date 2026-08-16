@@ -1,5 +1,6 @@
 import { D1AgendaRepository } from '../repositories/D1AgendaRepository.ts';
 import { D1BulletinRepository } from '../repositories/D1BulletinRepository.ts';
+import { D1StudyRepository } from '../repositories/D1StudyRepository.ts';
 import type { Env } from './env.ts';
 import { serveMedia } from './media.ts';
 import { apiError, apiSuccess } from './responses.ts';
@@ -26,6 +27,8 @@ const publicApi = async (url: URL, env: Env) => {
     const bulletins = await new D1BulletinRepository(env.DB).listPublished();
     return apiSuccess(bulletins, 200, 'public, max-age=60');
   }
+  if(url.pathname==='/api/public/studies'){const studies=await new D1StudyRepository(env.DB).listPublished();return apiSuccess(studies,200,'public, max-age=60');}
+  const studyMatch=/^\/api\/public\/studies\/([a-z0-9-]+)$/.exec(url.pathname);if(studyMatch){const study=await new D1StudyRepository(env.DB).findPublishedBySlug(studyMatch[1]);return study?apiSuccess(study,200,'public, max-age=60'):apiError(404,'STUDY_NOT_FOUND','Estudo não encontrado.');}
   const bulletinMatch = /^\/api\/public\/bulletins\/([a-z0-9-]+)$/.exec(url.pathname);
   if (bulletinMatch) {
     const bulletin = await new D1BulletinRepository(env.DB).findPublishedBySlug(bulletinMatch[1]);
@@ -51,6 +54,7 @@ export const handleRequest = async (request: Request, env: Env): Promise<Respons
     if (/^\/boletins\/[a-z0-9-]+\/?$/.test(url.pathname) && !['/boletins/ler','/boletins/modelo-de-impressao'].includes(url.pathname.replace(/\/$/,''))) {
       const slug=url.pathname.split('/').filter(Boolean).at(-1); const assetUrl=new URL(`/boletins/ler?slug=${encodeURIComponent(slug||'')}`,url); return env.ASSETS.fetch(new Request(assetUrl,request));
     }
+    if(/^\/estudos\/[a-z0-9-]+\/?$/.test(url.pathname)&&url.pathname.replace(/\/$/,'')!=='/estudos/ler'){const slug=url.pathname.split('/').filter(Boolean).at(-1);return env.ASSETS.fetch(new Request(new URL(`/estudos/ler?slug=${encodeURIComponent(slug||'')}`,url),request));}
     return env.ASSETS.fetch(request);
   } catch (error) {
     console.error('Unhandled worker error', error instanceof Error ? error.message : 'unknown');

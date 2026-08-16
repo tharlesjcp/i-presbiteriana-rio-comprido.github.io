@@ -4,9 +4,9 @@ import '../styles/bulletins.css';
 interface Props { bulletin?: Bulletin | null; }
 const { bulletin } = Astro.props;
 ---
-<article class:list={['bulletin-card', 'reveal', !bulletin && 'bulletin-card-empty']}>
+<article class:list={['bulletin-card', 'reveal', !bulletin && 'bulletin-card-empty']} data-home-bulletin>
   <div class="bulletin-art" aria-hidden="true"><span>IPRC</span><strong>BOLETIM</strong><small>SEMANAL</small></div>
-  <div class="bulletin-copy">
+  <div class="bulletin-copy" data-home-bulletin-copy>
     <p class="eyebrow">{bulletin ? 'Boletim atual' : 'Boletins da IPRC'}</p>
     {bulletin ? <><p class="meta">Nº {bulletin.number} · {formatBulletinDate(bulletin.date)}</p><h3>{bulletin.pastoral.title}</h3><a class="button button-light" href={`/boletins/${bulletin.slug}`}>Ler boletim <span aria-hidden="true">→</span></a></> : <><h3>Os boletins serão publicados aqui em breve.</h3><p>A versão digital reunirá pastoral, avisos e informações da comunidade.</p><a class="button button-light" href="/boletins">Conhecer os boletins <span aria-hidden="true">→</span></a></>}
   </div>

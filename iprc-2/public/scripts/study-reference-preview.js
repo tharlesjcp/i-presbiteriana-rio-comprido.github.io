@@ -10,13 +10,15 @@ if (dialog) {
   dialog.querySelector('[data-reference-close]')?.addEventListener('click', close);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
   dialog.addEventListener('click', event => { if (event.target === dialog) close(); });
-  document.querySelectorAll('[data-bible-reference]').forEach(button => button.addEventListener('click', async () => {
+  document.addEventListener('click', async event => {
+    const button = event.target.closest?.('[data-bible-reference]');
+    if (!button) return;
     trigger = button;
-    const { book, code, chapter, start, end, label } = button.dataset;
+    const { book, code, chapter, start, end, label, wholeChapter } = button.dataset;
     title.textContent = label;
     text.textContent = 'Carregando…';
     error.hidden = true;
-    const target = `/biblia/${book}/${chapter}#v${start}`;
+    const target = `/biblia/${book}/${chapter}${wholeChapter === 'true' ? '' : `#v${start}`}`;
     chapterLink.href = target;
     openLink.href = target;
     dialog.showModal();
@@ -37,5 +39,5 @@ if (dialog) {
       text.textContent = '';
       error.hidden = false;
     }
-  }));
+  });
 }

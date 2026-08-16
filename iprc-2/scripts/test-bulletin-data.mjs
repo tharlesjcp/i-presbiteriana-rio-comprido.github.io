@@ -88,7 +88,10 @@ const home = await readFile(new URL('../src/pages/index.astro', import.meta.url)
 const site = await readFile(new URL('../src/data/site.ts', import.meta.url), 'utf8');
 const listing = await readFile(new URL('../src/pages/boletins/index.astro', import.meta.url), 'utf8');
 const preview = await readFile(new URL('../src/components/BulletinPrintPreview.astro', import.meta.url), 'utf8');
-assert.match(home, /bulletinRepository\.findLatestPublished/);
+assert.match(home, /public-home-bulletin/,'Home deve consultar o mesmo endpoint público do acervo D1');
+const homeBulletin=await readFile(new URL('../src/scripts/public-home-bulletin.ts',import.meta.url),'utf8');
+assert.match(homeBulletin,/api\/public\/bulletins/);
+assert.match(homeBulletin,/data\[0\]/,'Home deve exibir somente o boletim publicado mais recente');
 assert.doesNotMatch(home + site, /boletim\.html|Semana de 03 a 09 de agosto/);
 assert.match(listing, /data-empty-bulletins/);
 assert.equal((preview.match(/class="print-sheet"/g) || []).length, 2);

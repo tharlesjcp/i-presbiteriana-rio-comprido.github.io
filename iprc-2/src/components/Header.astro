@@ -1,7 +1,9 @@
 ---
 import { navigation, LEGACY_BASE } from '../data/site';
+interface Props { mode?: 'overlay'|'solid'; }
+const { mode='overlay' }=Astro.props;
 ---
-<header class="site-header" data-header>
+<header class:list={['site-header',mode==='solid'&&'site-header--solid']} data-header>
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="IPRC — página inicial">
       <img class="brand-logo" src="/logo-iprc.svg" width="48" height="48" alt="" aria-hidden="true" />

@@ -2,10 +2,13 @@ import { createAgendaEventFromActivity, normalizeBulletin, validateRichText, typ
 
 export class BulletinAdminValidationError extends Error {}
 const text=(value:unknown,max=10_000)=>typeof value==='string'?value.trim().slice(0,max):'';
+// Espaços nas bordas dos fragmentos são conteúdo editorial; removê-los junta
+// palavras quando a formatação muda entre dois fragmentos consecutivos.
+const inlineText=(value:unknown,max=10_000)=>typeof value==='string'?value.slice(0,max):'';
 const document=(value:unknown):RichTextDocument=>{
   if(!value||typeof value!=='object'||!validateRichText(value as RichTextDocument))throw new BulletinAdminValidationError('O conteúdo editorial possui uma estrutura inválida.');
   const raw=value as RichTextDocument;
-  return {version:1,blocks:raw.blocks.map(block=>block.type==='list'?{...block,items:block.items.map(items=>items.map(item=>({text:text(item.text),marks:item.marks?.filter(mark=>['bold','italic','underline'].includes(mark))})))}:{...block,content:block.content.map(item=>({text:text(item.text),marks:item.marks?.filter(mark=>['bold','italic','underline'].includes(mark))}))})};
+  return {version:1,blocks:raw.blocks.map(block=>block.type==='list'?{...block,items:block.items.map(items=>items.map(item=>({text:inlineText(item.text),marks:item.marks?.filter(mark=>['bold','italic','underline'].includes(mark))})))}:{...block,content:block.content.map(item=>({text:inlineText(item.text),marks:item.marks?.filter(mark=>['bold','italic','underline'].includes(mark))}))})};
 };
 export const normalizeBulletinAdminInput=(raw:unknown):BulletinInput=>{
   if(!raw||typeof raw!=='object')throw new BulletinAdminValidationError('Informe os dados do boletim.');
