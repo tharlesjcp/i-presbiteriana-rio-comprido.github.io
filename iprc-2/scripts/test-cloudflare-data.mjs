@@ -29,10 +29,16 @@ const queryJson = command => {
 };
 
 runWrangler(['d1', 'migrations', 'apply', 'DB', '--local']);
-const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks', 'bulletin_publications', 'admin_audit_log'];
+const expectedTables = ['recurring_schedules', 'agenda_events', 'bulletin_templates', 'bulletins', 'bulletin_announcements', 'bulletin_activities', 'bulletin_birthdays', 'bulletin_diaconal_schedule', 'bulletin_weekly_readings', 'bulletin_blocks', 'bulletin_publications', 'study_publications', 'admin_audit_log'];
 const tables = queryJson("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name;").map(row => row.name);
 for (const table of expectedTables) assert(tables.includes(table), `migration deve criar ${table}`);
 assert.equal(queryJson('SELECT COUNT(*) AS total FROM recurring_schedules;')[0].total, 4);
+const studyEditorial=queryJson("SELECT length(transcript) AS transcript_length,transcript_source,transcript_status,json_array_length(references_json) AS references_total,updated_at FROM studies WHERE id='study-b8anLmQG6l0';")[0];
+assert(studyEditorial.transcript_length>16000,'transcript manual integral deve estar na entidade administrativa');
+assert.equal(studyEditorial.transcript_source,'manual_user_provided');assert.equal(studyEditorial.transcript_status,'raw');assert.equal(studyEditorial.references_total,5);
+const studyPublic=queryJson("SELECT length(json_extract(snapshot_json,'$.transcript')) AS transcript_length,source_updated_at FROM study_publications WHERE study_id='study-b8anLmQG6l0' AND withdrawn_at IS NULL;")[0];
+assert.equal(studyPublic.transcript_length,0,'migration editorial não pode republicar silenciosamente o estudo');
+assert.notEqual(studyPublic.source_updated_at,studyEditorial.updated_at,'versão pública deve registrar alterações administrativas pendentes');
 runWrangler(['d1', 'execute', 'DB', '--local', '--file', resolve(projectRoot, 'migrations/0002_seed_recurring_schedules.sql')]);
 assert.equal(queryJson('SELECT COUNT(*) AS total FROM recurring_schedules;')[0].total, 4, 'seed repetido não duplica horários');
 const duplicate = runWrangler(['d1', 'execute', 'DB', '--local', '--command', `INSERT INTO bulletins (id, number, slug, date, template_id, status, pastoral_title, pastoral_body_json) VALUES ('unique-a', 90, 'unique-a', '2028-02-29', 'standard', 'draft', 'A', '{"version":1,"blocks":[]}'); INSERT INTO bulletins (id, number, slug, date, template_id, status, pastoral_title, pastoral_body_json, deleted_at) VALUES ('unique-b', 90, 'unique-b', '2028-03-01', 'standard', 'trashed', 'B', '{"version":1,"blocks":[]}', '2028-03-02T00:00:00Z');`], false);

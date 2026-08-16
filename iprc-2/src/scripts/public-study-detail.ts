@@ -4,7 +4,7 @@ type Json=Record<string,any>;
 const slug=new URLSearchParams(location.search).get('slug')||location.pathname.split('/').filter(Boolean).at(-1)||'';
 const q=(s:string)=>document.querySelector(s) as HTMLElement;
 const format=(v:string)=>new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC',day:'2-digit',month:'long',year:'numeric'}).format(new Date(`${v.slice(0,10)}T00:00:00Z`));
-const prose=(target:HTMLElement,value:string)=>target.replaceChildren(...value.split(/\n\n+/).filter(Boolean).map(t=>{const p=document.createElement('p');p.textContent=t;return p}));
+const prose=(target:HTMLElement,value:string)=>target.replaceChildren(...value.split(/\n\n+/).filter(Boolean).map(text=>{const heading=text.match(/^##\s+(.+)/);const element=document.createElement(heading?'h2':'p');element.textContent=heading?heading[1]:text;return element}));
 fetch(`/api/public/studies/${encodeURIComponent(slug)}`).then(async r=>{
   if(!r.ok)throw new Error();const s=(await r.json() as {data:Json}).data;
   q('[data-study-title]').textContent=s.title;q('[data-study-author]').textContent=s.author;const date=s.studyDate||s.publishedAt;q('[data-study-date]').textContent=format(date);q('[data-study-date]').setAttribute('datetime',date);q('[data-study-duration]').textContent=s.durationSeconds?` · ${Math.floor(s.durationSeconds/60)} min`:'';

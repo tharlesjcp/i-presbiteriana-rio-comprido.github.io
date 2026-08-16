@@ -46,7 +46,7 @@ export const handleAdminApi = async (request:Request,env:Env,authenticate:Authen
     if(study&&request.method==='GET')return apiSuccess(await studies.find(decodeURIComponent(study[1])));
     if(study&&request.method==='PUT'){const {value,version}=studyExpectedVersion(await readJson(request));return apiSuccess(await studies.update(decodeURIComponent(study[1]),value,version,identity.email));}
     const studyStatus=/^\/api\/admin\/studies\/([^/]+)\/(publish|unpublish|archive|restore)$/.exec(url.pathname);
-    if(studyStatus&&request.method==='POST'){const body=await readJson(request) as {expectedVersion?:unknown};if(typeof body.expectedVersion!=='string')throw new StudyAdminValidationError('A versão atual do estudo é obrigatória.');const target=studyStatus[2]==='publish'?'published':studyStatus[2]==='archive'?'archived':'draft';return apiSuccess(await studies.changeStatus(decodeURIComponent(studyStatus[1]),target,body.expectedVersion,identity.email));}
+    if(studyStatus&&request.method==='POST'){const body=await readJson(request) as {expectedVersion?:unknown};if(typeof body.expectedVersion!=='string')throw new StudyAdminValidationError('A versão atual do estudo é obrigatória.');const id=decodeURIComponent(studyStatus[1]);if(studyStatus[2]==='publish')return apiSuccess(await studies.publish(id,body.expectedVersion,identity.email));const target=studyStatus[2]==='archive'?'archived':'draft';return apiSuccess(await studies.changeStatus(id,target,body.expectedVersion,identity.email));}
     return apiError(404,'ADMIN_ROUTE_NOT_FOUND','Rota administrativa não encontrada.');
   } catch(error) {
     if(error instanceof AgendaValidationError) return apiError(400,'VALIDATION_ERROR',error.message);

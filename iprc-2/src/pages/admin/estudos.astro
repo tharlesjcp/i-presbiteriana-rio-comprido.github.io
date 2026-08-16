@@ -1,4 +1,44 @@
 ---
-import AdminLayout from '../../layouts/AdminLayout.astro';import studyStyles from '../../styles/admin-studies.css?raw';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import studyStyles from '../../styles/admin-studies.css?raw';
 ---
-<AdminLayout title="Estudos" description="Gerencie os estudos bíblicos da IPRC." current="estudos"><style set:html={studyStyles}></style><section class="study-admin"><header><div><p class="admin-eyebrow">Estudos bíblicos</p><h1>Conteúdo para aprender.</h1><p id="study-session">Confirmando acesso…</p></div><button class="admin-primary" id="new-study" type="button">Novo estudo</button></header><p id="study-feedback" class="admin-feedback" hidden></p><div id="study-list" class="study-admin-list" aria-live="polite"></div><section id="study-editor" hidden><button type="button" class="admin-link-button" id="study-back">← Voltar aos estudos</button><header class="study-editor-head"><div><p class="admin-eyebrow">Editor</p><h2 id="study-heading">Novo estudo</h2><p id="study-save-status" role="status">Ainda não salvo</p></div><div><button type="button" class="admin-secondary" id="study-preview">Visualizar</button><button type="button" class="admin-primary" id="study-save">Salvar</button></div></header><form id="study-form"><div class="study-form-grid"><label>Título<input id="study-title" required /></label><label>Data do estudo<input id="study-date" type="date" /></label><label>Autor<input id="study-author" required /></label><label>Link do YouTube<input id="study-youtube" type="url" required /></label><label class="wide">Thumbnail<input id="study-thumbnail" type="url" /></label><label>Duração em segundos<input id="study-duration" type="number" min="0" /></label><label class="wide">Resumo opcional<textarea id="study-summary"></textarea></label><label class="wide">Conteúdo editorial<textarea id="study-content" rows="10"></textarea></label><label class="wide">Transcript<textarea id="study-transcript" rows="10"></textarea></label><label>Origem do transcript<input id="study-transcript-source" /></label><label>Status do transcript<select id="study-transcript-status"><option value="unavailable">Indisponível</option><option value="raw">Original</option><option value="reviewed">Revisado</option></select></label><label class="wide">Referências bíblicas (uma por linha: joao 3:16-18)<textarea id="study-references"></textarea></label></div></form><div class="study-editor-actions"><button id="study-publish" class="admin-primary" type="button">Publicar</button><button id="study-unpublish" class="admin-secondary" type="button">Despublicar</button><button id="study-archive" class="admin-secondary danger" type="button">Arquivar</button><button id="study-restore" class="admin-secondary" type="button">Restaurar</button></div></section></section></AdminLayout><script>import '../../scripts/admin-studies';</script>
+<AdminLayout title="Estudos" description="Gerencie os estudos bíblicos da IPRC." current="estudos">
+  <style set:html={studyStyles}></style>
+  <section class="study-admin">
+    <header><div><p class="admin-eyebrow">Estudos bíblicos</p><h1>Conteúdo para aprender.</h1><p id="study-session">Confirmando acesso…</p></div><button class="admin-primary" id="new-study" type="button">Novo estudo</button></header>
+    <p id="study-feedback" class="admin-feedback" role="status" hidden></p>
+    <div id="study-list" class="study-admin-list" aria-live="polite"></div>
+  </section>
+
+  <dialog id="study-editor" class="study-editor-dialog" aria-labelledby="study-heading">
+    <div class="study-editor-shell">
+      <header class="study-editor-head">
+        <div><p class="admin-eyebrow">Editor de estudos</p><h2 id="study-heading">Novo estudo</h2><div class="study-editor-state"><span id="study-publication-status">Rascunho</span><span id="study-save-status" role="status">Ainda não salvo</span></div></div>
+        <button type="button" class="study-close" id="study-close" aria-label="Fechar editor">×</button>
+      </header>
+      <div class="study-editor-toolbar">
+        <button type="button" class="admin-secondary" id="study-preview">Visualizar</button>
+        <button type="button" class="admin-primary" id="study-save">Salvar</button>
+        <button id="study-publish" class="admin-primary" type="button">Publicar</button>
+        <button id="study-unpublish" class="admin-secondary" type="button">Despublicar</button>
+        <span class="toolbar-spacer"></span>
+        <button id="study-archive" class="admin-secondary danger" type="button">Arquivar</button>
+        <button id="study-restore" class="admin-secondary" type="button">Restaurar</button>
+      </div>
+      <form id="study-form">
+        <fieldset><legend>Informações</legend><div class="study-form-grid">
+          <label class="wide">Título<input id="study-title" required /></label><label>Data do estudo<input id="study-date" type="date" /></label><label>Autor<input id="study-author" required /></label>
+          <label class="wide">Link do YouTube<input id="study-youtube" type="url" required /></label><label class="wide">Thumbnail<input id="study-thumbnail" type="url" /></label><label>Duração em segundos<input id="study-duration" type="number" min="0" /></label>
+        </div></fieldset>
+        <fieldset><legend>Apresentação</legend><div class="study-form-grid">
+          <label class="wide">Resumo opcional<textarea id="study-summary" rows="5"></textarea></label><label class="wide">Referências bíblicas <small>Uma por linha, por exemplo: joao 3:16-18</small><textarea id="study-references" rows="6"></textarea></label>
+        </div></fieldset>
+        <fieldset><legend>Texto do estudo</legend><label>Conteúdo editorial<textarea id="study-content" rows="22"></textarea></label></fieldset>
+        <fieldset><legend>Fonte</legend><div class="study-form-grid">
+          <label class="wide">Transcrição original<textarea id="study-transcript" rows="22"></textarea></label><label>Origem da transcrição<input id="study-transcript-source" /></label><label>Status da transcrição<select id="study-transcript-status"><option value="unavailable">Pendente de transcrição</option><option value="raw">Original disponível</option><option value="reviewed">Revisada</option></select></label>
+        </div></fieldset>
+      </form>
+    </div>
+  </dialog>
+</AdminLayout>
+<script>import '../../scripts/admin-studies';</script>

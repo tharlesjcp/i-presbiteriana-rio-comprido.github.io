@@ -2,6 +2,8 @@ export type StudyStatus = 'draft' | 'published' | 'archived';
 export type BibleReference = { book: string; chapter: number; verseStart: number; verseEnd?: number };
 export type StudyInput = { id?: string; slug?: string; title: string; studyDate?: string; publishedAt?: string; summary?: string; author: string; youtubeUrl: string; thumbnail?: string; durationSeconds?: number; editorialContent?: string; transcript?: string; transcriptSource?: string; transcriptStatus?: 'unavailable'|'raw'|'reviewed'; references: BibleReference[]; status: StudyStatus };
 export type Study = Omit<StudyInput, 'id'|'slug'|'summary'|'publishedAt'|'thumbnail'|'transcript'|'editorialContent'> & { id: string; slug: string; summary?: string; publishedAt?: string; thumbnail: string; transcript: string; editorialContent: string; youtubeId: string; createdAt?: string; updatedAt?: string };
+export type StudyPublication = { revision:number; sourceUpdatedAt:string; publishedAt:string; publishedBy:string; withdrawnAt?:string; withdrawnBy?:string };
+export type VersionedStudy = Study & { publication?:StudyPublication; hasUnpublishedChanges:boolean };
 
 const youtubeIdPattern = /^[A-Za-z0-9_-]{11}$/;
 export const extractYoutubeId = (value: string): string | null => {
