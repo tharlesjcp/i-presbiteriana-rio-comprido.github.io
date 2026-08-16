@@ -5,12 +5,16 @@ import { duplicateBulletin, normalizeBulletin } from '../src/domain/bulletin.ts'
 import { agendaStatusForBulletin, D1BulletinAdminRepository } from '../src/repositories/D1BulletinAdminRepository.ts';
 import { publicBulletinFromSnapshot } from '../src/repositories/D1BulletinRepository.ts';
 import { bulletinExpectedVersion, normalizeBulletinAdminInput } from '../src/services/bulletinAdminValidation.ts';
+const root=resolve(import.meta.dirname,'..');
 
 const rich = { version: 1, blocks: [{ type: 'paragraph', content: [{ text: ' Texto ', marks: ['bold'] }] }] };
 const base = { number: 120, date: '2028-02-29', templateId: 'iprc-padrao', status: 'draft', pastoral: { title: '', body: rich }, announcements: [], monthActivities: [], birthdays: [], diaconalSchedule: [], weeklyReadings: [] };
 const draft = normalizeBulletinAdminInput(base);
 assert.equal(draft.pastoral.title, '', 'rascunho pode ser salvo antes do título pastoral');
-assert.equal(draft.pastoral.body.blocks[0].content[0].text, 'Texto', 'texto é normalizado sem HTML arbitrário');
+assert.equal(draft.pastoral.body.blocks[0].content[0].text, ' Texto ', 'whitespace inline é conteúdo editorial e deve ser preservado');
+const inlineBoundaries=normalizeBulletinAdminInput({...base,pastoral:{title:'Espaços',body:{version:1,blocks:[{type:'paragraph',content:[{text:'Simonton',marks:['bold']},{text:' chegou'},{text:' à igreja e '},{text:'pregou',marks:['italic']},{text:' a Palavra.'}]}]}}});
+assert.equal(inlineBoundaries.pastoral.body.blocks[0].content.map(item=>item.text).join(''),'Simonton chegou à igreja e pregou a Palavra.','bold/normal/italic devem preservar espaços entre fragmentos');
+assert.equal(inlineBoundaries.pastoral.body.blocks[0].content[1].text,' chegou','o espaço anterior ao fragmento normal não pode sofrer trim');
 assert.throws(() => normalizeBulletinAdminInput({ ...base, date: '2026-02-29' }), /inválido/i);
 assert.throws(() => normalizeBulletinAdminInput({ ...base, status: 'published' }), /inválido/i, 'publicação exige título');
 assert.throws(() => bulletinExpectedVersion({ value: base }), /versão/i);
@@ -78,5 +82,16 @@ const atomicRepository = new D1BulletinAdminRepository(failingDb);
 await assert.rejects(() => atomicRepository.update('bulletin-atomic',{...base,pastoral:{title:'Depois',body:rich},announcements:[{id:'a-fail',title:'Falha',content:rich,sortOrder:0}]},'v1','teste@iprc'),/falha simulada/);
 assert.equal(failingDb.parent.pastoral_title,'Antes','falha nos filhos deve reverter atualização do parent');
 assert.equal(failingDb.parent.updated_at,'v1','falha nos filhos não pode avançar a versão');
+
+const bulletinReader=await readFile(resolve(root,'src/scripts/public-bulletin-reader.ts'),'utf8');
+assert.match(bulletinReader,/data\.bibleReference|dataset\.bibleReference/,'referências do boletim devem abrir o preview bíblico');
+assert.match(bulletinReader,/parseReadingPart/,'leituras semanais textuais precisam ser transformadas em referências interativas');
+assert.match(bulletinReader,/mt:'mateus'.*jo:'joao'.*sl:'salmos'/,'abreviações usadas no Boletim 172 devem ser normalizadas');
+const referencePreview=await readFile(resolve(root,'public/scripts/study-reference-preview.js'),'utf8');
+assert.match(referencePreview,/document\.addEventListener\('click'/,'preview reutilizável deve aceitar botões inseridos após o carregamento');
+const bulletinStyles=await readFile(resolve(root,'src/styles/bulletins.css'),'utf8');
+assert.match(bulletinStyles,/header\.bulletin-digital-header\{max-width:none\}/,'hero digital não pode herdar o limite antigo de 55rem');
+assert.match(bulletinStyles,/text-align:justify;hyphens:auto/,'Pastoral deve ser justificada em telas largas');
+assert.match(bulletinStyles,/@media\(max-width:760px\)\{\.bulletin-digital-grid main \.rich-text>p\{text-align:left;hyphens:none\}\}/,'mobile deve voltar ao alinhamento à esquerda');
 
 console.log('Admin Boletins: snapshots públicos, republicação, privacidade, Agenda em draft, atomicidade, autosave e rotas aprovados.');
